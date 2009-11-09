@@ -39,8 +39,21 @@ limitations under the License.
 public class GenNegExExtended
 {
 
-    public String negCheck(String sentenceString, String phraseString, ArrayList ruleStrings, 
-            boolean negatePossible) throws Exception {
+//    public String negCheck
+//    (
+//      String sentenceString,
+//      String phraseString,
+//      ArrayList ruleStrings, 
+//      boolean negatePossible
+//    ) throws Exception
+    public String negCheck
+        (
+          String sentenceString,
+//          String phraseString,
+          ArrayList ruleStrings, 
+          boolean negatePossible
+        ) throws Exception
+    {
 
         Sorter s            = new Sorter();
         String sToReturn        = "";

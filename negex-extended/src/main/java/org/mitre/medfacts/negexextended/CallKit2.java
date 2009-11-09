@@ -64,7 +64,7 @@ limitations under the License.
 
 
  
-public class CallKit{
+public class CallKit2{
         public static void main(String[] args) {
 
           try {
@@ -102,15 +102,17 @@ public class CallKit{
 
                                 String line             = scKit.nextLine().trim();
 
-                                String[] content        = pSplit.split(line);
-
-                                String phrase = content[1].trim();
-                                String sentence = content[2].trim();
+//                                String[] content        = pSplit.split(line);
+//
+//                                String phrase = content[1].trim();
+//                                String sentence = content[2].trim();
+                                
+                                String sentence = line;
 
                                 // Show NEGATED and POSSIBLE tags for the testkit and print scope.                      
-                                afterNegCheck = g.negCheck(sentence, /*phrase,*/ rules, negatePossible);
-                                System.out.println(content[0] + "\t" + content[1] + "\t" + content[2] + 
-                                                        "\t" + content[3] + "\t" +
+                                afterNegCheck = g.negCheck(sentence, rules, negatePossible);
+                                System.out.println(sentence + 
+                                                        "\t" +
                                                         afterNegCheck );
                         }
                 }

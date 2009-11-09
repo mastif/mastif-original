@@ -1,0 +1,8 @@
+09	 	He showed no signs of HIV, but he tested positive for influenza.	Negated
+10	 	She tested negative for pneumonia, positive for influenza, and negative for bronchitis.	dummy
+11	 	She showed no clinical signs or symptoms of PNEUMONIA.	Negated
+12	 	She showed clinical signs or symptoms of PNEUMONIA.	Negated
+13	 	Pneumonia is unlikely.	dummy
+14	 	Pneumonia was ruled out.	dummy
+15	 	He is not a current smoker	dummy
+16	 	This means that he is not to receive chemotherapy of any type including palliative chemotherapy.	dummy

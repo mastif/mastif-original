@@ -1,0 +1,19 @@
+1	 	Pneumonia is unlikely.	dummy
+2	 	Pneumonia was ruled out.	dummy
+3	 	He is not a current smoker	dummy
+4	 	This means that he is not to receive chemotherapy of any type including palliative chemotherapy.	dummy
+5	 	Negative for headaches , vision changes , numbness , tingling , dyspnea , hematuria , abdominal pain , diarrhea , melena or hematochezia . 	dummy
+6	 	There was absence of  temperature sense which supports spinothalamic involvement 	dummy
+7	 	Lack of oxygen caused brain damage.	dummy
+8	 	She had no fevers , chills , headaches , or neck stiffness .	dummy
+9	 	This was not in a clear vascular distribution and there was no air evident in the wall of the small or large bowel .	dummy
+10	 	Exam reveals no adenopathy , extra ocular movements intact , pupils equal , round , reactive to light and accommodation .	dummy
+11	 	There is no improvement of  bradycardia.	dummy
+12	 	There is no evidence of bradycardia	dummy
+13	 	 There has been no GI or GU symptoms except for constipation.	dummy
+14	 	The patient was ruled out for a myocardial infarction	dummy
+15	 	Following enzymes to rule out unstable angina	dummy
+16	 	Because of her complex picture , and because the source of her sepsis was not found , the initial plan was to treat with antibiotics	dummy
+17	 	There was no evidence of this cerebrospinal fluid leak 	dummy
+18	 	Pneumonia has not been ruled out	dummy
+19	 	Rule him out for pneumonia.	dummy

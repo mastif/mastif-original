@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<schemas xmlns='http://xml.netbeans.org/schema/JAXBWizConfig' destdir='build/generated-sources/jaxb' projectName='med_facts_xml_project' version='1.0'>
+	<schema type='-xmlschema' package='org.mitre.medfact.xml' name='NegationRuleXmlBinding'>
+		<xjc-options>
+		</xjc-options>
+		<schema-sources>
+			<schema-source location='xml-resources/jaxb/NegationRuleXmlBinding/rules_schema.xsd' origLocation='src/main/resources/rules_schema.xsd'/>
+		</schema-sources>
+		<bindings>
+		</bindings>
+		<catalog/>
+	</schema>
+</schemas>

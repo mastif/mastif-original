@@ -16,8 +16,8 @@
         <m:class-value />
     </m:class>
     <m:rule tag="negation" direction="pre">rules <m:class-ref idref="patient_ref"/> out</m:rule>
-    <m:rule m:id="rule_out_ref" tag="negation" direction="pre">rule <m:class-ref idref="patient_ref"/> out</m:rule>
-    <m:rule tag="negation" direction="pre">did <m:rule-ref idref="rule_out_ref"/> <m:class-ref idref="direction_ref"/></m:rule>
+    <!-- <m:rule m:id="rule_out_ref" tag="negation" direction="pre">rule <m:class-ref idref="patient_ref"/> out</m:rule> -->
+    <!-- <m:rule tag="negation" direction="pre">did <m:rule-ref idref="rule_out_ref"/> <m:class-ref idref="direction_ref"/></m:rule> -->
 
     <!--
     <m:rule tag="PREN">did ${rule_out}</m:rule>

@@ -6,7 +6,9 @@
 package org.mitre.medfact;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -239,6 +241,18 @@ public class MedFactsXml
     {
         private int position;
         private JAXBElement content;
+
+        public String toString()
+        {
+            StringWriter writer = new StringWriter();
+            PrintWriter printer = new PrintWriter(writer);
+            printer.format("position: %d;", position);
+            printer.format("element class: %s;", content.getClass().getName());
+            printer.format("element content class: %s;", content.getDeclaredType().getName());
+            printer.format("element content: %s;;", content.getValue());
+
+            return writer.toString();
+        }
 
         public ContentAndPosition()
         {

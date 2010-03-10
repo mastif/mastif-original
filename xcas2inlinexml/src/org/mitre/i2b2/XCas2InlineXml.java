@@ -55,7 +55,9 @@ public class XCas2InlineXml {
 		UimaXmlRepresentation uxr;
 		try {
 			uxr = new UimaXmlRepresentation(f);
+			System.out.format("===%nuxr.processXml() BEFORE%n===%n");
 			uxr.processXml();
+			System.out.format("===%nuxr.processXml() AFTER%n===%n");
 			ArrayList annotList = uxr.annotList;
 			System.out.println("Annotations: " + annotList.size());
 
@@ -88,6 +90,8 @@ public class XCas2InlineXml {
 			int stackPtr = 0;
 
 			while (currSent != null) {
+				System.out.println("INSIDE WHILE BEGIN currWord: " + currWord);
+				System.out.println("INSIDE WHILE BEGIN currWord.text: " + currWord.text);
 				sentCount++;
 				xmlBufWriter.write("<s>");
 				while (currWord != null && currWord.end <= currSent.end) {
@@ -125,7 +129,12 @@ public class XCas2InlineXml {
 					} else {
 						lexCount++;
 						// Properly escape as HTML entities any angle brackets that appear in raw text.
-						String htmlAngleBracketed = HTMLEntities.htmlAngleBrackets(currWord.text);
+						System.out.println("HTMLEntities: " + HTMLEntities.class);
+						System.out.println("currWord: " + currWord);
+						System.out.println("currWord.text: " + currWord.text);
+						//String htmlAngleBracketed = HTMLEntities.htmlAngleBrackets(currWord.text);
+						String htmlAngleBracketed =
+							(currWord == null || currWord.text == null) ? "" : HTMLEntities.htmlAngleBrackets(currWord.text);
 						xmlBufWriter.write("<lex pos=\"" + currWord.pennTag + "\">" + htmlAngleBracketed + "</lex>");
 					}
 
@@ -182,6 +191,7 @@ public class XCas2InlineXml {
 	}
 
 	public static void printThreeLayerModel() {
+		System.out.format("===%nprintThreeLayerModel() BEGIN%n===%n");
 
 		Annot currAnnot = sentHead.next;
 		while (currAnnot != null) {
@@ -201,9 +211,11 @@ public class XCas2InlineXml {
 					+ currAnnot.end);
 			currAnnot = currAnnot.next;
 		}
+		System.out.format("===%nprintThreeLayerModel() END%n===%n");
 	}
 
 	public static void createThreeLayerModel(ArrayList annotList) {
+		System.out.format("===%ncreateThreeLayerModel() BEGIN%n===%n");
 		sentHead.start = -1;
 		neHead.start = -1;
 		wordHead.start = -1;
@@ -235,14 +247,20 @@ public class XCas2InlineXml {
 				// System.out.println("Unrecognized annotation type" + annot.type);
 			}
 		}
+		System.out.format("===%ncreateThreeLayerModel() END%n===%n");
 	}
 
 	public static boolean tokenAnnotP(Annot annot) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
+	//		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
+	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
+	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
+	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")
+	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
+		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
 			return true;
 		} else {
 			return false;
@@ -250,10 +268,14 @@ public class XCas2InlineXml {
 	}
 
 	public static boolean nonNewlineTokenAnnotP(Annot annot) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
-				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
+//		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
+//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
+//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
+//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
+		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
+				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")) {
 			return true;
 		} else {
 			return false;
@@ -261,7 +283,8 @@ public class XCas2InlineXml {
 	}
 
 	public static boolean newlineTokenAnnotP(Annot annot) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
+		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
+		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
 			return true;
 		} else {
 			return false;
@@ -269,7 +292,8 @@ public class XCas2InlineXml {
 	}
 
 	public static boolean mayoNamedEntityAnnotP(Annot annot) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
+		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
+		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NamedEntity")) {
 			return true;
 		} else {
 			return false;
@@ -277,7 +301,9 @@ public class XCas2InlineXml {
 	}
 
 	public static boolean sentAnnotP(Annot annot) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
+		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
+		if (annot.localName.equals("edu.mayo.bmi.uima.core.sentence.type.Sentence")) {
+
 			return true;
 		} else {
 			return false;

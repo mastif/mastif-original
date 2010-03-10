@@ -4,6 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/junit-4.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
-	<classpathentry kind="con" path="lib/htmlentities.jar"/>
+	<classpathentry kind="lib" path="lib/htmlentities.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -42,9 +42,14 @@ import edu.mayo.bmi.util.UmlsConcept;
  * 
  */
 public class UimaXmlRepresentation extends XmlRepresentation {
+	//public static String TAG_TCAS_DOC = "uima.tcas.Document";
 	public static String TAG_TCAS_DOC = "uima.tcas.Document";
+	public static String TAG_CAS_SOFA = "uima.cas.Sofa";
+	public static String TAG_TCAS_SOFA_STRING_ATTRIBUTE = "sofaString";
 	public static String TAG_I = "i";
-	public static String TAG_UMLS_CONCEPT = "edu.mayo.bmi.uima.common.types.UmlsConcept";
+	//public static String TAG_UMLS_CONCEPT = "edu.mayo.bmi.uima.common.types.UmlsConcept";
+	// changed "common.types" to "core.ae.type"
+	public static String TAG_UMLS_CONCEPT = "edu.mayo.bmi.uima.core.ae.type.UmlsConcept";
 	public static String TAG_UIMA_FS_ARR = "uima.cas.FSArray";
 
 	public static String ATTRIBUTE_CERTAINITY = "certainty";
@@ -265,17 +270,30 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		/**
 		 * load document text
 		 */
-		NodeList textNodeList = xmlDocument.getElementsByTagName(TAG_TCAS_DOC);
+		NodeList textNodeList = xmlDocument.getElementsByTagName(TAG_CAS_SOFA);
 		if (textNodeList.getLength() > 0) { // if not a plain text file
 			Node n = textNodeList.item(0);
 			if (isElementType(n)) {
 				e = (Element) n;
-				NodeList nl = e.getChildNodes();
-				for (int i = 0; i < nl.getLength(); i++)
-					docText.append((nl.item(i) == null ? "" : nl.item(i).toString()));
-
+				String sofaString = e.getAttribute(TAG_TCAS_SOFA_STRING_ATTRIBUTE);
+				docText.append(sofaString);
 			}
 		}
+		
+		System.out.format("docText: \"%s\"%n", docText);
+		
+		
+//		NodeList textNodeList = xmlDocument.getElementsByTagName(TAG_TCAS_DOC);
+//		if (textNodeList.getLength() > 0) { // if not a plain text file
+//			Node n = textNodeList.item(0);
+//			if (isElementType(n)) {
+//				e = (Element) n;
+//				NodeList nl = e.getChildNodes();
+//				for (int i = 0; i < nl.getLength(); i++)
+//					docText.append((nl.item(i) == null ? "" : nl.item(i).toString()));
+//
+//			}
+//		}
 
 		/**
 		 * Use _ref_ontologyConceptArr to get umlsIds
@@ -283,14 +301,24 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 
 		int tagTypeCount = 7;
 		String[] tagTypes = new String[tagTypeCount];
-		tagTypes[0] = "edu.mayo.bmi.uima.common.types.NamedEntityAnnotation";
-		tagTypes[1] = "edu.mayo.bmi.uima.common.types.SentenceAnnotation";
-		tagTypes[2] = "edu.mayo.bmi.uima.common.types.WordTokenAnnotation";
-		tagTypes[3] = "edu.mayo.bmi.uima.common.types.PunctTokenAnnotation";
-		tagTypes[4] = "edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation";
-		tagTypes[5] = "edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation";
-		tagTypes[6] = "edu.mayo.bmi.uima.common.types.NumTokenAnnotation";
+//		tagTypes[0] = "edu.mayo.bmi.uima.common.types.NamedEntityAnnotation";
+//		tagTypes[1] = "edu.mayo.bmi.uima.common.types.SentenceAnnotation";
+//		tagTypes[2] = "edu.mayo.bmi.uima.common.types.WordTokenAnnotation";
+//		tagTypes[3] = "edu.mayo.bmi.uima.common.types.PunctTokenAnnotation";
+//		tagTypes[4] = "edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation";
+//		tagTypes[5] = "edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation";
+//		tagTypes[6] = "edu.mayo.bmi.uima.common.types.NumTokenAnnotation";
+		tagTypes[0] = "edu.mayo.bmi.uima.core.ae.type.NamedEntity";
+		tagTypes[1] = "edu.mayo.bmi.uima.core.sentence.type.Sentence";
+		tagTypes[2] = "edu.mayo.bmi.uima.core.ae.type.WordToken";
+		tagTypes[3] = "edu.mayo.bmi.uima.core.ae.type.PunctuationToken";
+		tagTypes[4] = "edu.mayo.bmi.uima.core.ae.type.ContractionToken";
+		tagTypes[5] = "edu.mayo.bmi.uima.core.ae.type.NewlineToken";
+		tagTypes[6] = "edu.mayo.bmi.uima.core.ae.type.NumToken";
+		System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount BEFORE LOOP%n$$$%n");
 		for (int t = 0; t < tagTypeCount; t++) {
+			System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
+			System.out.format("tag type: %s%n", tagTypes[t]);
 			NodeList neNodeList = xmlDocument.getElementsByTagName(tagTypes[t]);
 
 			String start = null;
@@ -316,7 +344,8 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				start = annotation.getAttribute(ATTRIBUTE_BEGIN);
 				end = annotation.getAttribute(ATTRIBUTE_END);
 				// named entity-specific attrs:
-				if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
+				//if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
+				if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.NamedEntity")) {
 					strNegated = annotation.getAttribute(ATTRIBUTE_CERTAINITY);
 					status = annotation.getAttribute(ATTRIBUTE_STATUS);
 
@@ -331,23 +360,43 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 					umlsObjs = getAllUmlsConceptObjs(iOntConceptArrId);
 					umlsObjsString = umlsObjs.toString();
 					
-				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")) {
-					pennTag = annotation.getAttribute("pennTag");
-				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")) {
-					pennTag = new String("contr");
-				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")) {
-					pennTag = new String("punct");
-				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
-					pennTag = new String("number");
+//				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")) {
+//					pennTag = annotation.getAttribute("pennTag");
+//				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")) {
+//					pennTag = new String("contr");
+//				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")) {
+//					pennTag = new String("punct");
+//				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
+//					pennTag = new String("number");
+//				}
+				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.WordToken")) {
+					pennTag = annotation.getAttribute("partOfSpeech");
+					//pennTag = annotation.getAttribute("pennTag");
+				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.ContractionToken")) {
+					pennTag = new String("partOfSpeech");
+					//pennTag = new String("contr");
+				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.PunctToken")) {
+					pennTag = new String("partOfSpeech");
+					//pennTag = new String("punct");
+				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.NumToken")) {
+					pennTag = new String("partOfSpeech");
+					//pennTag = new String("number");
 				}
 				try {
+					System.out.format("start: %s; end: %s; typeId: %s%n", start, end, typeId);
 					istart = Integer.parseInt(start);
+					System.out.format("istart: %d; ", istart);
 					// istart = Integer.parseInt(start) + 8;
 					iend = Integer.parseInt(end);
+					System.out.format("iend: %d; ", iend);
 					// iend = Integer.parseInt(end) + 8;
 					iTypeId = Integer.parseInt(typeId);
+					System.out.format("iTypeId: %d; ", iTypeId);
 				} catch (NumberFormatException nfe) {
+					System.out.println();
+					System.out.println("NumberFormatException!");
 				}
+				System.out.println();
 
 				String typeName = AnnotationType.getTypeName(typeId);
 				if (docText == null || docText.length() == 0) {
@@ -355,6 +404,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 					System.out.println("empty docText");
 				} else {
 					coveredText = docText.substring(istart, iend);
+					System.out.format("coveredText: %s%n", coveredText);
 					// coveredText = docText.substring(istart+8, iend+8); //
 					// sometimes things are off by 8, apparently depending on
 					// which JRE?
@@ -368,6 +418,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				// }
 				// System.out.println("");
 
+				System.out.println("creating new Annot...");
 				Annot annot = new Annot();
 				annot.start = istart;
 				annot.end = iend;
@@ -385,6 +436,8 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				// System.out.println("localName in Mayo code:" + annot.localName);
 				// System.out.println("Adding annot...");
 				annotList.add(annot);
+				System.out.println("finished creating annot.");
+				System.out.format("new annot: %s%n", annot.toString());
 
 				// Reset
 				typeName = null;
@@ -393,7 +446,10 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				pennTag = null;
 				umlsObjsString = null;
 			}
+			System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d END INSIDE LOOP%n$$$%n", t);
+
 		}
+		System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount AFTER LOOP%n$$$%n");
 	}
 
 	public static void main(String args[]) {

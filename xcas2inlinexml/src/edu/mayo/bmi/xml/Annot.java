@@ -22,6 +22,39 @@ public class Annot {
 	public Annot () {
 		id = count++;
 	}
+	
+	public String toString()
+	{
+		StringBuilder b = new StringBuilder();
+		
+		b.append("Annot: { id : ");
+		b.append(id);
+		b.append(", start : ");
+		b.append(start);
+		b.append(", end: ");
+		b.append(end);
+		b.append("; localname : \"");
+		b.append(localName);
+		b.append("\", umlsObjsString : \"");
+		b.append(umlsObjsString);
+		b.append("\", type : \"");
+		b.append(type);
+		b.append("\", pennTag : \"");
+		b.append(pennTag);
+		b.append("\", status : \"");
+		b.append(status);
+		b.append("\", neg : \"");
+		b.append(neg);
+		b.append("\", text : \"");
+		b.append(text);
+		b.append("\", prev.id : ");
+		b.append((prev == null) ? "prev is null" : prev.id);
+		b.append(", next.id : ");
+		b.append((next == null) ? "next is null" : next.id);
+		b.append("}");
+		
+		return b.toString();
+	}
 }
 
 

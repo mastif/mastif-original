@@ -113,6 +113,7 @@ public class XCas2InlineXml {
 						stackPtr++;
 						annotStackArray[stackPtr] = currNE;
 						currNE.openTagEmittedP = true;
+						System.out.format("opening MNE tag A... (%s)%n", currNE.type);
 						xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\"" + currNE.neg
 								+ "\" umls=\"" + currNE.umlsObjsString + "\">");
 						currNE = currNE.next;
@@ -121,6 +122,7 @@ public class XCas2InlineXml {
 							stackPtr++;
 							annotStackArray[stackPtr] = currNE;
 							currNE.openTagEmittedP = true;
+							System.out.format("opening MNE tag B... (%s)%n", currNE.type);
 							xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
 									+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
 							currNE = currNE.next;
@@ -135,6 +137,7 @@ public class XCas2InlineXml {
 						currChunk.openTagEmittedP = true;
 						//xmlBufWriter.write("<chunk type=\"" + currChunk.type + "\" " + /*"status=\"" + currChunk.status + "\" neg=\"" + currChunk.neg
         				//		+ "\" umls=\"" + currNE.umlsObjsString + "\"" +*/ ">");
+						System.out.format("opening chunk tag A... (%s)%n", currChunk.pennTag);
 						xmlBufWriter.write("<chunk type=\"" + currChunk.pennTag + "\" >");
 						currChunk = currChunk.next;
 						while ((currChunk != null) && (currChunk.start <= currWord.start) && (currChunk.openTagEmittedP == false)) {
@@ -144,6 +147,7 @@ public class XCas2InlineXml {
 							currChunk.openTagEmittedP = true;
 							//xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
 							//		+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
+							System.out.format("opening chunk tag B... (%s)%n", currChunk.pennTag);
 							xmlBufWriter.write("<chunk type=\"" + currChunk.type + "\" >");
 							currChunk = currChunk.next;
 						}
@@ -162,6 +166,7 @@ public class XCas2InlineXml {
 						//String htmlAngleBracketed = HTMLEntities.htmlAngleBrackets(currWord.text);
 						String htmlAngleBracketed =
 							(currWord == null || currWord.text == null) ? "" : HTMLEntities.htmlAngleBrackets(currWord.text);
+						System.out.format("outputting word: \"%s\"%n", currWord.text);
 						xmlBufWriter.write("<lex pos=\"" + currWord.pennTag + "\">" + htmlAngleBracketed + "</lex>");
 					}
 
@@ -186,6 +191,7 @@ public class XCas2InlineXml {
 					}
 
 					// Emit NE element close tag
+					System.out.format("(checking to close NE tag...) stackPtr: %d%n", stackPtr);
 					if (stackPtr > 0) {
 						Annot neOnStack = annotStackArray[stackPtr];
 

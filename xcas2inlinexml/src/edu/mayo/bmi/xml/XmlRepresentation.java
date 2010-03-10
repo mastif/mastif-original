@@ -50,7 +50,8 @@ implements XmlDocument
 {
   public static String ATTRIBUTE_TYPE_ID = "typeID";
   public static String ATTRIBUTE_BEGIN = "begin";
-  public static String ATTRIBUTE_END = "end";	
+  public static String ATTRIBUTE_END = "end";
+  public static String ATTRIBUTE_CHUNK_TYPE = "chunkType";
   public static String TAG_NAMED_ENTITIY = "edu.mayo.bmi.uima.common.types.NamedEntityAnnotation";
   public static String ATTRIBUTE_COVERED_TEXT = "plain.text.covered.text";
 	

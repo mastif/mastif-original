@@ -315,10 +315,10 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		tagTypes[4] = "edu.mayo.bmi.uima.core.ae.type.ContractionToken";
 		tagTypes[5] = "edu.mayo.bmi.uima.core.ae.type.NewlineToken";
 		tagTypes[6] = "edu.mayo.bmi.uima.core.ae.type.NumToken";
-		System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount BEFORE LOOP%n$$$%n");
+		//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount BEFORE LOOP%n$$$%n");
 		for (int t = 0; t < tagTypeCount; t++) {
-			System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
-			System.out.format("tag type: %s%n", tagTypes[t]);
+			//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
+			//System.out.format("tag type: %s%n", tagTypes[t]);
 			NodeList neNodeList = xmlDocument.getElementsByTagName(tagTypes[t]);
 
 			String start = null;
@@ -436,8 +436,8 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				// System.out.println("localName in Mayo code:" + annot.localName);
 				// System.out.println("Adding annot...");
 				annotList.add(annot);
-				System.out.println("finished creating annot.");
-				System.out.format("new annot: %s%n", annot.toString());
+				//System.out.println("finished creating annot.");
+				//System.out.format("new annot: %s%n", annot.toString());
 
 				// Reset
 				typeName = null;
@@ -445,11 +445,114 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				status = null;
 				pennTag = null;
 				umlsObjsString = null;
+				//System.out.format("$$$%ninside for loop over i = 0 .. neNodeList.length; i == %d END INSIDE LOOP%n$$$%n", i);
 			}
-			System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d END INSIDE LOOP%n$$$%n", t);
+			//System.out.format("$$$%nafter for loop over i = 0 .. neNodeList.length; AFTER INSIDE LOOP%n$$$%n");
 
+			//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; 5 == %d AFTER LOOP%n$$$%n", t);
 		}
-		System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount AFTER LOOP%n$$$%n");
+		//System.out.format("$$$%nafter for loop over t = 0 .. tagTypeCount AFTER LOOP%n$$$%n");
+		
+		////
+		////
+		System.out.println("Starting to process CHUNK annotations...");
+		tagTypeCount = 6;
+		tagTypes = new String[tagTypeCount];
+		tagTypes[0] = "edu.mayo.bmi.uima.chunker.type.ADJP";
+		tagTypes[1] = "edu.mayo.bmi.uima.chunker.type.ADVP";
+		tagTypes[2] = "edu.mayo.bmi.uima.chunker.type.NP";
+		tagTypes[3] = "edu.mayo.bmi.uima.chunker.type.PP";
+		tagTypes[4] = "edu.mayo.bmi.uima.chunker.type.SBAR";
+		tagTypes[5] = "edu.mayo.bmi.uima.chunker.type.VP";
+		
+		for (int t = 0; t < tagTypeCount; t++) {
+			System.out.format("$$$%ninside 2nd for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
+			System.out.format("tag type: %s%n", tagTypes[t]);
+			NodeList neNodeList = xmlDocument.getElementsByTagName(tagTypes[t]);
+
+			String start = null;
+			String end = null;
+			String coveredText = null;
+			String typeId = null;
+			String ontologyConceptArrId = null;
+			String strNegated = null;
+			String status = null;
+			String pennTag = null;
+			String umlsObjsString = null;
+
+			int iTypeId = 0;
+			int istart = 0;
+			int iend = 0;
+			int iOntConceptArrId = 0;
+			boolean isNegated = false;
+			List umlsObjs = null;
+
+			for (int i = 0; i < neNodeList.getLength(); i++) {
+				Element annotation = (Element) neNodeList.item(i);
+				//typeId = annotation.getAttribute(ATTRIBUTE_TYPE_ID);
+				start = annotation.getAttribute(ATTRIBUTE_BEGIN);
+				end = annotation.getAttribute(ATTRIBUTE_END);
+				String chunkType = annotation.getAttribute(ATTRIBUTE_CHUNK_TYPE);
+
+				try {
+					System.out.format("(reminder: tag type: %s)%n", tagTypes[t]);
+					System.out.format("start: %s; end: %s; typeId: %s%n", start, end, typeId);
+					istart = Integer.parseInt(start);
+					System.out.format("istart: %d; ", istart);
+					// istart = Integer.parseInt(start) + 8;
+					iend = Integer.parseInt(end);
+					System.out.format("iend: %d; ", iend);
+					// iend = Integer.parseInt(end) + 8;
+					//iTypeId = Integer.parseInt(typeId);
+					//System.out.format("iTypeId: %d; ", iTypeId);
+				} catch (NumberFormatException nfe) {
+					System.out.println();
+					System.out.println("NumberFormatException!");
+				}
+				//String typeName = AnnotationType.getTypeName(typeId);
+				String typeName = "chunk";
+				pennTag = chunkType;
+				if (docText == null || docText.length() == 0) {
+					System.err.println("empty docText");
+					System.out.println("empty docText");
+				} else {
+					coveredText = docText.substring(istart, iend);
+					System.out.format("coveredText: %s%n", coveredText);
+					// coveredText = docText.substring(istart+8, iend+8); //
+					// sometimes things are off by 8, apparently depending on
+					// which JRE?
+				}
+
+				System.out.println("creating new Annot...");
+				Annot annot = new Annot();
+				annot.start = istart;
+				annot.end = iend;
+				annot.type = typeName;
+				if (isNegated) {
+					annot.neg = "neg";
+				} else {
+					annot.neg = "pos";
+				}
+				annot.status = status;
+				annot.umlsObjsString = umlsObjsString;
+				annot.pennTag = pennTag;
+				annot.text = coveredText;
+				annot.localName = annotation.getTagName();
+				// System.out.println("localName in Mayo code:" + annot.localName);
+				// System.out.println("Adding annot...");
+				annotList.add(annot);
+				System.out.println("finished creating annot.");
+				System.out.format("new annot: %s%n", annot.toString());
+				
+				// Reset
+				typeName = null;
+				coveredText = null;
+				status = null;
+				pennTag = null;
+				umlsObjsString = null;
+			}
+		}
+		
 	}
 
 	public static void main(String args[]) {

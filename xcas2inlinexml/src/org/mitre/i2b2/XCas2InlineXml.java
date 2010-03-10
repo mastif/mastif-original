@@ -31,12 +31,16 @@ public class XCas2InlineXml {
 	public static Annot sentHead = new Annot();
 	public static Annot neHead = new Annot();
 	public static Annot wordHead = new Annot();
+	public static Annot chunkHead = new Annot();
 	public static int xCasNECount = 0;
+	public static int xCasChunkCount = 0;
 	public static int xCasUnkCount = 0;
 	public static int xCasWordCount = 0;
 	public static int xCasNewlineCount = 0;
 	public static int NEOpenCount = 0;
 	public static int NECloseCount = 0;
+	public static int chunkOpenCount = 0;
+	public static int chunkCloseCount = 0;
 	public static int lexCount = 0;
 	public static int sentCount = 0;
 	public static int newlineCount = 0;
@@ -81,6 +85,7 @@ public class XCas2InlineXml {
 			xmlBufWriter.write("<DOC>\n<TEXT>\n");
 			Annot currSent = sentHead.next;
 			Annot currNE = neHead.next;
+			Annot currChunk = chunkHead.next;
 			Annot currWord = wordHead.next;
 			Annot prevWord = null;
 
@@ -122,6 +127,28 @@ public class XCas2InlineXml {
 						}
 					}
 
+					// Emit chunk element open tag
+					if ((currChunk != null) && (currChunk.start <= currWord.start) && (currChunk.openTagEmittedP == false)) {
+						chunkOpenCount++;
+						stackPtr++;
+						annotStackArray[stackPtr] = currChunk;
+						currChunk.openTagEmittedP = true;
+						//xmlBufWriter.write("<chunk type=\"" + currChunk.type + "\" " + /*"status=\"" + currChunk.status + "\" neg=\"" + currChunk.neg
+        				//		+ "\" umls=\"" + currNE.umlsObjsString + "\"" +*/ ">");
+						xmlBufWriter.write("<chunk type=\"" + currChunk.pennTag + "\" >");
+						currChunk = currChunk.next;
+						while ((currChunk != null) && (currChunk.start <= currWord.start) && (currChunk.openTagEmittedP == false)) {
+							chunkOpenCount++;
+							stackPtr++;
+							annotStackArray[stackPtr] = currChunk;
+							currChunk.openTagEmittedP = true;
+							//xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
+							//		+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
+							xmlBufWriter.write("<chunk type=\"" + currChunk.type + "\" >");
+							currChunk = currChunk.next;
+						}
+					}
+
 					// Emit Word element
 					if (newlineTokenAnnotP(currWord)) {
 						// Don't bother writing out newlines; we force newlines for every sentence boundary.
@@ -140,6 +167,23 @@ public class XCas2InlineXml {
 
 					prevWord = currWord;
 					currWord = currWord.next;
+					
+					// Emit chunk element close tag
+					if (stackPtr > 0 && annotStackArray[stackPtr].type.equals("chunk")) {
+						Annot chunkOnStack = annotStackArray[stackPtr];
+
+						//                         No more words          chunk currently on top of chunk stack
+						//     Something on        after the one just     ends prior to the next word
+						//        stack?           emitted                about to be emitted
+						while ((stackPtr > 0) && ((currWord == null) || (chunkOnStack.end <= currWord.start))) {
+							chunkCloseCount++;
+							xmlBufWriter.write("</chunk>");
+							stackPtr--;
+							if (stackPtr > 0) {
+								chunkOnStack = annotStackArray[stackPtr];
+							}
+						}
+					}
 
 					// Emit NE element close tag
 					if (stackPtr > 0) {
@@ -219,6 +263,7 @@ public class XCas2InlineXml {
 		sentHead.start = -1;
 		neHead.start = -1;
 		wordHead.start = -1;
+		chunkHead.start = -1;
 		Iterator annotIter = annotList.iterator();
 		while (annotIter.hasNext()) {
 			Annot annot = (Annot) annotIter.next();
@@ -242,6 +287,12 @@ public class XCas2InlineXml {
 				addToList(neHead, annot);
 				countList(neHead);
 				annot.nodeType = "mne";
+			} else if (chunkAnnotP(annot)) {
+				xCasChunkCount++;
+				// System.out.println("Adding named entity...");
+				addToList(chunkHead, annot);
+				countList(chunkHead);
+				annot.nodeType = "chunk";
 			} else {
 				xCasUnkCount++;
 				// System.out.println("Unrecognized annotation type" + annot.type);
@@ -303,6 +354,16 @@ public class XCas2InlineXml {
 	public static boolean sentAnnotP(Annot annot) {
 		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
 		if (annot.localName.equals("edu.mayo.bmi.uima.core.sentence.type.Sentence")) {
+
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean chunkAnnotP(Annot annot) {
+		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
+		if (annot.localName.startsWith("edu.mayo.bmi.uima.chunker")) {
 
 			return true;
 		} else {

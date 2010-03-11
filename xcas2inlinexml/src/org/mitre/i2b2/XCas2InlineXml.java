@@ -15,8 +15,8 @@ import java.io.*;
 import java.util.*;
 import edu.mayo.bmi.xml.*;
 
-import junit.framework.*;
-import com.tecnick.htmlutils.htmlentities.HTMLEntities;
+//import junit.framework.*;
+//import com.tecnick.htmlutils.htmlentities.HTMLEntities;
 
 /*
 import org.dom4j.*;
@@ -107,29 +107,10 @@ public class XCas2InlineXml {
 						xmlBufWriter.write(" ");
 					}
 
-					// Emit MNE element open tag
-					if ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
-						NEOpenCount++;
-						stackPtr++;
-						annotStackArray[stackPtr] = currNE;
-						currNE.openTagEmittedP = true;
-						System.out.format("opening MNE tag A... (%s)%n", currNE.type);
-						xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\"" + currNE.neg
-								+ "\" umls=\"" + currNE.umlsObjsString + "\">");
-						currNE = currNE.next;
-						while ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
-							NEOpenCount++;
-							stackPtr++;
-							annotStackArray[stackPtr] = currNE;
-							currNE.openTagEmittedP = true;
-							System.out.format("opening MNE tag B... (%s)%n", currNE.type);
-							xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
-									+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
-							currNE = currNE.next;
-						}
-					}
-
 					// Emit chunk element open tag
+					// BRW - modified 3/11/10
+					// Moved chunks before NEs as when they overlap perfectly we'd like chunks appearing on the "outside"
+					// e.g. <chunk><mne>pain</mne></chunk>
 					if ((currChunk != null) && (currChunk.start <= currWord.start) && (currChunk.openTagEmittedP == false)) {
 						chunkOpenCount++;
 						stackPtr++;
@@ -153,6 +134,29 @@ public class XCas2InlineXml {
 						}
 					}
 
+					// Emit MNE element open tag
+					if ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
+						NEOpenCount++;
+						stackPtr++;
+						annotStackArray[stackPtr] = currNE;
+						currNE.openTagEmittedP = true;
+						System.out.format("opening MNE tag A... (%s)%n", currNE.type);
+						xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\"" + currNE.neg
+								+ "\" umls=\"" + currNE.umlsObjsString + "\">");
+						currNE = currNE.next;
+						while ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
+							NEOpenCount++;
+							stackPtr++;
+							annotStackArray[stackPtr] = currNE;
+							currNE.openTagEmittedP = true;
+							System.out.format("opening MNE tag B... (%s)%n", currNE.type);
+							xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
+									+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
+							currNE = currNE.next;
+						}
+					}
+
+					
 					// Emit Word element
 					if (newlineTokenAnnotP(currWord)) {
 						// Don't bother writing out newlines; we force newlines for every sentence boundary.
@@ -160,6 +164,7 @@ public class XCas2InlineXml {
 					} else {
 						lexCount++;
 						// Properly escape as HTML entities any angle brackets that appear in raw text.
+						/*
 						System.out.println("HTMLEntities: " + HTMLEntities.class);
 						System.out.println("currWord: " + currWord);
 						System.out.println("currWord.text: " + currWord.text);
@@ -168,44 +173,32 @@ public class XCas2InlineXml {
 							(currWord == null || currWord.text == null) ? "" : HTMLEntities.htmlAngleBrackets(currWord.text);
 						System.out.format("outputting word: \"%s\"%n", currWord.text);
 						xmlBufWriter.write("<lex pos=\"" + currWord.pennTag + "\">" + htmlAngleBracketed + "</lex>");
+						*/
+						xmlBufWriter.write("<lex pos=\"" + currWord.pennTag + "\">" + currWord.text + "</lex>");
 					}
 
 					prevWord = currWord;
 					currWord = currWord.next;
-					
-					// Emit chunk element close tag
-					if (stackPtr > 0 && annotStackArray[stackPtr].type.equals("chunk")) {
-						Annot chunkOnStack = annotStackArray[stackPtr];
 
-						//                         No more words          chunk currently on top of chunk stack
-						//     Something on        after the one just     ends prior to the next word
-						//        stack?           emitted                about to be emitted
-						while ((stackPtr > 0) && ((currWord == null) || (chunkOnStack.end <= currWord.start))) {
+					System.out.format("(checking to close tag...) stackPtr: %d%n", stackPtr);
+					if (stackPtr > 0) { 
+						System.out.format("annot type = %s\n", annotStackArray[stackPtr].type);
+					}
+					// BRW - 3/11/10
+					// This appears to be the correct logic now.  Need to be able to pop any series of annotation types
+					// off the stack.  Previous code only popped off one type at a time and wouldn't handle multiple annotations
+					// of different types that ended at the same position - e.g. <chunk>the <mne>pain</mne></chunk>
+					Annot currentOnStack = annotStackArray[stackPtr];
+					while ((stackPtr > 0) && ((currWord == null) || (currentOnStack.end <= currWord.start))) {
+						if (currentOnStack.type.equals("chunk")) {
 							chunkCloseCount++;
 							xmlBufWriter.write("</chunk>");
-							stackPtr--;
-							if (stackPtr > 0) {
-								chunkOnStack = annotStackArray[stackPtr];
-							}
-						}
-					}
-
-					// Emit NE element close tag
-					System.out.format("(checking to close NE tag...) stackPtr: %d%n", stackPtr);
-					if (stackPtr > 0) {
-						Annot neOnStack = annotStackArray[stackPtr];
-
-						//                         No more words          MNE currently on top of MNE stack
-						//     Something on        after the one just     ends prior to the next word
-						//        stack?           emitted                about to be emitted
-						while ((stackPtr > 0) && ((currWord == null) || (neOnStack.end <= currWord.start))) {
+						} else {
 							NECloseCount++;
 							xmlBufWriter.write("</MNE>");
-							stackPtr--;
-							if (stackPtr > 0) {
-								neOnStack = annotStackArray[stackPtr];
-							}
 						}
+						stackPtr--;
+						currentOnStack = annotStackArray[stackPtr];
 					}
 				}
 				xmlBufWriter.write("</s>\n");

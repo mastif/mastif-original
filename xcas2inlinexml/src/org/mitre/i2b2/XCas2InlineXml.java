@@ -30,15 +30,19 @@ public class XCas2InlineXml {
 	public static String inlineXmlFilename = null;
 	public static Annot sentHead = new Annot();
 	public static Annot neHead = new Annot();
+	public static Annot negationHead = new Annot();
 	public static Annot wordHead = new Annot();
 	public static Annot chunkHead = new Annot();
 	public static int xCasNECount = 0;
+	public static int xCasNegationCount = 0;
 	public static int xCasChunkCount = 0;
 	public static int xCasUnkCount = 0;
 	public static int xCasWordCount = 0;
 	public static int xCasNewlineCount = 0;
 	public static int NEOpenCount = 0;
 	public static int NECloseCount = 0;
+	public static int NegationOpenCount = 0;
+	public static int NegationCloseCount = 0;
 	public static int chunkOpenCount = 0;
 	public static int chunkCloseCount = 0;
 	public static int lexCount = 0;
@@ -84,6 +88,7 @@ public class XCas2InlineXml {
 
 			xmlBufWriter.write("<DOC>\n<TEXT>\n");
 			Annot currSent = sentHead.next;
+			Annot currNegation = negationHead.next;
 			Annot currNE = neHead.next;
 			Annot currChunk = chunkHead.next;
 			Annot currWord = wordHead.next;
@@ -134,6 +139,29 @@ public class XCas2InlineXml {
 						}
 					}
 
+					// Emit negation element open tag
+					if ((currNegation != null) && (currNegation.start <= currWord.start) && (currNegation.openTagEmittedP == false)) {
+						NegationOpenCount++;
+						stackPtr++;
+						annotStackArray[stackPtr] = currNegation;
+						currNegation.openTagEmittedP = true;
+						System.out.format("opening negation tag A... (%s)%n", currNegation.type);
+						xmlBufWriter.write("<negation type=\"" + currNegation.type + "\" status=\"" + currNegation.status + "\" neg=\"" + currNegation.neg
+								+ "\" umls=\"" + currNegation.umlsObjsString + "\">");
+						currNegation = currNegation.next;
+						while ((currNegation != null) && (currNegation.start <= currWord.start) && (currNegation.openTagEmittedP == false)) {
+							NegationOpenCount++;
+							stackPtr++;
+							annotStackArray[stackPtr] = currNegation;
+							currNegation.openTagEmittedP = true;
+							System.out.format("opening MNE tag B... (%s)%n", currNegation.type);
+							xmlBufWriter.write("<negation type=\"" + currNegation.type + "\" status=\"" + currNegation.status + "\" neg=\""
+									+ currNegation.neg + "\" umls=\"" + currNegation.umlsObjsString + "\">");
+							currNegation = currNegation.next;
+						}
+					}
+
+					
 					// Emit MNE element open tag
 					if ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
 						NEOpenCount++;
@@ -193,9 +221,16 @@ public class XCas2InlineXml {
 						if (currentOnStack.type.equals("chunk")) {
 							chunkCloseCount++;
 							xmlBufWriter.write("</chunk>");
-						} else {
+						} else if (currentOnStack.nodeType.equals("negation")) {
+							NegationCloseCount++;
+							xmlBufWriter.write("</negation>");
+						} else if (currentOnStack.nodeType.equals("mne"))
+						{
+							System.out.format("(debug mne type: %s%n", currentOnStack.type);
 							NECloseCount++;
 							xmlBufWriter.write("</MNE>");
+						} else
+						{
 						}
 						stackPtr--;
 						currentOnStack = annotStackArray[stackPtr];
@@ -254,6 +289,12 @@ public class XCas2InlineXml {
 					+ currAnnot.end);
 			currAnnot = currAnnot.next;
 		}
+		currAnnot = negationHead.next;
+		while (currAnnot != null) {
+			System.out.println("negation(" + currAnnot.id + "): " + currAnnot.text + " start=" + currAnnot.start + " end="
+					+ currAnnot.end);
+			currAnnot = currAnnot.next;
+		}
 		System.out.format("===%nprintThreeLayerModel() END%n===%n");
 	}
 
@@ -261,6 +302,7 @@ public class XCas2InlineXml {
 		System.out.format("===%ncreateThreeLayerModel() BEGIN%n===%n");
 		sentHead.start = -1;
 		neHead.start = -1;
+		negationHead.start = -1;
 		wordHead.start = -1;
 		chunkHead.start = -1;
 		Iterator annotIter = annotList.iterator();
@@ -286,6 +328,12 @@ public class XCas2InlineXml {
 				addToList(neHead, annot);
 				countList(neHead);
 				annot.nodeType = "mne";
+			} else if (ctakesNegationAnnotP(annot)) {
+				xCasNegationCount++;
+				// System.out.println("Adding named entity...");
+				addToList(negationHead, annot);
+				countList(negationHead);
+				annot.nodeType = "negation";
 			} else if (chunkAnnotP(annot)) {
 				xCasChunkCount++;
 				// System.out.println("Adding named entity...");
@@ -344,6 +392,15 @@ public class XCas2InlineXml {
 	public static boolean mayoNamedEntityAnnotP(Annot annot) {
 		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
 		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NamedEntity")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static boolean ctakesNegationAnnotP(Annot annot) {
+		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
+		if (annot.localName.equals("gov.va.maveric.uima.ctakes.NENegation")) {
 			return true;
 		} else {
 			return false;

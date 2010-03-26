@@ -37,6 +37,8 @@ public class Annot {
 		b.append(localName);
 		b.append("\", umlsObjsString : \"");
 		b.append(umlsObjsString);
+		b.append("\", nodeType : \"");
+		b.append(nodeType);
 		b.append("\", type : \"");
 		b.append(type);
 		b.append("\", pennTag : \"");

@@ -26,8 +26,11 @@ import org.dom4j.io.XMLWriter;
 
 public class XCas2InlineXml {
 
-	public static String xCasFilename = null;
-	public static String inlineXmlFilename = null;
+    private TagManager neTagManager;
+
+	public String xCasFilename = null;
+	public String inlineXmlFilename = null;
+
 	public static Annot sentHead = new Annot();
 	public static Annot neHead = new Annot();
 	public static Annot negationHead = new Annot();
@@ -52,11 +55,24 @@ public class XCas2InlineXml {
 	public static Annot[] annotStackArray = new Annot[MAX_EMBEDDING_DEPTH];
 	public static Annot annotRoot = new Annot();
 
+    public XCas2InlineXml()
+    {
+        neTagManager = new TagManager();
+        neTagManager.setAnnotationTypeString("ne");
+    }
+
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) throws IOException {
-		grabCommandLineArgs(args);
+
+        XCas2InlineXml xCas2InlineXml = new XCas2InlineXml();
+        xCas2InlineXml.grabCommandLineArgs(args);
+        xCas2InlineXml.execute();
+    }
+
+    public void execute()
+    {
 		File f = new File(xCasFilename);
 		System.out.println("Looking for data in file '" + f.getAbsolutePath() + "'");
 		System.out.println("");
@@ -78,7 +94,7 @@ public class XCas2InlineXml {
 		}
 	}
 
-	public static void emitInlineXml() throws IOException {
+	public  void emitInlineXml() throws IOException {
 
 		try {
 			// Output inline XML
@@ -140,49 +156,38 @@ public class XCas2InlineXml {
 					}
 
 					// Emit negation element open tag
-					if ((currNegation != null) && (currNegation.start <= currWord.start) && (currNegation.openTagEmittedP == false)) {
-						NegationOpenCount++;
-						stackPtr++;
-						annotStackArray[stackPtr] = currNegation;
-						currNegation.openTagEmittedP = true;
-						System.out.format("opening negation tag A... (%s)%n", currNegation.type);
-						xmlBufWriter.write("<negation type=\"" + currNegation.type + "\" status=\"" + currNegation.status + "\" neg=\"" + currNegation.neg
-								+ "\" umls=\"" + currNegation.umlsObjsString + "\">");
-						currNegation = currNegation.next;
-						while ((currNegation != null) && (currNegation.start <= currWord.start) && (currNegation.openTagEmittedP == false)) {
-							NegationOpenCount++;
-							stackPtr++;
-							annotStackArray[stackPtr] = currNegation;
-							currNegation.openTagEmittedP = true;
-							System.out.format("opening MNE tag B... (%s)%n", currNegation.type);
-							xmlBufWriter.write("<negation type=\"" + currNegation.type + "\" status=\"" + currNegation.status + "\" neg=\""
-									+ currNegation.neg + "\" umls=\"" + currNegation.umlsObjsString + "\">");
-							currNegation = currNegation.next;
-						}
-					}
+                    GenericTagBuilder negationTagBuilder = new NegationTagBuilder(xmlBufWriter, currNegation, currWord, stackPtr, "negation", NegationOpenCount);
+                    negationTagBuilder.invoke();
+                    stackPtr = negationTagBuilder.getStackPtr();
+                    NegationOpenCount = negationTagBuilder.getAnnotationTagOpenCount();
 
-					
-					// Emit MNE element open tag
-					if ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
-						NEOpenCount++;
-						stackPtr++;
-						annotStackArray[stackPtr] = currNE;
-						currNE.openTagEmittedP = true;
-						System.out.format("opening MNE tag A... (%s)%n", currNE.type);
-						xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\"" + currNE.neg
-								+ "\" umls=\"" + currNE.umlsObjsString + "\">");
-						currNE = currNE.next;
-						while ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
-							NEOpenCount++;
-							stackPtr++;
-							annotStackArray[stackPtr] = currNE;
-							currNE.openTagEmittedP = true;
-							System.out.format("opening MNE tag B... (%s)%n", currNE.type);
-							xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
-									+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
-							currNE = currNE.next;
-						}
-					}
+
+                    // Emit MNE element open tag
+                    GenericTagBuilder namedEntityTagBuilder = new NamedEntityTagBuilder(xmlBufWriter, currNE, currWord, stackPtr, "MNE", NEOpenCount);
+                    namedEntityTagBuilder.invoke();
+                    stackPtr = namedEntityTagBuilder.getStackPtr();
+                    NEOpenCount = namedEntityTagBuilder.getAnnotationTagOpenCount();
+
+//					if ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
+//						NEOpenCount++;
+//						stackPtr++;
+//						annotStackArray[stackPtr] = currNE;
+//						currNE.openTagEmittedP = true;
+//						System.out.format("opening MNE tag A... (%s)%n", currNE.type);
+//						xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\"" + currNE.neg
+//								+ "\" umls=\"" + currNE.umlsObjsString + "\">");
+//						currNE = currNE.next;
+//						while ((currNE != null) && (currNE.start <= currWord.start) && (currNE.openTagEmittedP == false)) {
+//							NEOpenCount++;
+//							stackPtr++;
+//							annotStackArray[stackPtr] = currNE;
+//							currNE.openTagEmittedP = true;
+//							System.out.format("opening MNE tag B... (%s)%n", currNE.type);
+//							xmlBufWriter.write("<MNE type=\"" + currNE.type + "\" status=\"" + currNE.status + "\" neg=\""
+//									+ currNE.neg + "\" umls=\"" + currNE.umlsObjsString + "\">");
+//							currNE = currNE.next;
+//						}
+//					}
 
 					
 					// Emit Word element
@@ -268,7 +273,7 @@ public class XCas2InlineXml {
 		}
 	}
 
-	public static void printThreeLayerModel() {
+    public  void printThreeLayerModel() {
 		System.out.format("===%nprintThreeLayerModel() BEGIN%n===%n");
 
 		Annot currAnnot = sentHead.next;
@@ -298,7 +303,7 @@ public class XCas2InlineXml {
 		System.out.format("===%nprintThreeLayerModel() END%n===%n");
 	}
 
-	public static void createThreeLayerModel(ArrayList annotList) {
+	public void createThreeLayerModel(ArrayList annotList) {
 		System.out.format("===%ncreateThreeLayerModel() BEGIN%n===%n");
 		sentHead.start = -1;
 		neHead.start = -1;
@@ -323,11 +328,15 @@ public class XCas2InlineXml {
 				// System.out.println("Adding word...");
 				addToList(wordHead, annot);
 			} else if (mayoNamedEntityAnnotP(annot)) {
-				xCasNECount++;
-				// System.out.println("Adding named entity...");
-				addToList(neHead, annot);
-				countList(neHead);
-				annot.nodeType = "mne";
+                neTagManager.incrementAnnotationCount();
+                annot.nodeType = "mne";
+                neTagManager.addToList(annot);
+
+//				xCasNECount++;
+//				// System.out.println("Adding named entity...");
+//				addToList(neHead, annot);
+//				countList(neHead);
+//				annot.nodeType = "mne";
 			} else if (ctakesNegationAnnotP(annot)) {
 				xCasNegationCount++;
 				// System.out.println("Adding named entity...");
@@ -461,7 +470,7 @@ public class XCas2InlineXml {
 	}
 
 	// Command line processing
-	public static void grabCommandLineArgs(String[] args) {
+	public void grabCommandLineArgs(String[] args) {
 		if (args.length == 0) {
 			emitHelp();
 			System.exit(0);
@@ -507,6 +516,189 @@ public class XCas2InlineXml {
 		System.out.println("               -o <inline xml output filename>");
 		System.out.println("             [ -h (print this message and exit) ]");
 	}
+
+    private class TagManager
+    {
+        int annotationCount = 0;
+        int openTagCount = 0;
+        int closeTagCount = 0;
+        Annot head;
+
+        String annotationTypeString = "";
+
+        public TagManager()
+        {
+            head = new Annot();
+            head.start = -1;
+        }
+
+        public void addToList(Annot newAnnot)
+        {
+            Annot hold = null;
+            Annot curr = head;
+            Annot prev = null;
+
+            while (curr != null) {
+                if (newAnnot.start < curr.start || ((newAnnot.start == curr.start) && (newAnnot.end > curr.end))) {
+                    hold = curr;
+                    curr = newAnnot;
+                    prev.next = curr;
+                    newAnnot.prev = prev;
+                    newAnnot.next = hold;
+                    hold.prev = curr;
+                    return;
+                }
+                prev = curr;
+                curr = curr.next;
+            }
+            prev.next = newAnnot;
+            newAnnot.prev = prev;
+        }
+
+        public void print()
+        {
+            Annot currAnnot = head.next;
+            while (currAnnot != null) {
+                System.out.println("ne(" + currAnnot.id + "): " + currAnnot.text + " start=" + currAnnot.start + " end="
+                        + currAnnot.end);
+                currAnnot = currAnnot.next;
+            }
+
+        }
+
+        public Annot getHead()
+        {
+            return head;
+        }
+
+        public void incrementAnnotationCount()
+        {
+            annotationCount++;
+        }
+
+        public void incrementOpenTagCount()
+        {
+            openTagCount++;
+        }
+
+        public void incrementCloseTagCount()
+        {
+            closeTagCount++;
+        }
+
+        public int getAnnoationCount()
+        {
+            return annotationCount;
+        }
+
+        public int getOpenTagCount()
+        {
+            return openTagCount;
+        }
+
+        public int getCloseTagCount()
+        {
+            return closeTagCount;
+        }
+        public String getAnnotationTypeString()
+        {
+            return annotationTypeString;
+        }
+
+        public void setAnnotationTypeString(String annotationTypeString)
+        {
+            this.annotationTypeString = annotationTypeString;
+        }
+
+    }
+
+    private abstract class GenericTagBuilder {
+        protected BufferedWriter xmlBufWriter;
+        protected Annot currAnnotation;
+        protected Annot currWord;
+        protected int stackPtr;
+        protected String tagName;
+        protected int annotationTagOpenCount;
+
+        public GenericTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
+            this.xmlBufWriter = xmlBufWriter;
+            this.currAnnotation = currAnnotation;
+            this.currWord = currWord;
+            this.stackPtr = stackPtr;
+            this.tagName = tagName;
+            this.annotationTagOpenCount = annotationTagOpenCount;
+        }
+
+        public Annot getCurrAnnotation() {
+            return currAnnotation;
+        }
+
+        public int getStackPtr() {
+            return stackPtr;
+        }
+
+        public int getAnnotationTagOpenCount() {
+            return annotationTagOpenCount;
+        }
+
+        public GenericTagBuilder invoke() throws IOException {
+            if ((currAnnotation != null) && (currAnnotation.start <= currWord.start) && (currAnnotation.openTagEmittedP == false)) {
+                annotationTagOpenCount++;
+                stackPtr++;
+                annotStackArray[stackPtr] = currAnnotation;
+                currAnnotation.openTagEmittedP = true;
+                constructString();
+                currAnnotation = currAnnotation.next;
+                while ((currAnnotation != null) && (currAnnotation.start <= currWord.start) && (currAnnotation.openTagEmittedP == false)) {
+                    annotationTagOpenCount++;
+                    stackPtr++;
+                    annotStackArray[stackPtr] = currAnnotation;
+                    currAnnotation.openTagEmittedP = true;
+                    constructString();
+                    //System.out.format("opening MNE tag B... (%s)%n", currAnnotation.type);
+                    //xmlBufWriter.write("<negation type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\""
+                    //        + currAnnotation.neg + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+                    currAnnotation = currAnnotation.next;
+                }
+            }
+            return this;
+        }
+
+        public abstract void constructString() throws IOException;
+//        private void constructString() throws IOException {
+//            System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
+//            xmlBufWriter.write("<negation type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
+//                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+//        }
+    }
+
+    public class NegationTagBuilder extends GenericTagBuilder
+    {
+        public NegationTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int negationOpenCount) {
+            super(xmlBufWriter, currAnnotation, currWord, stackPtr, tagName, negationOpenCount);
+        }
+
+        public void constructString() throws IOException {
+            System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
+            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
+                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+        }
+    }
+
+    public class NamedEntityTagBuilder extends GenericTagBuilder
+    {
+        public NamedEntityTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int negationOpenCount) {
+            super(xmlBufWriter, currAnnotation, currWord, stackPtr, tagName, negationOpenCount);
+        }
+
+        public void constructString() throws IOException {
+            System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
+            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
+                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+        }
+    }
+
+
 
 }
 

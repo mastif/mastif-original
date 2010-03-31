@@ -17,7 +17,7 @@ public class AnnotationTypeChecker {
     //		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")
     //		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
         if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
-                || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
+                || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctuationToken")
                 || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
                 || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")
                 || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
@@ -33,7 +33,7 @@ public class AnnotationTypeChecker {
 //				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
 //				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
         if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
-                || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
+                || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctuationToken")
                 || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
                 || annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")) {
             return true;
@@ -45,6 +45,14 @@ public class AnnotationTypeChecker {
     public static boolean isNewlineToken(Annot annot) {
         //if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
         if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isPunctuationToken(Annot annot) {
+        if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctuationToken")) {
             return true;
         } else {
             return false;

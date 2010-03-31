@@ -191,7 +191,7 @@ public class XCas2InlineXml {
 
 					
 					// Emit Word element
-					if (newlineTokenAnnotP(currWord)) {
+					if (AnnotationTypeChecker.isNewlineToken(currWord)) {
 						// Don't bother writing out newlines; we force newlines for every sentence boundary.
 						newlineCount++;
 					} else {
@@ -314,20 +314,20 @@ public class XCas2InlineXml {
 		while (annotIter.hasNext()) {
 			Annot annot = (Annot) annotIter.next();
 			// System.out.println("localName=" + annot.localName);
-			if (sentAnnotP(annot)) {
+			if (AnnotationTypeChecker.isSent(annot)) {
 				// System.out.println("Adding sent...");
 				addToList(sentHead, annot);
 				annot.nodeType = "sent";
-			} else if (tokenAnnotP(annot)) {
+			} else if (AnnotationTypeChecker.isToken(annot)) {
 				xCasWordCount++;
-				if (newlineTokenAnnotP(annot)) {
+				if (AnnotationTypeChecker.isNewlineToken(annot)) {
 					xCasNewlineCount++;
 				} else {
 					annot.nodeType = "word";
 				}
 				// System.out.println("Adding word...");
 				addToList(wordHead, annot);
-			} else if (mayoNamedEntityAnnotP(annot)) {
+			} else if (AnnotationTypeChecker.isMayoNamedEntity(annot)) {
                 neTagManager.incrementAnnotationCount();
                 annot.nodeType = "mne";
                 neTagManager.addToList(annot);
@@ -337,13 +337,13 @@ public class XCas2InlineXml {
 //				addToList(neHead, annot);
 //				countList(neHead);
 //				annot.nodeType = "mne";
-			} else if (ctakesNegationAnnotP(annot)) {
+			} else if (AnnotationTypeChecker.isCtakesNegation(annot)) {
 				xCasNegationCount++;
 				// System.out.println("Adding named entity...");
 				addToList(negationHead, annot);
 				countList(negationHead);
 				annot.nodeType = "negation";
-			} else if (chunkAnnotP(annot)) {
+			} else if (AnnotationTypeChecker.isChunk(annot)) {
 				xCasChunkCount++;
 				// System.out.println("Adding named entity...");
 				addToList(chunkHead, annot);
@@ -357,86 +357,7 @@ public class XCas2InlineXml {
 		System.out.format("===%ncreateThreeLayerModel() END%n===%n");
 	}
 
-	public static boolean tokenAnnotP(Annot annot) {
-	//		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
-	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
-	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
-	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")
-	//		|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean nonNewlineTokenAnnotP(Annot annot) {
-//		if (annot.localName.equals("edu.mayo.bmi.uima.common.types.WordTokenAnnotation")
-//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.PunctTokenAnnotation")
-//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.ContractionTokenAnnotation")
-//				|| annot.localName.equals("edu.mayo.bmi.uima.common.types.NumTokenAnnotation")) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.WordToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.PunctToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.ContractionToken")
-				|| annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NumToken")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean newlineTokenAnnotP(Annot annot) {
-		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NewlineToken")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean mayoNamedEntityAnnotP(Annot annot) {
-		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.core.ae.type.NamedEntity")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean ctakesNegationAnnotP(Annot annot) {
-		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
-		if (annot.localName.equals("gov.va.maveric.uima.ctakes.NENegation")) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean sentAnnotP(Annot annot) {
-		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
-		if (annot.localName.equals("edu.mayo.bmi.uima.core.sentence.type.Sentence")) {
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static boolean chunkAnnotP(Annot annot) {
-		//if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
-		if (annot.localName.startsWith("edu.mayo.bmi.uima.chunker")) {
-
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	public static void countList(Annot annot) {
+    public static void countList(Annot annot) {
 		int count = 0;
 		while (annot != null) {
 			count++;

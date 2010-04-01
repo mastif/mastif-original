@@ -29,7 +29,14 @@ public class XCas2InlineXml {
     private TagManager neTagManager;
     private TagManager ctakesNegationTagManager;
     private TagManager chunkTagManager;
-    private TagManager punctuationTagManager;
+
+    OutputStream xmlOutStream;
+    OutputStreamWriter xmlWriter;
+    BufferedWriter xmlBufWriter;
+
+    GenericTagBuilder chunkTagBuilder;
+    GenericTagBuilder negationTagBuilder;
+    GenericTagBuilder namedEntityTagBuilder;
 
 	public String xCasFilename = null;
 	public String inlineXmlFilename = null;
@@ -47,13 +54,11 @@ public class XCas2InlineXml {
 	public static int xCasNewlineCount = 0;
     public static int xCasPunctuationCount = 0;
 	public static int neOpenCount = 0;
-	public static int NECloseCount = 0;
+	public static int neCloseCount = 0;
 	public static int negationOpenCount = 0;
-	public static int NegationCloseCount = 0;
+	public static int negationCloseCount = 0;
 	public static int chunkOpenCount = 0;
 	public static int chunkCloseCount = 0;
-    public static int punctuationOpenCount = 0;
-    public static int punctuationCloseCount = 0;
 	public static int lexCount = 0;
 	public static int sentCount = 0;
 	public static int newlineCount = 0;
@@ -72,9 +77,24 @@ public class XCas2InlineXml {
 
         chunkTagManager = new TagManager();
         chunkTagManager.setAnnotationTypeString("chunk");
+    }
 
-        punctuationTagManager = new TagManager();
-        punctuationTagManager.setAnnotationTypeString("punctuation");
+    public void initializeOutputFile()
+    {
+
+        try
+        {
+            xmlOutStream = new FileOutputStream(inlineXmlFilename);
+            xmlWriter = new OutputStreamWriter(xmlOutStream, "UTF-8");
+            xmlBufWriter = new BufferedWriter(xmlWriter);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Problem initializing output file for inline xml", e);
+        }
+
+        chunkTagBuilder = new ChunkTagBuilder(xmlBufWriter, "chunk");
+        negationTagBuilder = new NegationTagBuilder(xmlBufWriter, "negation");
+        namedEntityTagBuilder = new NamedEntityTagBuilder(xmlBufWriter, "MNE");
     }
 
 	/**
@@ -84,6 +104,7 @@ public class XCas2InlineXml {
 
         XCas2InlineXml xCas2InlineXml = new XCas2InlineXml();
         xCas2InlineXml.grabCommandLineArgs(args);
+        xCas2InlineXml.initializeOutputFile();
         xCas2InlineXml.execute();
     }
 
@@ -102,8 +123,12 @@ public class XCas2InlineXml {
 			System.out.println("Annotations: " + annotList.size());
 
 			createThreeLayerModel(annotList);
-			// printThreeLayerModel();
+            System.out.format("===%nprintThreeLayerModel(): BEFORE%n===%n");
+			printThreeLayerModel();
+            System.out.format("===%nprintThreeLayerModel(): AFTER%n===%n");
+            System.out.format("===%nemitInlinexml(): BEFORE%n===%n");
 			emitInlineXml();
+            System.out.format("===%nemitInlinexml(): AFTER%n===%n");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -114,24 +139,34 @@ public class XCas2InlineXml {
 
 		try {
 			// Output inline XML
-			OutputStream xmlOutStream = new FileOutputStream(inlineXmlFilename);
-			OutputStreamWriter xmlWriter = new OutputStreamWriter(xmlOutStream, "UTF-8");
-			BufferedWriter xmlBufWriter = new BufferedWriter(xmlWriter);
+//			OutputStream xmlOutStream = new FileOutputStream(inlineXmlFilename);
+//			OutputStreamWriter xmlWriter = new OutputStreamWriter(xmlOutStream, "UTF-8");
+//			BufferedWriter xmlBufWriter = new BufferedWriter(xmlWriter);
 
 			xmlBufWriter.write("<DOC>\n<TEXT>\n");
 			Annot currSent = sentHead.next;
-			Annot currNegation = negationHead.next;
-			Annot currNE = neHead.next;
-			Annot currChunk = chunkHead.next;
+//			Annot currNegation = negationHead.next;
+//			Annot currNE = neHead.next;
+//			Annot currChunk = chunkHead.next;
+            Annot currNegation = ctakesNegationTagManager.getHead().next;
+            Annot currNE = neTagManager.getHead().next;
+            Annot currChunk = chunkTagManager.getHead().next;
+
 			Annot currWord = wordHead.next;
 			Annot prevWord = null;
+
+            GenericTagBuilder chunkTagBuilder = new ChunkTagBuilder(xmlBufWriter, "chunk");
+            GenericTagBuilder negationTagBuilder = new NegationTagBuilder(xmlBufWriter, "negation");
+            GenericTagBuilder namedEntityTagBuilder = new NamedEntityTagBuilder(xmlBufWriter, "MNE");
 
 			// number of (and pointer to) MNE annotations on annotStackArray stack
 			// Note that counting is 1-based, not zero-based. stack is empty when
 			// pointer = 0;
 			int stackPtr = 0;
 
+            System.out.format("while currSent is not null -- outside before%n");
 			while (currSent != null) {
+                System.out.format("while currSent is not null -- inside begin%n");
 				System.out.println("INSIDE WHILE BEGIN currWord: " + currWord);
 				System.out.println("INSIDE WHILE BEGIN currWord.text: " + currWord.text);
 				sentCount++;
@@ -148,23 +183,32 @@ public class XCas2InlineXml {
 					// BRW - modified 3/11/10
 					// Moved chunks before NEs as when they overlap perfectly we'd like chunks appearing on the "outside"
 					// e.g. <chunk><mne>pain</mne></chunk>
-                    GenericTagBuilder chunkTagBuilder = new ChunkTagBuilder(xmlBufWriter, currChunk, currWord, stackPtr, "chunk", chunkOpenCount);
+                    System.out.format("    stackPtr before chunk: %d%n", stackPtr);
+                    chunkTagBuilder.setParameters(currChunk, currWord, stackPtr, chunkOpenCount);
                     chunkTagBuilder.invoke();
                     stackPtr = chunkTagBuilder.getStackPtr();
                     chunkOpenCount = chunkTagBuilder.getAnnotationTagOpenCount();
+                    currChunk = chunkTagBuilder.getCurrAnnotation();
+                    System.out.format("    stackPtr after chunk: %d%n", stackPtr);
 
 					// Emit negation element open tag
-                    GenericTagBuilder negationTagBuilder = new NegationTagBuilder(xmlBufWriter, currNegation, currWord, stackPtr, "negation", negationOpenCount);
+                    System.out.format("    stackPtr before negation: %d%n", stackPtr);
+                    negationTagBuilder.setParameters(currNegation, currWord, stackPtr, negationOpenCount);
                     negationTagBuilder.invoke();
                     stackPtr = negationTagBuilder.getStackPtr();
                     negationOpenCount = negationTagBuilder.getAnnotationTagOpenCount();
+                    currNegation = chunkTagBuilder.getCurrAnnotation();
+                    System.out.format("    stackPtr after negation: %d%n", stackPtr);
 
 
                     // Emit MNE element open tag
-                    GenericTagBuilder namedEntityTagBuilder = new NamedEntityTagBuilder(xmlBufWriter, currNE, currWord, stackPtr, "MNE", neOpenCount);
+                    System.out.format("    stackPtr before ne: %d%n", stackPtr);
+                    namedEntityTagBuilder.setParameters(currNE, currWord, stackPtr, neOpenCount);
                     namedEntityTagBuilder.invoke();
                     stackPtr = namedEntityTagBuilder.getStackPtr();
                     neOpenCount = namedEntityTagBuilder.getAnnotationTagOpenCount();
+                    currNE = namedEntityTagBuilder.getCurrAnnotation();
+                    System.out.format("    stackPtr after ne: %d%n", stackPtr);
 
 //                    GenericTagBuilder punctuationTagBuilder = new PunctuationTagBuilder(xmlBufWriter, currChunk, currWord, stackPtr, "punctuation", punctuationOpenCount);
 //                    chunkTagBuilder.invoke();
@@ -210,35 +254,59 @@ public class XCas2InlineXml {
 					// off the stack.  Previous code only popped off one type at a time and wouldn't handle multiple annotations
 					// of different types that ended at the same position - e.g. <chunk>the <mne>pain</mne></chunk>
 					Annot currentOnStack = annotStackArray[stackPtr];
+                    System.out.format(">> size of annotStackArray: %d%n", annotStackArray.length);
+                    System.out.format(">> stackPtr: %d%n", stackPtr);
+                    System.out.format(">> currentOnStack: %s%n", currentOnStack);
+                    System.out.format(">> currentOnStack.type: %s%n", (currentOnStack == null) ? "(currentOnStack is null)" : currentOnStack.type);
+                    System.out.format("    while stackPtr > 0 and (currWord is null or currentOnStack ends before currWord start OUTSIDE BEFORE%n");
 					while ((stackPtr > 0) && ((currWord == null) || (currentOnStack.end <= currWord.start))) {
-						if (currentOnStack.type.equals("chunk")) {
+                        System.out.format("    while stackPtr > 0 and (currWord is null or currentOnStack ends before currWord start INSIDE BEGIN%n");
+                        String currentOnStackType = currentOnStack.type;
+                        if (currentOnStackType == null) currentOnStackType = "";
+                        String currentOnStackNodeType = currentOnStack.nodeType;
+                        if (currentOnStackNodeType == null) currentOnStackNodeType = "";
+						if (currentOnStackType.equals("chunk")) {
+                            //chunkTagBuilder.decrementAnnotationTagOpenCount();
+                            //chunkTagBuilder.advanceToNextAnnotation();
 							chunkCloseCount++;
 							xmlBufWriter.write("</chunk>");
-						} else if (currentOnStack.nodeType.equals("negation")) {
-							NegationCloseCount++;
+						} else if (currentOnStackNodeType.equals("negation")) {
+                            //negationTagBuilder.decrementAnnotationTagOpenCount();
+                            //negationTagBuilder.advanceToNextAnnotation();
+							negationCloseCount++;
 							xmlBufWriter.write("</negation>");
-						} else if (currentOnStack.nodeType.equals("mne"))
+						} else if (currentOnStackNodeType.equals("mne"))
 						{
 							System.out.format("(debug mne type: %s%n", currentOnStack.type);
-							NECloseCount++;
+                            //namedEntityTagBuilder.decrementAnnotationTagOpenCount();
+                            //namedEntityTagBuilder.advanceToNextAnnotation();
+							neCloseCount++;
 							xmlBufWriter.write("</MNE>");
 						} else
 						{
 						}
 						stackPtr--;
 						currentOnStack = annotStackArray[stackPtr];
+                        System.out.format("    while stackPtr > 0 and (currWord is null or currentOnStack ends before currWord start INSIDE END%n");
 					}
+                    System.out.format("    while stackPtr > 0 and (currWord is null or currentOnStack ends before currWord start OUTSIDE AFTER%n");
 				}
 				xmlBufWriter.write("</s>\n");
 				currSent = currSent.next;
 				if (currSent != null) {
 				}
+                System.out.format("while currSent is not null -- inside end%n");
 			}
+            System.out.format("while currSent is not null -- outside after%n");
 
 			xmlBufWriter.write("</TEXT>\n</DOC>\n");
 
 			xmlBufWriter.flush();
 			xmlBufWriter.close();
+
+            chunkOpenCount = chunkTagBuilder.getAnnotationTagOpenCount();
+            negationOpenCount = negationTagBuilder.getAnnotationTagOpenCount();
+            neOpenCount = namedEntityTagBuilder.getAnnotationTagOpenCount();
 
 			System.out.println(xCasWordCount + " xCas word annotations (" + xCasNewlineCount + " newline annots; " + xCasPunctuationCount + " puctuation annots).");
 			System.out.println(sentCount + " xCas sentences.");
@@ -246,8 +314,8 @@ public class XCas2InlineXml {
 
 			System.out.println(lexCount + " inline lex tokens.");
 			System.out.println(sentCount + " inline sentences (" + newlineCount + " newlines skipped; " + punctuationCount + " punctuation count).");
-			if (neOpenCount != NECloseCount) {
-				System.err.println("Error in generating inline xml MNE tags (open=" + neOpenCount + " close=" + NECloseCount
+			if (neOpenCount != neCloseCount) {
+				System.err.println("Error in generating inline xml MNE tags (open=" + neOpenCount + " close=" + neCloseCount
 						+ ")");
 			}
 			System.out.println(neOpenCount + " inline Mayo NE (MNE) tags.");
@@ -276,13 +344,21 @@ public class XCas2InlineXml {
 					+ currAnnot.end);
 			currAnnot = currAnnot.next;
 		}
-		currAnnot = neHead.next;
+        currAnnot = chunkTagManager.getHead();
+		while (currAnnot != null) {
+			System.out.println("chunk(" + currAnnot.id + "): " + currAnnot.text + " start=" + currAnnot.start + " end="
+					+ currAnnot.end);
+			currAnnot = currAnnot.next;
+		}
+		//currAnnot = neHead.next;
+        currAnnot = neTagManager.getHead();
 		while (currAnnot != null) {
 			System.out.println("ne(" + currAnnot.id + "): " + currAnnot.text + " start=" + currAnnot.start + " end="
 					+ currAnnot.end);
 			currAnnot = currAnnot.next;
 		}
-		currAnnot = negationHead.next;
+		//currAnnot = negationHead.next;
+        currAnnot = ctakesNegationTagManager.getHead();
 		while (currAnnot != null) {
 			System.out.println("negation(" + currAnnot.id + "): " + currAnnot.text + " start=" + currAnnot.start + " end="
 					+ currAnnot.end);
@@ -360,6 +436,11 @@ public class XCas2InlineXml {
 				// System.out.println("Unrecognized annotation type" + annot.type);
 			}
 		}
+
+        xCasNECount = neTagManager.getAnnotationCount();
+        xCasChunkCount = chunkTagManager.getAnnotationCount();
+        xCasNegationCount = ctakesNegationTagManager.getAnnotationCount();
+
 		System.out.format("===%ncreateThreeLayerModel() END%n===%n");
 	}
 
@@ -513,7 +594,7 @@ public class XCas2InlineXml {
             closeTagCount++;
         }
 
-        public int getAnnoationCount()
+        public int getAnnotationCount()
         {
             return annotationCount;
         }
@@ -547,11 +628,12 @@ public class XCas2InlineXml {
         protected String tagName;
         protected int annotationTagOpenCount;
 
-        public GenericTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
+        //public GenericTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
+        public GenericTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
             this.xmlBufWriter = xmlBufWriter;
-            this.currAnnotation = currAnnotation;
-            this.currWord = currWord;
-            this.stackPtr = stackPtr;
+            //this.currAnnotation = currAnnotation;
+            //this.currWord = currWord;
+            //this.stackPtr = stackPtr;
             this.tagName = tagName;
             this.annotationTagOpenCount = annotationTagOpenCount;
         }
@@ -566,6 +648,24 @@ public class XCas2InlineXml {
 
         public int getAnnotationTagOpenCount() {
             return annotationTagOpenCount;
+        }
+
+        public void decrementAnnotationTagOpenCount()
+        {
+            annotationTagOpenCount--;
+        }
+
+        public void advanceToNextAnnotation()
+        {
+            currAnnotation = currAnnotation.next;
+        }
+
+        public void setParameters(Annot currAnnotation, Annot currWord, int stackPtr, int annotationTagOpenCount)
+        {
+            this.currAnnotation = currAnnotation;
+            this.currWord = currWord;
+            this.stackPtr = stackPtr;
+            this.annotationTagOpenCount = annotationTagOpenCount;
         }
 
         public GenericTagBuilder invoke() throws IOException {
@@ -601,8 +701,8 @@ public class XCas2InlineXml {
 
     public class NegationTagBuilder extends GenericTagBuilder
     {
-        public NegationTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
-            super(xmlBufWriter, currAnnotation, currWord, stackPtr, tagName, annotationTagOpenCount);
+        public NegationTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
+            super(xmlBufWriter, tagName);
         }
 
         public void constructString() throws IOException {
@@ -614,8 +714,8 @@ public class XCas2InlineXml {
 
     public class NamedEntityTagBuilder extends GenericTagBuilder
     {
-        public NamedEntityTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
-            super(xmlBufWriter, currAnnotation, currWord, stackPtr, tagName, annotationTagOpenCount);
+        public NamedEntityTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
+            super(xmlBufWriter, tagName);
         }
 
         public void constructString() throws IOException {
@@ -627,8 +727,8 @@ public class XCas2InlineXml {
 
     public class ChunkTagBuilder extends GenericTagBuilder
     {
-        public ChunkTagBuilder(BufferedWriter xmlBufWriter, Annot currAnnotation, Annot currWord, int stackPtr, String tagName, int annotationTagOpenCount) {
-            super(xmlBufWriter, currAnnotation, currWord, stackPtr, tagName, annotationTagOpenCount);
+        public ChunkTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
+            super(xmlBufWriter, tagName);
         }
 
         public void constructString() throws IOException {

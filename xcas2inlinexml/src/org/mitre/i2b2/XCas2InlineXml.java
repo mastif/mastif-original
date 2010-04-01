@@ -197,7 +197,7 @@ public class XCas2InlineXml {
                     negationTagBuilder.invoke();
                     stackPtr = negationTagBuilder.getStackPtr();
                     negationOpenCount = negationTagBuilder.getAnnotationTagOpenCount();
-                    currNegation = chunkTagBuilder.getCurrAnnotation();
+                    currNegation = negationTagBuilder.getCurrAnnotation();
                     System.out.format("    stackPtr after negation: %d%n", stackPtr);
 
 

@@ -299,7 +299,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		 * Use _ref_ontologyConceptArr to get umlsIds
 		 */
 
-		int tagTypeCount = 8;
+		int tagTypeCount = 9;
 		String[] tagTypes = new String[tagTypeCount];
 //		tagTypes[0] = "edu.mayo.bmi.uima.common.types.NamedEntityAnnotation";
 //		tagTypes[1] = "edu.mayo.bmi.uima.common.types.SentenceAnnotation";
@@ -316,6 +316,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		tagTypes[5] = "edu.mayo.bmi.uima.core.ae.type.NewlineToken";
 		tagTypes[6] = "edu.mayo.bmi.uima.core.ae.type.NumToken";
 		tagTypes[7] = "gov.va.maveric.uima.ctakes.NENegation";
+        tagTypes[8] = "edu.mayo.bmi.uima.context.type.NEContext";
 		//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount BEFORE LOOP%n$$$%n");
 		for (int t = 0; t < tagTypeCount; t++) {
 			//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
@@ -384,7 +385,9 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 					//pennTag = new String("number");
 				} else if (tagTypes[t].equalsIgnoreCase("gov.va.maveric.uima.ctakes.NENegation")) {
 					pennTag = new String("negation");
-				}
+				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.context.type.NEContext")) {
+                    pennTag = new String("negationContext");
+                }
 				try {
 					System.out.format("start: %s; end: %s; typeId: %s%n", start, end, typeId);
 					istart = Integer.parseInt(start);

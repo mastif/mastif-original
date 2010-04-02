@@ -28,6 +28,7 @@ public class XCas2InlineXml {
 
     private TagManager neTagManager;
     private TagManager ctakesNegationTagManager;
+    private TagManager negationContextTagManager;
     private TagManager chunkTagManager;
 
     OutputStream xmlOutStream;
@@ -36,6 +37,7 @@ public class XCas2InlineXml {
 
     GenericTagBuilder chunkTagBuilder;
     GenericTagBuilder negationTagBuilder;
+    GenericTagBuilder negationContextTagBuilder;
     GenericTagBuilder namedEntityTagBuilder;
 
 	public String xCasFilename = null;
@@ -48,6 +50,7 @@ public class XCas2InlineXml {
 	public static Annot chunkHead = new Annot();
 	public static int xCasNECount = 0;
 	public static int xCasNegationCount = 0;
+    public static int xCasNegationContextCount = 0;
 	public static int xCasChunkCount = 0;
 	public static int xCasUnkCount = 0;
 	public static int xCasWordCount = 0;
@@ -55,8 +58,10 @@ public class XCas2InlineXml {
     public static int xCasPunctuationCount = 0;
 	public static int neOpenCount = 0;
 	public static int neCloseCount = 0;
-	public static int negationOpenCount = 0;
-	public static int negationCloseCount = 0;
+    public static int negationOpenCount = 0;
+    public static int negationCloseCount = 0;
+	public static int negationContextOpenCount = 0;
+	public static int negationContextCloseCount = 0;
 	public static int chunkOpenCount = 0;
 	public static int chunkCloseCount = 0;
 	public static int lexCount = 0;
@@ -74,6 +79,9 @@ public class XCas2InlineXml {
 
         ctakesNegationTagManager = new TagManager();
         ctakesNegationTagManager.setAnnotationTypeString("negation");
+
+        negationContextTagManager = new TagManager();
+        negationContextTagManager.setAnnotationTypeString("negationContext");
 
         chunkTagManager = new TagManager();
         chunkTagManager.setAnnotationTypeString("chunk");
@@ -94,6 +102,7 @@ public class XCas2InlineXml {
 
         chunkTagBuilder = new ChunkTagBuilder(xmlBufWriter, "chunk");
         negationTagBuilder = new NegationTagBuilder(xmlBufWriter, "negation");
+        negationContextTagBuilder = new NegationContextTagBuilder(xmlBufWriter, "negationContext");
         namedEntityTagBuilder = new NamedEntityTagBuilder(xmlBufWriter, "MNE");
     }
 
@@ -149,6 +158,7 @@ public class XCas2InlineXml {
 //			Annot currNE = neHead.next;
 //			Annot currChunk = chunkHead.next;
             Annot currNegation = ctakesNegationTagManager.getHead().next;
+            Annot currNegationContext = negationContextTagManager.getHead().next;
             Annot currNE = neTagManager.getHead().next;
             Annot currChunk = chunkTagManager.getHead().next;
 
@@ -199,6 +209,15 @@ public class XCas2InlineXml {
                     negationOpenCount = negationTagBuilder.getAnnotationTagOpenCount();
                     currNegation = negationTagBuilder.getCurrAnnotation();
                     System.out.format("    stackPtr after negation: %d%n", stackPtr);
+
+                    // Emit negationContext element open tag
+                    System.out.format("    stackPtr before negationContext: %d%n", stackPtr);
+                    negationContextTagBuilder.setParameters(currNegationContext, currWord, stackPtr, negationContextOpenCount);
+                    negationContextTagBuilder.invoke();
+                    stackPtr = negationContextTagBuilder.getStackPtr();
+                    negationContextOpenCount = negationContextTagBuilder.getAnnotationTagOpenCount();
+                    currNegationContext = negationContextTagBuilder.getCurrAnnotation();
+                    System.out.format("    stackPtr after negationContext: %d%n", stackPtr);
 
 
                     // Emit MNE element open tag
@@ -275,6 +294,11 @@ public class XCas2InlineXml {
                             //negationTagBuilder.advanceToNextAnnotation();
 							negationCloseCount++;
 							xmlBufWriter.write("</negation>");
+                        } else if (currentOnStackNodeType.equals("negationContext")) {
+                            //negationTagBuilder.decrementAnnotationTagOpenCount();
+                            //negationTagBuilder.advanceToNextAnnotation();
+                            negationContextCloseCount++;
+                            xmlBufWriter.write("</negationContext>");
 						} else if (currentOnStackNodeType.equals("mne"))
 						{
 							System.out.format("(debug mne type: %s%n", currentOnStack.type);
@@ -415,6 +439,16 @@ public class XCas2InlineXml {
                 ctakesNegationTagManager.incrementAnnotationCount();
                 annot.nodeType = "negation";
                 ctakesNegationTagManager.addToList(annot);
+
+//				xCasNegationCount++;
+//				// System.out.println("Adding named entity...");
+//				addToList(negationHead, annot);
+//				countList(negationHead);
+//				annot.nodeType = "negation";
+            } else if (AnnotationTypeChecker.isNegationContext(annot)) {
+                negationContextTagManager.incrementAnnotationCount();
+                annot.nodeType = "negationContext";
+                negationContextTagManager.addToList(annot);
 
 //				xCasNegationCount++;
 //				// System.out.println("Adding named entity...");
@@ -702,6 +736,19 @@ public class XCas2InlineXml {
     public class NegationTagBuilder extends GenericTagBuilder
     {
         public NegationTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
+            super(xmlBufWriter, tagName);
+        }
+
+        public void constructString() throws IOException {
+            System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
+            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
+                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+        }
+    }
+
+    public class NegationContextTagBuilder extends GenericTagBuilder
+    {
+        public NegationContextTagBuilder(BufferedWriter xmlBufWriter, String tagName) {
             super(xmlBufWriter, tagName);
         }
 

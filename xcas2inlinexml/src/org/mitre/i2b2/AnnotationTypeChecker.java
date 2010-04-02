@@ -77,6 +77,14 @@ public class AnnotationTypeChecker {
         }
     }
 
+    public static boolean isNegationContext(Annot annot) {
+        if (annot.localName.equals("edu.mayo.bmi.uima.context.type.NEContext")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static boolean isSent(Annot annot) {
         //if (annot.localName.equals("edu.mayo.bmi.uima.common.types.SentenceAnnotation")) {
         if (annot.localName.equals("edu.mayo.bmi.uima.core.sentence.type.Sentence")) {

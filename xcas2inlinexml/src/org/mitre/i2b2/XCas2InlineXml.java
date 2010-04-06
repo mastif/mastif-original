@@ -741,8 +741,9 @@ public class XCas2InlineXml {
 
         public void constructString() throws IOException {
             System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
-            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
-                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+            xmlBufWriter.write("<" + tagName + ">");
+//            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
+//                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
         }
     }
 
@@ -754,8 +755,7 @@ public class XCas2InlineXml {
 
         public void constructString() throws IOException {
             System.out.format("opening %s tag A... (%s)%n", tagName, currAnnotation.type);
-            xmlBufWriter.write("<" + tagName + " type=\"" + currAnnotation.type + "\" status=\"" + currAnnotation.status + "\" neg=\"" + currAnnotation.neg
-                    + "\" umls=\"" + currAnnotation.umlsObjsString + "\">");
+            xmlBufWriter.write("<" + tagName + " focusText=\"" + currAnnotation.focusText + "\">");
         }
     }
 

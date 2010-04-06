@@ -53,6 +53,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 	public static String TAG_UIMA_FS_ARR = "uima.cas.FSArray";
 
 	public static String ATTRIBUTE_CERTAINITY = "certainty";
+    public static String ATTRIBUTE_FOCUS_TEXT = "FocusText";
 	public static String ATTRIBUTE_STATUS = "status";
 
 	public static String ATTRIBUTE_ID = "_id";
@@ -341,6 +342,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 			List umlsObjs = null;
 
 			for (int i = 0; i < neNodeList.getLength(); i++) {
+                String focusText = null;
 				Element annotation = (Element) neNodeList.item(i);
 				typeId = annotation.getAttribute(ATTRIBUTE_TYPE_ID);
 				start = annotation.getAttribute(ATTRIBUTE_BEGIN);
@@ -387,6 +389,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 					pennTag = new String("negation");
 				} else if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.context.type.NEContext")) {
                     pennTag = new String("negationContext");
+                    focusText = annotation.getAttribute(ATTRIBUTE_FOCUS_TEXT);
                 }
 				try {
 					System.out.format("start: %s; end: %s; typeId: %s%n", start, end, typeId);
@@ -439,6 +442,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				annot.pennTag = pennTag;
 				annot.text = coveredText;
 				annot.localName = annotation.getTagName();
+                annot.focusText = focusText;
 				// System.out.println("localName in Mayo code:" + annot.localName);
 				// System.out.println("Adding annot...");
 				annotList.add(annot);

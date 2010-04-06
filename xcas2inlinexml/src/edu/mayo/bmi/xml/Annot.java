@@ -13,6 +13,7 @@ public class Annot {
 	public String status = null;
 	public String neg = null;
 	public String text = null;
+    public String focusText = null;
 	public Annot prev = null;
 	public Annot next = null;
 	

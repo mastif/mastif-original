@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Created by IntelliJ IDEA.
@@ -232,10 +234,21 @@ public class UimaLoaderCli
         documentAnnotationElement.setAttribute("language", "x-unspecified");
         rootCasElement.appendChild(documentAnnotationElement);
 
+        Set<String> interestedAnnotationSet = new TreeSet<String>();
+        interestedAnnotationSet.add("section");
+        interestedAnnotationSet.add("subsection");
+        interestedAnnotationSet.add("xcope");
+        interestedAnnotationSet.add("cue");
+
         int annotationId = 10;
+        nodeAndSegmentsLoop:
         for (NodeAndSegments currentNodeAndSegments : list)
         {
             String annotationType = currentNodeAndSegments.getNode().getNodeName();
+            if (!interestedAnnotationSet.contains(annotationType))
+            {
+                continue nodeAndSegmentsLoop;
+            }
             Element currentAnnotationElement = inputDom.createElement("org.mitre.medfact.type." + annotationType);
             currentAnnotationElement.setAttribute("_indexed", "1");
             currentAnnotationElement.setAttribute("_ref_sofa", "1");

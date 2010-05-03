@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CAS version="2">
+  <uima.cas.Sofa _indexed="0" _id="1" sofaNum="1" sofaID="_InitialView" mimeType="text" sofaString="An AP, lateral, and sunrise view of the left knee is obtained.  A  standing view of both knees is&#13;&#10;obtained. A Rosenberg view is also obtained.  &#13;&#10;       &#13;&#10;On the left, bony mineralization is normal. There is evidence of a lateral tibial plateau fracture.&#13;&#10;Soft tissues demonstrate arterial calcification.  &#13;&#10;       &#13;&#10;Chondrocalcinosis identified involving the lateral compartment of the knee. There is moderate &#13;&#10;narrowing of the medial and lateral compartment of the left knee. The appearance and left knee&#13;&#10;similar to May 1, 2011. "/>
+  <uima.tcas.DocumentAnnotation _indexed="1" _id="8" _ref_sofa="1" begin="0" end="534" language="x-unspecified"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="276" _ref_sofa="1" begin="97" end="98" tokenNumber="23"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="284" _ref_sofa="1" begin="145" end="146" tokenNumber="34"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="292" _ref_sofa="1" begin="154" end="155" tokenNumber="36"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="300" _ref_sofa="1" begin="255" end="256" tokenNumber="57"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="308" _ref_sofa="1" begin="307" end="308" tokenNumber="65"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="316" _ref_sofa="1" begin="316" end="317" tokenNumber="67"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="324" _ref_sofa="1" begin="412" end="413" tokenNumber="82"/>
+  <edu.mayo.bmi.uima.core.ae.type.NewlineToken _indexed="1" _id="332" _ref_sofa="1" begin="508" end="509" tokenNumber="101"/>
+  <edu.mayo.bmi.uima.core.ae.type.NumToken _indexed="1" _id="340" _ref_sofa="1" begin="525" end="526" tokenNumber="105" partOfSpeech="CD" numType="1"/>
+  <edu.mayo.bmi.uima.core.ae.type.NumToken _indexed="1" _id="349" _ref_sofa="1" begin="528" end="532" tokenNumber="107" partOfSpeech="CD" numType="1"/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="358" _ref_sofa="1" begin="5" end="6" tokenNumber="2" partOfSpeech=","/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="366" _ref_sofa="1" begin="14" end="15" tokenNumber="4" partOfSpeech=","/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="374" _ref_sofa="1" begin="61" end="62" tokenNumber="14" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="382" _ref_sofa="1" begin="107" end="108" tokenNumber="25" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="390" _ref_sofa="1" begin="142" end="143" tokenNumber="32" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="398" _ref_sofa="1" begin="167" end="168" tokenNumber="40" partOfSpeech=","/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="406" _ref_sofa="1" begin="198" end="199" tokenNumber="45" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="414" _ref_sofa="1" begin="254" end="255" tokenNumber="55" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="422" _ref_sofa="1" begin="304" end="305" tokenNumber="63" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="430" _ref_sofa="1" begin="392" end="393" tokenNumber="77" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="438" _ref_sofa="1" begin="478" end="479" tokenNumber="94" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="446" _ref_sofa="1" begin="526" end="527" tokenNumber="106" partOfSpeech=","/>
+  <edu.mayo.bmi.uima.core.ae.type.PunctuationToken _indexed="1" _id="454" _ref_sofa="1" begin="532" end="533" tokenNumber="108" partOfSpeech="."/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="462" _ref_sofa="1" begin="0" end="62" sentenceNumber="0"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="467" _ref_sofa="1" begin="64" end="97" sentenceNumber="1"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="472" _ref_sofa="1" begin="99" end="108" sentenceNumber="2"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="477" _ref_sofa="1" begin="109" end="143" sentenceNumber="3"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="482" _ref_sofa="1" begin="156" end="199" sentenceNumber="4"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="487" _ref_sofa="1" begin="200" end="255" sentenceNumber="5"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="492" _ref_sofa="1" begin="257" end="305" sentenceNumber="6"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="497" _ref_sofa="1" begin="318" end="411" sentenceNumber="7"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="502" _ref_sofa="1" begin="414" end="508" sentenceNumber="8"/>
+  <edu.mayo.bmi.uima.core.sentence.type.Sentence _indexed="1" _id="507" _ref_sofa="1" begin="510" end="533" sentenceNumber="9"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="512" _ref_sofa="1" begin="97" end="98" tokenNumber="22"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="520" _ref_sofa="1" begin="145" end="146" tokenNumber="33"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="528" _ref_sofa="1" begin="154" end="155" tokenNumber="35"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="536" _ref_sofa="1" begin="255" end="256" tokenNumber="56"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="544" _ref_sofa="1" begin="307" end="308" tokenNumber="64"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="552" _ref_sofa="1" begin="316" end="317" tokenNumber="66"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="560" _ref_sofa="1" begin="412" end="413" tokenNumber="81"/>
+  <edu.mayo.bmi.uima.core.ae.type.SymbolToken _indexed="1" _id="568" _ref_sofa="1" begin="508" end="509" tokenNumber="100"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="576" _ref_sofa="1" begin="0" end="2" tokenNumber="0" partOfSpeech="DT" capitalization="1" numPosition="0" canonicalForm="an"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="588" _ref_sofa="1" begin="3" end="5" tokenNumber="1" partOfSpeech="NN" capitalization="3" numPosition="0" canonicalForm="AP"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="600" _ref_sofa="1" begin="7" end="14" tokenNumber="3" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="lateral"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="612" _ref_sofa="1" begin="16" end="19" tokenNumber="5" partOfSpeech="CC" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="624" _ref_sofa="1" begin="20" end="27" tokenNumber="6" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="sunrise"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="636" _ref_sofa="1" begin="28" end="32" tokenNumber="7" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="view"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="648" _ref_sofa="1" begin="33" end="35" tokenNumber="8" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="660" _ref_sofa="1" begin="36" end="39" tokenNumber="9" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="672" _ref_sofa="1" begin="40" end="44" tokenNumber="10" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="leave"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="684" _ref_sofa="1" begin="45" end="49" tokenNumber="11" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="knee"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="696" _ref_sofa="1" begin="50" end="52" tokenNumber="12" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="708" _ref_sofa="1" begin="53" end="61" tokenNumber="13" partOfSpeech="VBN" capitalization="0" numPosition="0" canonicalForm="obtain"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="720" _ref_sofa="1" begin="64" end="65" tokenNumber="15" partOfSpeech="DT" capitalization="3" numPosition="0" canonicalForm="A"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="732" _ref_sofa="1" begin="67" end="75" tokenNumber="16" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="stand"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="744" _ref_sofa="1" begin="76" end="80" tokenNumber="17" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="view"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="756" _ref_sofa="1" begin="81" end="83" tokenNumber="18" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="768" _ref_sofa="1" begin="84" end="88" tokenNumber="19" partOfSpeech="DT" capitalization="0" numPosition="0" canonicalForm="both"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="780" _ref_sofa="1" begin="89" end="94" tokenNumber="20" partOfSpeech="NNS" capitalization="0" numPosition="0" canonicalForm="knee"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="792" _ref_sofa="1" begin="95" end="97" tokenNumber="21" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="804" _ref_sofa="1" begin="99" end="107" tokenNumber="24" partOfSpeech="VBN" capitalization="0" numPosition="0" canonicalForm="obtain"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="816" _ref_sofa="1" begin="109" end="110" tokenNumber="26" partOfSpeech="DT" capitalization="3" numPosition="0" canonicalForm="A"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="828" _ref_sofa="1" begin="111" end="120" tokenNumber="27" partOfSpeech="NNP" capitalization="1" numPosition="0" canonicalForm="Rosenberg"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="840" _ref_sofa="1" begin="121" end="125" tokenNumber="28" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="view"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="852" _ref_sofa="1" begin="126" end="128" tokenNumber="29" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="864" _ref_sofa="1" begin="129" end="133" tokenNumber="30" partOfSpeech="RB" capitalization="0" numPosition="0" canonicalForm="also"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="876" _ref_sofa="1" begin="134" end="142" tokenNumber="31" partOfSpeech="VBN" capitalization="0" numPosition="0" canonicalForm="obtain"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="888" _ref_sofa="1" begin="156" end="158" tokenNumber="37" partOfSpeech="IN" capitalization="1" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="900" _ref_sofa="1" begin="159" end="162" tokenNumber="38" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="912" _ref_sofa="1" begin="163" end="167" tokenNumber="39" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="leave"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="924" _ref_sofa="1" begin="169" end="173" tokenNumber="41" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="bony"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="936" _ref_sofa="1" begin="174" end="188" tokenNumber="42" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="mineralization"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="948" _ref_sofa="1" begin="189" end="191" tokenNumber="43" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="960" _ref_sofa="1" begin="192" end="198" tokenNumber="44" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="normal"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="972" _ref_sofa="1" begin="200" end="205" tokenNumber="46" partOfSpeech="EX" capitalization="1" numPosition="0" canonicalForm="there"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="984" _ref_sofa="1" begin="206" end="208" tokenNumber="47" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="996" _ref_sofa="1" begin="209" end="217" tokenNumber="48" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="evidence"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1008" _ref_sofa="1" begin="218" end="220" tokenNumber="49" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1020" _ref_sofa="1" begin="221" end="222" tokenNumber="50" partOfSpeech="DT" capitalization="0" numPosition="0" canonicalForm="A"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1032" _ref_sofa="1" begin="223" end="230" tokenNumber="51" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="lateral"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1044" _ref_sofa="1" begin="231" end="237" tokenNumber="52" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="tibial"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1056" _ref_sofa="1" begin="238" end="245" tokenNumber="53" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="plateau"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1068" _ref_sofa="1" begin="246" end="254" tokenNumber="54" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="fracture"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1080" _ref_sofa="1" begin="257" end="261" tokenNumber="58" partOfSpeech="JJ" capitalization="1" numPosition="0" canonicalForm="soft"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1092" _ref_sofa="1" begin="262" end="269" tokenNumber="59" partOfSpeech="NNS" capitalization="0" numPosition="0" canonicalForm="tissue"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1104" _ref_sofa="1" begin="270" end="281" tokenNumber="60" partOfSpeech="VBP" capitalization="0" numPosition="0" canonicalForm="demonstrate"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1116" _ref_sofa="1" begin="282" end="290" tokenNumber="61" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="arterial"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1128" _ref_sofa="1" begin="291" end="304" tokenNumber="62" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="calcification"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1140" _ref_sofa="1" begin="318" end="335" tokenNumber="68" partOfSpeech="NN" capitalization="1" numPosition="0" canonicalForm="chondrocalcinosis"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1152" _ref_sofa="1" begin="336" end="346" tokenNumber="69" partOfSpeech="VBD" capitalization="0" numPosition="0" canonicalForm="identify"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1164" _ref_sofa="1" begin="347" end="356" tokenNumber="70" partOfSpeech="VBG" capitalization="0" numPosition="0" canonicalForm="involve"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1176" _ref_sofa="1" begin="357" end="360" tokenNumber="71" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1188" _ref_sofa="1" begin="361" end="368" tokenNumber="72" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="lateral"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1200" _ref_sofa="1" begin="369" end="380" tokenNumber="73" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="compartment"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1212" _ref_sofa="1" begin="381" end="383" tokenNumber="74" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1224" _ref_sofa="1" begin="384" end="387" tokenNumber="75" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1236" _ref_sofa="1" begin="388" end="392" tokenNumber="76" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="knee"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1248" _ref_sofa="1" begin="394" end="399" tokenNumber="78" partOfSpeech="EX" capitalization="1" numPosition="0" canonicalForm="there"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1260" _ref_sofa="1" begin="400" end="402" tokenNumber="79" partOfSpeech="VBZ" capitalization="0" numPosition="0" canonicalForm="IS"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1272" _ref_sofa="1" begin="403" end="411" tokenNumber="80" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="moderate"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1284" _ref_sofa="1" begin="414" end="423" tokenNumber="83" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="narrow"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1296" _ref_sofa="1" begin="424" end="426" tokenNumber="84" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1308" _ref_sofa="1" begin="427" end="430" tokenNumber="85" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1320" _ref_sofa="1" begin="431" end="437" tokenNumber="86" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="medial"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1332" _ref_sofa="1" begin="438" end="441" tokenNumber="87" partOfSpeech="CC" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1344" _ref_sofa="1" begin="442" end="449" tokenNumber="88" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="lateral"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1356" _ref_sofa="1" begin="450" end="461" tokenNumber="89" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="compartment"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1368" _ref_sofa="1" begin="462" end="464" tokenNumber="90" partOfSpeech="IN" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1380" _ref_sofa="1" begin="465" end="468" tokenNumber="91" partOfSpeech="DT" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1392" _ref_sofa="1" begin="469" end="473" tokenNumber="92" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="leave"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1404" _ref_sofa="1" begin="474" end="478" tokenNumber="93" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="knee"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1416" _ref_sofa="1" begin="480" end="483" tokenNumber="95" partOfSpeech="DT" capitalization="1" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1428" _ref_sofa="1" begin="484" end="494" tokenNumber="96" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="appearance"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1440" _ref_sofa="1" begin="495" end="498" tokenNumber="97" partOfSpeech="CC" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1452" _ref_sofa="1" begin="499" end="503" tokenNumber="98" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="leave"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1464" _ref_sofa="1" begin="504" end="508" tokenNumber="99" partOfSpeech="NN" capitalization="0" numPosition="0" canonicalForm="knee"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1476" _ref_sofa="1" begin="510" end="517" tokenNumber="102" partOfSpeech="JJ" capitalization="0" numPosition="0" canonicalForm="similar"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1488" _ref_sofa="1" begin="518" end="520" tokenNumber="103" partOfSpeech="TO" capitalization="0" numPosition="0"/>
+  <edu.mayo.bmi.uima.core.ae.type.WordToken _indexed="1" _id="1500" _ref_sofa="1" begin="521" end="524" tokenNumber="104" partOfSpeech="NNP" capitalization="1" numPosition="0" canonicalForm="May"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1512" _ref_sofa="1" begin="0" end="98" id="pattern1" paragraphNumber="0"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1518" _ref_sofa="1" begin="99" end="146" id="pattern1" paragraphNumber="1"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1524" _ref_sofa="1" begin="147" end="155" id="pattern1" paragraphNumber="2"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1530" _ref_sofa="1" begin="156" end="256" id="pattern1" paragraphNumber="3"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1536" _ref_sofa="1" begin="257" end="308" id="pattern1" paragraphNumber="4"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1542" _ref_sofa="1" begin="309" end="317" id="pattern1" paragraphNumber="5"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1548" _ref_sofa="1" begin="318" end="413" id="pattern1" paragraphNumber="6"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1554" _ref_sofa="1" begin="414" end="509" id="pattern1" paragraphNumber="7"/>
+  <gov.va.maveric.uima.section.type.Paragraph _indexed="1" _id="1560" _ref_sofa="1" begin="510" end="534" id="pattern1" paragraphNumber="8"/>
+  <edu.mayo.bmi.uima.chunker.type.INTJ _indexed="1" _id="1595" _ref_sofa="1" begin="95" end="97" chunkType="INTJ"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1600" _ref_sofa="1" begin="0" end="32" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1605" _ref_sofa="1" begin="36" end="49" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1610" _ref_sofa="1" begin="64" end="80" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1615" _ref_sofa="1" begin="84" end="94" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1620" _ref_sofa="1" begin="109" end="125" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1625" _ref_sofa="1" begin="159" end="188" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1630" _ref_sofa="1" begin="200" end="205" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1635" _ref_sofa="1" begin="209" end="217" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1640" _ref_sofa="1" begin="221" end="254" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1645" _ref_sofa="1" begin="257" end="269" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1650" _ref_sofa="1" begin="282" end="304" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1655" _ref_sofa="1" begin="318" end="335" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1660" _ref_sofa="1" begin="357" end="380" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1665" _ref_sofa="1" begin="384" end="399" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1670" _ref_sofa="1" begin="394" end="399" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1675" _ref_sofa="1" begin="414" end="423" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1680" _ref_sofa="1" begin="427" end="461" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1685" _ref_sofa="1" begin="465" end="508" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1690" _ref_sofa="1" begin="484" end="494" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1695" _ref_sofa="1" begin="499" end="508" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1700" _ref_sofa="1" begin="510" end="517" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.NP _indexed="1" _id="1705" _ref_sofa="1" begin="521" end="532" chunkType="NP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1710" _ref_sofa="1" begin="33" end="35" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1715" _ref_sofa="1" begin="81" end="83" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1720" _ref_sofa="1" begin="156" end="158" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1725" _ref_sofa="1" begin="218" end="220" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1730" _ref_sofa="1" begin="381" end="383" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1735" _ref_sofa="1" begin="424" end="426" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.PP _indexed="1" _id="1740" _ref_sofa="1" begin="462" end="464" chunkType="PP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1745" _ref_sofa="1" begin="50" end="61" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1750" _ref_sofa="1" begin="99" end="107" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1755" _ref_sofa="1" begin="126" end="142" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1760" _ref_sofa="1" begin="189" end="191" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1765" _ref_sofa="1" begin="206" end="208" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1770" _ref_sofa="1" begin="270" end="281" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1775" _ref_sofa="1" begin="336" end="356" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1780" _ref_sofa="1" begin="400" end="402" chunkType="VP"/>
+  <edu.mayo.bmi.uima.chunker.type.VP _indexed="1" _id="1785" _ref_sofa="1" begin="518" end="520" chunkType="VP"/>
+  <edu.mayo.bmi.uima.cdt.ae.type.DateAnnotation _indexed="1" _id="1566" _ref_sofa="1" begin="521" end="532"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1800" _ref_sofa="1" begin="0" end="32"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1804" _ref_sofa="1" begin="36" end="49"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1808" _ref_sofa="1" begin="64" end="80"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1812" _ref_sofa="1" begin="84" end="94"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1816" _ref_sofa="1" begin="109" end="125"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1820" _ref_sofa="1" begin="159" end="188"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1824" _ref_sofa="1" begin="200" end="205"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1828" _ref_sofa="1" begin="209" end="217"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1832" _ref_sofa="1" begin="221" end="254"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1836" _ref_sofa="1" begin="257" end="269"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1840" _ref_sofa="1" begin="282" end="304"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1844" _ref_sofa="1" begin="318" end="335"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1848" _ref_sofa="1" begin="357" end="380"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1852" _ref_sofa="1" begin="384" end="399"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1856" _ref_sofa="1" begin="414" end="423"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1860" _ref_sofa="1" begin="427" end="461"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1864" _ref_sofa="1" begin="465" end="508"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1868" _ref_sofa="1" begin="510" end="517"/>
+  <edu.mayo.bmi.uima.lookup.type.LookupWindowAnnotation _indexed="1" _id="1872" _ref_sofa="1" begin="521" end="532"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1876" _ref_sofa="1" begin="0" end="64" sentenceNumber="0"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1881" _ref_sofa="1" begin="64" end="109" sentenceNumber="1"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1886" _ref_sofa="1" begin="109" end="156" sentenceNumber="2"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1891" _ref_sofa="1" begin="156" end="200" sentenceNumber="3"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1896" _ref_sofa="1" begin="200" end="257" sentenceNumber="4"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1901" _ref_sofa="1" begin="257" end="318" sentenceNumber="5"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1906" _ref_sofa="1" begin="318" end="394" sentenceNumber="6"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1911" _ref_sofa="1" begin="394" end="480" sentenceNumber="7"/>
+  <gov.va.maveric.uima.section.type.SentenceNumber _indexed="1" _id="1916" _ref_sofa="1" begin="480" end="534" sentenceNumber="8"/>
+  <gov.va.maveric.uima.section.type.SentenceSectionCreation _indexed="1" _id="1570" _ref_sofa="1" begin="0" end="64" sectionNumber="0"/>
+  <gov.va.maveric.uima.section.type.SentenceSectionCreation _indexed="1" _id="1575" _ref_sofa="1" begin="64" end="109" sectionNumber="1"/>
+  <gov.va.maveric.uima.section.type.SentenceSectionCreation _indexed="1" _id="1580" _ref_sofa="1" begin="109" end="156" sectionNumber="2"/>
+  <gov.va.maveric.uima.section.type.SentenceSectionCreation _indexed="1" _id="1585" _ref_sofa="1" begin="156" end="200" sectionNumber="3"/>
+  <gov.va.maveric.uima.section.type.SentenceSectionCreation _indexed="1" _id="1590" _ref_sofa="1" begin="200" end="534" sectionNumber="4"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="13" _ref_sofa="1" begin="45" end="49" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="25" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="30" _ref_sofa="1" begin="40" end="49" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="42" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="46" _ref_sofa="1" begin="89" end="94" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="58" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="63" _ref_sofa="1" begin="231" end="245" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="75" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="80" _ref_sofa="1" begin="246" end="254" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="92" status="0" certainty="0" typeID="2" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="105" _ref_sofa="1" begin="257" end="269" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="117" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="122" _ref_sofa="1" begin="262" end="269" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="134" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="137" _ref_sofa="1" begin="291" end="304" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="149" status="0" certainty="0" typeID="2" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="153" _ref_sofa="1" begin="282" end="290" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="165" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="168" _ref_sofa="1" begin="318" end="335" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="180" status="0" certainty="0" typeID="2" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="193" _ref_sofa="1" begin="388" end="392" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="205" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="210" _ref_sofa="1" begin="504" end="508" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="222" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="227" _ref_sofa="1" begin="474" end="478" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="239" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="244" _ref_sofa="1" begin="469" end="478" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="256" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.core.ae.type.NamedEntity _indexed="1" _id="260" _ref_sofa="1" begin="499" end="508" uid="0" discoveryTechnique="1" _ref_ontologyConceptArr="272" status="0" certainty="0" typeID="6" confidence="0.0"/>
+  <edu.mayo.bmi.uima.chunker.type.ADJP _indexed="1" _id="1790" _ref_sofa="1" begin="192" end="198" chunkType="ADJP"/>
+  <edu.mayo.bmi.uima.chunker.type.ADJP _indexed="1" _id="1795" _ref_sofa="1" begin="403" end="411" chunkType="ADJP"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1921" codingScheme="SNOMED" code="82169009" cui="C0230432" tui="T023"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1927" codingScheme="SNOMED" code="210659002" cui="C1279572" tui="T023"/>
+  <uima.cas.FSArray _id="272" size="2">
+    <i>1927</i>
+    <i>1921</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1933" codingScheme="SNOMED" code="82169009" cui="C0230432" tui="T023"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1939" codingScheme="SNOMED" code="210659002" cui="C1279572" tui="T023"/>
+  <uima.cas.FSArray _id="256" size="2">
+    <i>1939</i>
+    <i>1933</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1945" codingScheme="SNOMED" code="361291001" cui="C1283838" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1951" codingScheme="SNOMED" code="72696002" cui="C1963703" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1957" codingScheme="SNOMED" code="49076000" cui="C0022745" tui="T030"/>
+  <uima.cas.FSArray _id="239" size="3">
+    <i>1957</i>
+    <i>1951</i>
+    <i>1945</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1963" codingScheme="SNOMED" code="49076000" cui="C0022745" tui="T030"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1969" codingScheme="SNOMED" code="72696002" cui="C1963703" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1975" codingScheme="SNOMED" code="361291001" cui="C1283838" tui="T029"/>
+  <uima.cas.FSArray _id="222" size="3">
+    <i>1975</i>
+    <i>1969</i>
+    <i>1963</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1981" codingScheme="SNOMED" code="49076000" cui="C0022745" tui="T030"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1987" codingScheme="SNOMED" code="361291001" cui="C1283838" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1993" codingScheme="SNOMED" code="72696002" cui="C1963703" tui="T029"/>
+  <uima.cas.FSArray _id="205" size="3">
+    <i>1993</i>
+    <i>1987</i>
+    <i>1981</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="1999" codingScheme="SNOMED" code="60782007" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2005" codingScheme="SNOMED" code="268142006" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2011" codingScheme="SNOMED" code="201637001" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2017" codingScheme="SNOMED" code="156881000" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2023" codingScheme="SNOMED" code="201624004" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2029" codingScheme="SNOMED" code="201648008" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2035" codingScheme="SNOMED" code="239832006" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2041" codingScheme="SNOMED" code="201660009" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2047" codingScheme="SNOMED" code="201649000" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2053" codingScheme="SNOMED" code="201650000" cui="C0553730" tui="T047"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2059" codingScheme="SNOMED" code="239838005" cui="C0553730" tui="T047"/>
+  <uima.cas.FSArray _id="180" size="11">
+    <i>2059</i>
+    <i>2053</i>
+    <i>2047</i>
+    <i>2041</i>
+    <i>2035</i>
+    <i>2029</i>
+    <i>2023</i>
+    <i>2017</i>
+    <i>2011</i>
+    <i>2005</i>
+    <i>1999</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2065" codingScheme="SNOMED" code="51114001" cui="C0003842" tui="T023"/>
+  <uima.cas.FSArray _id="165" size="1">
+    <i>2065</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2071" codingScheme="SNOMED" code="263698008" cui="C0175895" tui="T046"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2077" codingScheme="SNOMED" code="90975005" cui="C0175895" tui="T046"/>
+  <uima.cas.FSArray _id="149" size="2">
+    <i>2077</i>
+    <i>2071</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2083" codingScheme="SNOMED" code="85756007" cui="C0040300" tui="T024"/>
+  <uima.cas.FSArray _id="134" size="1">
+    <i>2083</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2089" codingScheme="SNOMED" code="181790009" cui="C0225317" tui="T024"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2095" codingScheme="SNOMED" code="87784001" cui="C0225317" tui="T024"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2101" codingScheme="SNOMED" code="181607009" cui="C0225317" tui="T024"/>
+  <uima.cas.FSArray _id="117" size="3">
+    <i>2101</i>
+    <i>2095</i>
+    <i>2089</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2107" codingScheme="SNOMED" code="367344001" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2113" codingScheme="SNOMED" code="217171007" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2119" codingScheme="SNOMED" code="157169007" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2125" codingScheme="SNOMED" code="269323009" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2131" codingScheme="SNOMED" code="208744007" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2137" codingScheme="SNOMED" code="157255002" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2143" codingScheme="SNOMED" code="125605004" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2149" codingScheme="SNOMED" code="307182008" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2155" codingScheme="SNOMED" code="269102008" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2161" codingScheme="SNOMED" code="72704001" cui="C0016658" tui="T037"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2167" codingScheme="SNOMED" code="208739000" cui="C0016658" tui="T037"/>
+  <uima.cas.FSArray _id="92" size="11">
+    <i>2167</i>
+    <i>2161</i>
+    <i>2155</i>
+    <i>2149</i>
+    <i>2143</i>
+    <i>2137</i>
+    <i>2131</i>
+    <i>2125</i>
+    <i>2119</i>
+    <i>2113</i>
+    <i>2107</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2173" codingScheme="SNOMED" code="306783000" cui="C0584640" tui="T023"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2179" codingScheme="SNOMED" code="182074003" cui="C1269052" tui="T023"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2185" codingScheme="SNOMED" code="17011001" cui="C0584640" tui="T023"/>
+  <uima.cas.FSArray _id="75" size="3">
+    <i>2185</i>
+    <i>2179</i>
+    <i>2173</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2191" codingScheme="SNOMED" code="361291001" cui="C1283838" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2197" codingScheme="SNOMED" code="72696002" cui="C1963703" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2203" codingScheme="SNOMED" code="49076000" cui="C0022745" tui="T030"/>
+  <uima.cas.FSArray _id="58" size="3">
+    <i>2203</i>
+    <i>2197</i>
+    <i>2191</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2209" codingScheme="SNOMED" code="210659002" cui="C1279572" tui="T023"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2215" codingScheme="SNOMED" code="82169009" cui="C0230432" tui="T023"/>
+  <uima.cas.FSArray _id="42" size="2">
+    <i>2215</i>
+    <i>2209</i>
+  </uima.cas.FSArray>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2221" codingScheme="SNOMED" code="361291001" cui="C1283838" tui="T029"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2227" codingScheme="SNOMED" code="49076000" cui="C0022745" tui="T030"/>
+  <edu.mayo.bmi.uima.core.ae.type.UmlsConcept _id="2233" codingScheme="SNOMED" code="72696002" cui="C1963703" tui="T029"/>
+  <uima.cas.FSArray _id="25" size="3">
+    <i>2233</i>
+    <i>2227</i>
+    <i>2221</i>
+  </uima.cas.FSArray>
+</CAS>

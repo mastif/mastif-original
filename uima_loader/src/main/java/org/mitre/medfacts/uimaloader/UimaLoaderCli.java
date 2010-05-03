@@ -15,10 +15,7 @@ import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -117,6 +114,7 @@ public class UimaLoaderCli
             NodeAndSegmentsList nodeAndSegmentsList = new NodeAndSegmentsList();
 
             nodeAndSegmentsList.processNodes(allSegmentsList);
+            nodeAndSegmentsList.postProcess();
 
             // todo print out node and segment list...
 
@@ -252,7 +250,14 @@ public class UimaLoaderCli
             Element currentAnnotationElement = inputDom.createElement("org.mitre.medfact.type." + annotationType);
             currentAnnotationElement.setAttribute("_indexed", "1");
             currentAnnotationElement.setAttribute("_ref_sofa", "1");
-            currentAnnotationElement.setAttribute("id", "" + annotationId);
+            //currentAnnotationElement.setAttribute("id", "" + annotationId);
+            currentAnnotationElement.setAttribute("id", "" + currentNodeAndSegments.getId());
+            Integer parentId = currentNodeAndSegments.getParentId();
+            if (parentId != null)
+            {
+                currentAnnotationElement.setAttribute("parentId", "" + parentId);
+            }
+
             currentAnnotationElement.setAttribute("begin", "" + currentNodeAndSegments.getBeginSegment().getLocation());
             currentAnnotationElement.setAttribute("end", "" + currentNodeAndSegments.getEndSegment().getLocation());
             rootCasElement.appendChild(currentAnnotationElement);
@@ -492,6 +497,8 @@ public class UimaLoaderCli
         protected Node node;
         protected ElementBeginSegment beginSegment;
         protected ElementEndSegment endSegment;
+        protected int id;
+        protected Integer parentId;
 
         public Node getNode()
         {
@@ -521,6 +528,26 @@ public class UimaLoaderCli
         public void setEndSegment(ElementEndSegment endSegment)
         {
             this.endSegment = endSegment;
+        }
+
+        public int getId()
+        {
+            return id;
+        }
+
+        public void setId(int id)
+        {
+            this.id = id;
+        }
+
+        public Integer getParentId()
+        {
+            return parentId;
+        }
+
+        public void setParentId(Integer parentId)
+        {
+            this.parentId = parentId;
         }
     }
 
@@ -560,6 +587,7 @@ public class UimaLoaderCli
 
         public void processNodes(List<Segment> allSegmentsList)
         {
+            int currentIdValue = 10;
             for (Segment currentSegment : allSegmentsList)
             {
                 if (currentSegment instanceof ElementBeginSegment)
@@ -584,8 +612,45 @@ public class UimaLoaderCli
                     newNodeAndSegments.setNode(node);
                     newNodeAndSegments.setBeginSegment(beginSegment);
                     newNodeAndSegments.setEndSegment(endSegment);
+                    newNodeAndSegments.setId(currentIdValue);
                     add(newNodeAndSegments);
 
+                    currentIdValue++;
+                }
+            }
+        }
+
+        public void postProcess()
+        {
+            Map<String, NodeAndSegments> xcopeMap = new TreeMap<String, NodeAndSegments>();
+
+            // construct map of xcope ids to NodeAndSegment objects (which will
+            // be used to find the parent xcopes for the cue annotations)
+            for (NodeAndSegments current : getList())
+            {
+                Node currentNode = current.getNode();
+                Element currentElement = (Element)currentNode;
+                if (currentElement.getTagName().equals("xcope"))
+                {
+                    String id = currentElement.getAttribute("id");
+                    xcopeMap.put(id, current);
+                }
+            }
+
+            // iterate over the cue annotations and find their parent xcopes
+            for (NodeAndSegments current : getList())
+            {
+                Node currentNode = current.getNode();
+                Element currentElement = (Element)currentNode;
+                if (currentElement.getTagName().equals("cue"))
+                {
+                    String ref = currentElement.getAttribute("ref");
+                    NodeAndSegments parentXcopeNodeAndSegments = xcopeMap.get(ref);
+                    if (parentXcopeNodeAndSegments != null)
+                    {
+                        int parentXcopeId = parentXcopeNodeAndSegments.getId();
+                        current.setParentId(parentXcopeId);
+                    }
                 }
             }
         }

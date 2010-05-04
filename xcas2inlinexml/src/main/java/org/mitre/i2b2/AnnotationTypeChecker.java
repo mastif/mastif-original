@@ -41,6 +41,14 @@ public class AnnotationTypeChecker {
             return false;
         }
     }
+    
+    public static boolean isCue(Annot annot) {
+    	return (annot.localName.equals("org.mitre.medfact.type.Cue"));
+    }
+    
+    public static boolean isXcope(Annot annot) {
+    	return (annot.localName.equals("org.mitre.medfact.type.Xcope"));
+    }
 
     public static boolean isNewlineToken(Annot annot) {
         //if (annot.localName.equals("edu.mayo.bmi.uima.common.types.NewlineTokenAnnotation")) {

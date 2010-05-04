@@ -14,8 +14,11 @@ public class Annot {
 	public String neg = null;
 	public String text = null;
     public String focusText = null;
+    public String subType = null;
+    public String uid = null; // user defined id number
 	public Annot prev = null;
 	public Annot next = null;
+	public String ref = null; // added BRW 5/4/10 as generic pointer to other annotations
 	
 	public boolean openTagEmittedP = false;
 	public String nodeType = null;
@@ -44,12 +47,16 @@ public class Annot {
 		b.append(type);
 		b.append("\", pennTag : \"");
 		b.append(pennTag);
+		b.append("\", subType : \"");
+		b.append(subType);
 		b.append("\", status : \"");
 		b.append(status);
 		b.append("\", neg : \"");
 		b.append(neg);
 		b.append("\", text : \"");
 		b.append(text);
+		b.append("\", ref : \"");
+		b.append(ref);
 		b.append("\", prev.id : ");
 		b.append((prev == null) ? "prev is null" : prev.id);
 		b.append(", next.id : ");

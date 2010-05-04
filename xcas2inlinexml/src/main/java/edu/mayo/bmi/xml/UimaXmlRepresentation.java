@@ -62,6 +62,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 	public static String ATTRIBITE_OID = "oid";
 	public static String ATTRIBITE_CUI = "cui";
 	public static String ATTRIBITE_TUI = "tui";
+	public static String ATTRIBUTE_REF = "_ref_parentScope";
 	public static String ATTRIBUTE_ONTOLOGY_CONCEPT_ARR = "_ref_ontologyConceptArr";
 
 	public static String VALUE_NEGATED = "-1";
@@ -300,7 +301,7 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		 * Use _ref_ontologyConceptArr to get umlsIds
 		 */
 
-		int tagTypeCount = 9;
+		int tagTypeCount = 13;
 		String[] tagTypes = new String[tagTypeCount];
 //		tagTypes[0] = "edu.mayo.bmi.uima.common.types.NamedEntityAnnotation";
 //		tagTypes[1] = "edu.mayo.bmi.uima.common.types.SentenceAnnotation";
@@ -318,6 +319,10 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 		tagTypes[6] = "edu.mayo.bmi.uima.core.ae.type.NumToken";
 		tagTypes[7] = "gov.va.maveric.uima.ctakes.NENegation";
         tagTypes[8] = "edu.mayo.bmi.uima.context.type.NEContext";
+        tagTypes[9] = "org.mitre.medfact.type.Cue";
+        tagTypes[10] = "org.mitre.medfact.type.Xcope";
+        tagTypes[11] = "org.mitre.medfact.type.Section";
+        tagTypes[12] = "org.mitre.medfact.type.Subsection";
 		//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount BEFORE LOOP%n$$$%n");
 		for (int t = 0; t < tagTypeCount; t++) {
 			//System.out.format("$$$%ninside for loop over t = 0 .. tagTypeCount; t == %d BEGIN INSIDE LOOP%n$$$%n", t);
@@ -332,6 +337,9 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 			String strNegated = null;
 			String status = null;
 			String pennTag = null;
+			String refVal = null;
+			String cueType = null;
+			String uid = null;
 			String umlsObjsString = null;
 
 			int iTypeId = 0;
@@ -347,6 +355,9 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				typeId = annotation.getAttribute(ATTRIBUTE_TYPE_ID);
 				start = annotation.getAttribute(ATTRIBUTE_BEGIN);
 				end = annotation.getAttribute(ATTRIBUTE_END);
+				refVal = annotation.getAttribute(ATTRIBUTE_REF);
+				cueType = annotation.getAttribute("cueType");
+				uid = annotation.getAttribute("_id");
 				// named entity-specific attrs:
 				//if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.common.types.NamedEntityAnnotation")) {
 				if (tagTypes[t].equalsIgnoreCase("edu.mayo.bmi.uima.core.ae.type.NamedEntity")) {
@@ -443,6 +454,9 @@ public class UimaXmlRepresentation extends XmlRepresentation {
 				annot.text = coveredText;
 				annot.localName = annotation.getTagName();
                 annot.focusText = focusText;
+                annot.ref = refVal;
+                annot.subType = cueType;
+                annot.uid = uid;
 				// System.out.println("localName in Mayo code:" + annot.localName);
 				// System.out.println("Adding annot...");
 				annotList.add(annot);

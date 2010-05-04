@@ -247,15 +247,29 @@ public class UimaLoaderCli
             {
                 continue nodeAndSegmentsLoop;
             }
-            Element currentAnnotationElement = inputDom.createElement("org.mitre.medfact.type." + annotationType);
+            String annotationElementName = null;
+            if (annotationType.equals("section"))
+            {
+                annotationElementName = "Section";
+            } else if (annotationType.equals("subsection"))
+            {
+                annotationElementName = "Subsection";
+            } if (annotationType.equals("xcope"))
+            {
+                annotationElementName = "Xcope";
+            } if (annotationType.equals("cue"))
+            {
+                annotationElementName = "Cue";
+            }
+            Element currentAnnotationElement = inputDom.createElement("org.mitre.medfact.type." + annotationElementName);
             currentAnnotationElement.setAttribute("_indexed", "1");
             currentAnnotationElement.setAttribute("_ref_sofa", "1");
             //currentAnnotationElement.setAttribute("id", "" + annotationId);
-            currentAnnotationElement.setAttribute("id", "" + currentNodeAndSegments.getId());
+            currentAnnotationElement.setAttribute("_id", "" + currentNodeAndSegments.getId());
             Integer parentId = currentNodeAndSegments.getParentId();
             if (parentId != null)
             {
-                currentAnnotationElement.setAttribute("parentId", "" + parentId);
+                currentAnnotationElement.setAttribute("parentScope", "" + parentId);
             }
 
             currentAnnotationElement.setAttribute("begin", "" + currentNodeAndSegments.getBeginSegment().getLocation());

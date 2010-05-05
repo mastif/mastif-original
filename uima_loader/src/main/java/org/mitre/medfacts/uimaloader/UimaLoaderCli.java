@@ -248,6 +248,7 @@ public class UimaLoaderCli
                 continue nodeAndSegmentsLoop;
             }
             String annotationElementName = null;
+            String cueType = null;
             if (annotationType.equals("section"))
             {
                 annotationElementName = "Section";
@@ -260,12 +261,19 @@ public class UimaLoaderCli
             } if (annotationType.equals("cue"))
             {
                 annotationElementName = "Cue";
+                Element currentElement = (Element)currentNodeAndSegments.getNode();
+                cueType = currentElement.getAttribute("type");
+                if (cueType != null && cueType.isEmpty()) { cueType = null; }
             }
             Element currentAnnotationElement = inputDom.createElement("org.mitre.medfact.type." + annotationElementName);
             currentAnnotationElement.setAttribute("_indexed", "1");
             currentAnnotationElement.setAttribute("_ref_sofa", "1");
             //currentAnnotationElement.setAttribute("id", "" + annotationId);
             currentAnnotationElement.setAttribute("_id", "" + currentNodeAndSegments.getId());
+            if (cueType != null)
+            {
+                currentAnnotationElement.setAttribute("cueType", cueType);
+            }
             Integer parentId = currentNodeAndSegments.getParentId();
             if (parentId != null)
             {

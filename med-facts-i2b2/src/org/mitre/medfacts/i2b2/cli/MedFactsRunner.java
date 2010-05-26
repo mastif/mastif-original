@@ -4,6 +4,7 @@
  */
 package org.mitre.medfacts.i2b2.cli;
 
+import java.util.Map;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
@@ -18,6 +19,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -26,6 +28,7 @@ import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.RelationAnnotation;
 import org.mitre.medfacts.i2b2.annotation.RelationType;
+import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
  *
@@ -33,6 +36,10 @@ import org.mitre.medfacts.i2b2.annotation.RelationType;
  */
 public class MedFactsRunner
 {
+
+  public final static int MAX_WINDOW_LEFT = 12;
+  public final static int MAX_WINDOW_RIGHT = 12;
+
   private String textLookup[][];
 
   public MedFactsRunner()
@@ -68,6 +75,7 @@ public class MedFactsRunner
   private String textFilename;
   private List<String> annotationFilenameList;
   protected List<Annotation> allAnnotationList;
+  private Map<AnnotationType,List<Annotation>> annotationsByType;
 
   public void execute()
   {
@@ -76,6 +84,7 @@ public class MedFactsRunner
         processTextFile();
         processAnnotationFiles();
         validateAnnotations();
+        printOutFeatures();
       } catch (FileNotFoundException ex)
       {
         Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, null, ex);
@@ -205,6 +214,7 @@ public class MedFactsRunner
   private void processAnnotationFiles() throws IOException
   {
     List<Annotation> allAnnotationList = new ArrayList<Annotation>();
+    Map<AnnotationType,List<Annotation>> annotationsByType = new TreeMap<AnnotationType,List<Annotation>>();
 
     FileProcessor conceptFileProcessor = new ConceptFileProcessor();
     FileProcessor assertionFileProcessor = new AssertionFileProcessor();
@@ -222,12 +232,15 @@ public class MedFactsRunner
         case CONCEPT:
           //currentAnnotationList = processConceptAnnotationFile(currentFilename);
           currentAnnotationList = conceptFileProcessor.processConceptAnnotationFile(currentFilename);
+          annotationsByType.put(AnnotationType.CONCEPT, currentAnnotationList);
           break;
         case ASSERTION:
           currentAnnotationList = assertionFileProcessor.processConceptAnnotationFile(currentFilename);
+          annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
           break;
         case RELATION:
           currentAnnotationList = relationFileProcessor.processConceptAnnotationFile(currentFilename);
+          annotationsByType.put(AnnotationType.RELATION, currentAnnotationList);
           break;
       }
 
@@ -240,6 +253,8 @@ public class MedFactsRunner
     }
 
     setAllAnnotationList(allAnnotationList);
+    setAnnotationsByType(annotationsByType);
+
   }
 
   /**
@@ -292,6 +307,127 @@ public class MedFactsRunner
     }
     return b.toString();
   }
+
+  private void printOutFeatures()
+  {
+    Pattern conceptHeadPattern = Pattern.compile(" ([^ ]+)$");
+    System.out.println("$$$$$");
+    System.out.println("$$$$$");
+    for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
+    {
+      AssertionAnnotation currentAssertionAnnotation = (AssertionAnnotation)currentAnnotation;
+      if (!currentAssertionAnnotation.getConceptType().equals(ConceptType.PROBLEM))
+      {
+        // skip this one
+        continue;
+      }
+
+      StringBuilder sb = new StringBuilder();
+
+      AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
+      sb.append(assertionValue.toString().toLowerCase());
+
+      String conceptText = currentAssertionAnnotation.getConceptText();
+      String conceptTextFeature = constructConceptPhraseFeature(conceptText);
+      sb.append(" ");
+      sb.append(conceptTextFeature);
+
+      Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);
+      if (conceptHeadMatcher.find())
+      {
+        String conceptHeadText = conceptHeadMatcher.group(1);
+        String conceptHeadFeature = constructConceptHeadFeature(conceptHeadText);
+        sb.append(" ");
+        sb.append(conceptHeadFeature);
+      }
+
+      Location conceptBeginLocation = currentAssertionAnnotation.getBegin();
+      int conceptBeginLine = conceptBeginLocation.getLine();
+      int conceptBeginCharacter = conceptBeginLocation.getCharacter();
+      Location conceptEndLocation = currentAssertionAnnotation.getEnd();
+      int conceptEndCharacter = conceptEndLocation.getCharacter();
+      String currentLine[] = textLookup[conceptBeginLine-1];
+
+      List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginCharacter, conceptEndCharacter, currentLine);
+      for (String currentFeature : wordLeftFeatureList)
+      {
+        sb.append(" ");
+        sb.append(currentFeature);
+      }
+
+      List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginCharacter, conceptEndCharacter, currentLine);
+      for (String currentFeature : wordRightFeatureList)
+      {
+        sb.append(" ");
+        sb.append(currentFeature);
+      }
+
+      String featureLine = sb.toString();
+      System.out.println(featureLine);
+    }
+    System.out.println("$$$$$");
+    System.out.println("$$$$$");
+  }
+  
+  public String constructConceptPhraseFeature(String input)
+  {
+    return "concept_phrase_is_" + StringHandling.escapeStringForFeatureName(input);
+  }
+  
+  public String constructConceptHeadFeature(String input)
+  {
+    return "concept_head_is_" + StringHandling.escapeStringForFeatureName(input);
+  }
+
+//  public String constructFeatureSuffix(String input)
+//  {
+//    return StringHandling.escapeStringForFeatureName(input);
+//  }
+
+  /**
+   * @return the annotationsByType
+   */
+  public Map<AnnotationType, List<Annotation>> getAnnotationsByType()
+  {
+    return annotationsByType;
+  }
+
+  /**
+   * @param annotationsByType the annotationsByType to set
+   */
+  public void setAnnotationsByType(Map<AnnotationType, List<Annotation>> annotationsByType)
+  {
+    this.annotationsByType = annotationsByType;
+  }
+
+  private List<String> constructWordLeftFeatureList(int conceptBeginCharacter, int conceptEndCharacter, String[] currentLine)
+  {
+    List<String> featureList = new ArrayList<String>();
+    int count = 0;
+    for (int i=conceptBeginCharacter - 1; i >= 0 && ++count <= MAX_WINDOW_LEFT; i--)
+    {
+      String currentToken = currentLine[i];
+      String featureName = "";
+      featureName = "word_left_" + StringHandling.escapeStringForFeatureName(currentToken);
+      featureList.add(featureName);
+    }
+    return featureList;
+  }
+
+  private List<String> constructWordRightFeatureList(int conceptBeginCharacter, int conceptEndCharacter, String[] currentLine)
+  {
+    List<String> featureList = new ArrayList<String>();
+    int count = 0;
+    for (int i=conceptEndCharacter + 1; i < currentLine.length && ++count <= MAX_WINDOW_RIGHT; i++)
+    {
+      String currentToken = currentLine[i];
+      String featureName = "";
+      featureName = "word_right_" + StringHandling.escapeStringForFeatureName(currentToken);
+      featureList.add(featureName);
+    }
+    return featureList;
+  }
+
 
 //  private List<Annotation> processConceptAnnotationFile(String currentFilename)
 //          throws FileNotFoundException, IOException

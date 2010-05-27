@@ -13,10 +13,15 @@ import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -308,8 +313,17 @@ public class MedFactsRunner
     return b.toString();
   }
 
-  private void printOutFeatures()
+  private void printOutFeatures() throws IOException
   {
+    String featuresFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(getTextFilename()).replaceFirst(".features");
+    File featuresFile = new File(featuresFilename);
+
+    System.out.format("output filename: %s%n", featuresFilename);
+
+    Writer featuresFileWriter = new FileWriter(featuresFile);
+    BufferedWriter featuresBufferedWriter = new BufferedWriter(featuresFileWriter);
+    PrintWriter featuresPrinter = new PrintWriter(featuresBufferedWriter);
+
     Pattern conceptHeadPattern = Pattern.compile(" ([^ ]+)$");
     System.out.println("$$$$$");
     System.out.println("$$$$$");
@@ -364,9 +378,14 @@ public class MedFactsRunner
 
       String featureLine = sb.toString();
       System.out.println(featureLine);
+      featuresPrinter.println(featureLine);
     }
     System.out.println("$$$$$");
     System.out.println("$$$$$");
+
+    featuresPrinter.close();
+    featuresBufferedWriter.close();
+    featuresFileWriter.close();
   }
   
   public String constructConceptPhraseFeature(String input)

@@ -303,7 +303,7 @@ public class MedFactsRunner
       String currentToken = textLookup[lineOffset][i];
       b.append(currentToken);
       boolean isLast = (i == end.getCharacter());
-      if (!isLast) { b.append(" "); };
+      if (!isLast) { b.append(" "); }
     }
     return b.toString();
   }

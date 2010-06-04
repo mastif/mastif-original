@@ -11,11 +11,9 @@ import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -33,6 +31,7 @@ import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.RelationAnnotation;
 import org.mitre.medfacts.i2b2.annotation.RelationType;
+import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
@@ -50,6 +49,8 @@ public class MedFactsRunner
   public MedFactsRunner()
   {
     annotationFilenameList = new ArrayList<String>();
+    mapOfTrainingInstanceLists = new TreeMap<AnnotationType, List<TrainingInstance>>();
+    List<TrainingInstance> thisList = mapOfTrainingInstanceLists.put(AnnotationType.ASSERTION, new ArrayList<TrainingInstance>());
   }
 
   /**
@@ -81,6 +82,7 @@ public class MedFactsRunner
   private List<String> annotationFilenameList;
   protected List<Annotation> allAnnotationList;
   private Map<AnnotationType,List<Annotation>> annotationsByType;
+  protected Map<AnnotationType, List<TrainingInstance>> mapOfTrainingInstanceLists;
 
   public void execute()
   {
@@ -327,6 +329,7 @@ public class MedFactsRunner
     Pattern conceptHeadPattern = Pattern.compile(" ([^ ]+)$");
     System.out.println("$$$$$");
     System.out.println("$$$$$");
+
     for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
     {
       AssertionAnnotation currentAssertionAnnotation = (AssertionAnnotation)currentAnnotation;
@@ -337,14 +340,18 @@ public class MedFactsRunner
       }
 
       StringBuilder sb = new StringBuilder();
+      TrainingInstance trainingInstance = new TrainingInstance();
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
-      sb.append(assertionValue.toString().toLowerCase());
+      String assertionValueString = assertionValue.toString().toLowerCase();
+      sb.append(assertionValueString);
+      trainingInstance.setExpectedValue(assertionValueString);
 
       String conceptText = currentAssertionAnnotation.getConceptText();
       String conceptTextFeature = constructConceptPhraseFeature(conceptText);
       sb.append(" ");
       sb.append(conceptTextFeature);
+      trainingInstance.addFeature(conceptTextFeature);
 
       Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);
       if (conceptHeadMatcher.find())
@@ -353,6 +360,7 @@ public class MedFactsRunner
         String conceptHeadFeature = constructConceptHeadFeature(conceptHeadText);
         sb.append(" ");
         sb.append(conceptHeadFeature);
+        trainingInstance.addFeature(conceptHeadFeature);
       }
 
       Location conceptBeginLocation = currentAssertionAnnotation.getBegin();
@@ -367,6 +375,7 @@ public class MedFactsRunner
       {
         sb.append(" ");
         sb.append(currentFeature);
+        trainingInstance.addFeature(currentFeature);
       }
 
       List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginCharacter, conceptEndCharacter, currentLine);
@@ -374,11 +383,13 @@ public class MedFactsRunner
       {
         sb.append(" ");
         sb.append(currentFeature);
+        trainingInstance.addFeature(currentFeature);
       }
 
       String featureLine = sb.toString();
       System.out.println(featureLine);
       featuresPrinter.println(featureLine);
+      getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION).add(trainingInstance);
     }
     System.out.println("$$$$$");
     System.out.println("$$$$$");
@@ -445,6 +456,22 @@ public class MedFactsRunner
       featureList.add(featureName);
     }
     return featureList;
+  }
+
+  /**
+   * @return the mapOfTrainingInstanceLists
+   */
+  public Map<AnnotationType, List<TrainingInstance>> getMapOfTrainingInstanceLists()
+  {
+    return mapOfTrainingInstanceLists;
+  }
+
+  /**
+   * @param mapOfTrainingInstanceLists the mapOfTrainingInstanceLists to set
+   */
+  public void setMapOfTrainingInstanceLists(Map<AnnotationType, List<TrainingInstance>> mapOfTrainingInstanceLists)
+  {
+    this.mapOfTrainingInstanceLists = mapOfTrainingInstanceLists;
   }
 
 

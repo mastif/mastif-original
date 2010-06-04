@@ -7,7 +7,11 @@ package org.mitre.medfacts.i2b2.cli;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
+import org.mitre.medfacts.i2b2.annotation.AnnotationType;
+import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
 
 /**
@@ -17,6 +21,8 @@ import org.mitre.medfacts.i2b2.util.Constants;
 public class BatchRunner
 {
   protected String baseDirectoryString;
+
+  protected List<TrainingInstance> masterTrainingInstanceList = new ArrayList<TrainingInstance>();
 
   public static void main(String args[])
   {
@@ -88,8 +94,51 @@ public class BatchRunner
       runner.addAnnotationFilename(relationFilename);
 
       runner.execute();
+
+      List<TrainingInstance> trainingInstanceList =
+          runner.getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION);
+      masterTrainingInstanceList.addAll(trainingInstanceList);
     }
+
+    train();
+
     System.out.println("=== TEXT FILE LIST END ===");
+  }
+
+  /**
+   * @return the masterTrainingInstanceList
+   */
+  public List<TrainingInstance> getMasterTrainingInstanceList()
+  {
+    return masterTrainingInstanceList;
+  }
+
+  /**
+   * @param masterTrainingInstanceList the masterTrainingInstanceList to set
+   */
+  public void setMasterTrainingInstanceList(List<TrainingInstance> masterTrainingInstanceList)
+  {
+    this.masterTrainingInstanceList = masterTrainingInstanceList;
+  }
+
+  private void train()
+  {
+    JarafeMETrainer trainer = new JarafeMETrainer();
+
+    List<TrainingInstance> trainingInstanceList =
+        getMasterTrainingInstanceList();
+
+    for (TrainingInstance currentTrainingInstance : trainingInstanceList)
+    {
+      trainer.addTrainingInstance(currentTrainingInstance.getExpectedValue(), currentTrainingInstance.getFeatureList());
+    }
+    String model = trainer.train();
+
+    // decoding
+//    JarafeMEDecoder decoder = new JarafeMEDecoder(model);
+//    String classification1 = decoder.classifyInstance(l1);
+//    assert(classification1.equals(“absent”));
+
   }
 
 }

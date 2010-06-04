@@ -18,12 +18,14 @@ public enum RelationType
   TrNAP("TrNAP", "treatment is not administered because of medical problem"),
   PIP("PIP", "medical problem indicates medical problem"),
   TERP("TeRP", "test reveals medical problem"),
-  TECP("TeCP", "test conducted to investigate medical problem"),
-  NONEPP("NONEPP", "NonePP"),
-  NONETRP("NONETRP", "NONETRP"),
-  TRNAP("TRNAP", "TRNAP"),
-  NONETEP("NONETEP", "NONETEP"),
-  UNCERTAINT("UNCERTAINT", "UNCERTAINT")
+  TECP("TeCP", "test conducted to investigate medical problem")
+//  ,
+//  NONEPP("NONEPP", "NonePP"),
+//  NONETRP("NONETRP", "NONETRP"),
+  ,
+  TRNAP("TRNAP", "TRNAP")
+//  NONETEP("NONETEP", "NONETEP"),
+//  UNCERTAINT("UNCERTAINT", "UNCERTAINT")
   ;
 
   protected String shortName;

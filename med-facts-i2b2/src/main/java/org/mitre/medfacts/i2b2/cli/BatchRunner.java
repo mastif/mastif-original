@@ -137,7 +137,7 @@ public class BatchRunner
     // decoding
 //    JarafeMEDecoder decoder = new JarafeMEDecoder(model);
 //    String classification1 = decoder.classifyInstance(l1);
-//    assert(classification1.equals(“absent”));
+//    assert(classification1.equals("absent"));
 
   }
 

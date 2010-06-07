@@ -5,8 +5,9 @@
 
 package org.mitre.medfacts.i2b2.util;
 
-import java.util.List;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
@@ -30,12 +31,12 @@ public class RandomAssignmentSystem
   public void createSets()
   {
     int counter = 0;
-    int splitPoint = Math.round(trainingRatio * originalSet.size());
+    int splitPoint = Math.round(trainingRatio * originalSet.size() - 1);
 
     for (RandomAssignmentItem current : originalSet)
     {
       float currentRandomValue = current.getRandomValue();
-      if (counter < splitPoint)
+      if (counter <= splitPoint)
       {
         trainingSet.add(current);
       } else
@@ -76,6 +77,24 @@ public class RandomAssignmentSystem
     return trainingSet;
   }
 
+  public Set<RandomAssignmentItem> getTrainingSetSorted()
+  {
+    Comparator<RandomAssignmentItem> comparator = new RandomAssignmentItemOriginalPositionComparator();
+    SortedSet sortedSet = new TreeSet<RandomAssignmentItem>(comparator);
+    sortedSet.addAll(trainingSet);
+    return sortedSet;
+  }
+
+  public Set<Integer> getTrainingPositions()
+  {
+    SortedSet<Integer> sortedSet = new TreeSet<Integer>();
+    for (RandomAssignmentItem current: trainingSet)
+    {
+      sortedSet.add(current.getOriginalPosition());
+    }
+    return sortedSet;
+  }
+
   /**
    * @param trainingSet the trainingSet to set
    */
@@ -90,6 +109,39 @@ public class RandomAssignmentSystem
   public Set<RandomAssignmentItem> getTestSet()
   {
     return testSet;
+  }
+
+  public Set<RandomAssignmentItem> getTestSetSorted()
+  {
+    Comparator<RandomAssignmentItem> comparator = new RandomAssignmentItemOriginalPositionComparator();
+    SortedSet sortedSet = new TreeSet<RandomAssignmentItem>(comparator);
+    sortedSet.addAll(testSet);
+    return sortedSet;
+  }
+
+  public Set<Integer> getTestPositions()
+  {
+    SortedSet<Integer> sortedSet = new TreeSet<Integer>();
+    for (RandomAssignmentItem current: testSet)
+    {
+      sortedSet.add(current.getOriginalPosition());
+    }
+    return sortedSet;
+  }
+
+  public ItemType[] getArrayOfItemsTypes()
+  {
+    final int size = originalSet.size();
+    ItemType returnedArray[] = new ItemType[size];
+    for (RandomAssignmentItem current : testSet)
+    {
+      returnedArray[current.getOriginalPosition()] = ItemType.TEST;
+    }
+    for (RandomAssignmentItem current : trainingSet)
+    {
+      returnedArray[current.getOriginalPosition()] = ItemType.TRAINING;
+    }
+    return returnedArray;
   }
 
   /**

@@ -9,10 +9,15 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
+import org.mitre.medfacts.i2b2.util.ItemType;
+import org.mitre.medfacts.i2b2.util.RandomAssignmentItem;
+import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 
 /**
  *
@@ -20,6 +25,7 @@ import org.mitre.medfacts.i2b2.util.Constants;
  */
 public class BatchRunner
 {
+  public static final float TRAINING_RATIO = 0.8f;
   protected String baseDirectoryString;
 
   protected List<TrainingInstance> masterTrainingInstanceList = new ArrayList<TrainingInstance>();
@@ -100,7 +106,7 @@ public class BatchRunner
       masterTrainingInstanceList.addAll(trainingInstanceList);
     }
 
-    train();
+    trainAndEval();
 
     System.out.println("=== TEXT FILE LIST END ===");
   }
@@ -121,7 +127,7 @@ public class BatchRunner
     this.masterTrainingInstanceList = masterTrainingInstanceList;
   }
 
-  private void train()
+  public void trainAndEval()
   {
     JarafeMETrainer trainer = new JarafeMETrainer();
 
@@ -140,5 +146,47 @@ public class BatchRunner
 //    assert(classification1.equals("absent"));
 
   }
+
+  public void createTrainingSplit()
+  {
+    List<TrainingInstance> trainingInstanceList =
+    getMasterTrainingInstanceList();
+    int inputListSize = trainingInstanceList.size();
+
+    int trainingCutoff = Math.round(TRAINING_RATIO * (inputListSize-1));
+
+    int randomSlots[] = new int[inputListSize];
+
+    RandomAssignmentSystem system = new RandomAssignmentSystem();
+    system.setTrainingRatio(TRAINING_RATIO);
+
+    List<TrainingInstance> master = getMasterTrainingInstanceList();
+    for (int i=0; i < master.size(); i++)
+    {
+      system.addItem(i);
+    }
+
+    system.createSets();
+    final ItemType[] arrayOfItemTypes = system.getArrayOfItemsTypes();
+    Set<TrainingInstance> trainingSet = new TreeSet<TrainingInstance>();
+    Set<TrainingInstance> testSet = new TreeSet<TrainingInstance>();
+
+    for (int i=0; i < arrayOfItemTypes.length; i++)
+    {
+      ItemType currentItemType = arrayOfItemTypes[i];
+      TrainingInstance currentTrainingInstance = trainingInstanceList.get(i);
+      switch (currentItemType)
+      {
+        case TRAINING:
+          trainingSet.add(currentTrainingInstance);
+          break;
+        case TEST:
+          testSet.add(currentTrainingInstance);
+          break;
+      }
+    }
+
+  }
+
 
 }

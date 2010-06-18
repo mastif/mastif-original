@@ -14,6 +14,8 @@ import java.util.List;
  */
 public class TrainingInstance
 {
+  protected String filename;
+  protected int lineNumber;
   protected String expectedValue;
   protected List<String> featureList = new ArrayList<String>();
 
@@ -52,5 +54,37 @@ public class TrainingInstance
   public void addFeature(String conceptTextFeature)
   {
     featureList.add(conceptTextFeature);
+  }
+
+  /**
+   * @return the filename
+   */
+  public String getFilename()
+  {
+    return filename;
+  }
+
+  /**
+   * @param filename the filename to set
+   */
+  public void setFilename(String filename)
+  {
+    this.filename = filename;
+  }
+
+  /**
+   * @return the lineNumber
+   */
+  public int getLineNumber()
+  {
+    return lineNumber;
+  }
+
+  /**
+   * @param lineNumber the lineNumber to set
+   */
+  public void setLineNumber(int lineNumber)
+  {
+    this.lineNumber = lineNumber;
   }
 }

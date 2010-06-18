@@ -163,11 +163,11 @@ public class BatchRunner
       boolean actualMatchesExpected = actualValue.equalsIgnoreCase(expectedValue);
       if (actualMatchesExpected)
       {
-        System.out.format("MATCHES (actual/expected) %s/%s%n", actualValue, expectedValue);
+        System.out.format("MATCHES (actual/expected) %s/%s [%s:%d]%n", actualValue, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
         matchCount++;
       } else
       {
-        System.err.format("DOES NOT MATCH (actual/expected) %s/%s%n", actualValue, expectedValue);
+        System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d]%n", actualValue, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
         notMatchCount++;
       }
     }

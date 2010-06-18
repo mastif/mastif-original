@@ -355,6 +355,7 @@ public class MedFactsRunner
     System.out.println("$$$$$");
     System.out.println("$$$$$");
 
+    int lineNumber = 1;
     for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
     {
       AssertionAnnotation currentAssertionAnnotation = (AssertionAnnotation)currentAnnotation;
@@ -366,6 +367,9 @@ public class MedFactsRunner
 
       StringBuilder sb = new StringBuilder();
       TrainingInstance trainingInstance = new TrainingInstance();
+
+      trainingInstance.setFilename(getTextFilename());
+      trainingInstance.setLineNumber(lineNumber);
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
       String assertionValueString = assertionValue.toString().toLowerCase();
@@ -415,6 +419,8 @@ public class MedFactsRunner
       System.out.println(featureLine);
       featuresPrinter.println(featureLine);
       getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION).add(trainingInstance);
+
+      lineNumber++;
     }
     System.out.println("$$$$$");
     System.out.println("$$$$$");

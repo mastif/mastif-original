@@ -53,6 +53,14 @@ public class RandomAssignmentSystem
     originalSet.add(newItem);
   }
 
+  public void addZeroInclusiveToNExclusive(int n)
+  {
+    for (int i=0; i < n; i++)
+    {
+      addItem(i);
+    }
+  }
+
   /**
    * @return the originalSet
    */

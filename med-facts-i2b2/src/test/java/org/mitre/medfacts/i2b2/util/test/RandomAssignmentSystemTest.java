@@ -6,6 +6,7 @@
 package org.mitre.medfacts.i2b2.util.test;
 
 import java.util.Set;
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -60,8 +61,8 @@ public class RandomAssignmentSystemTest {
 
        system.createSets();
 
-       Set<RandomAssignmentItem> trainingSet = system.getTrainingSet();
-       Set<RandomAssignmentItem> testSet = system.getTestSet();
+       Set<RandomAssignmentItem> trainingSet = system.getTrainingSetSorted();
+       Set<RandomAssignmentItem> testSet = system.getTestSetSorted();
 
        System.out.println("=== TRAINING SET begin ===");
        printoutSet(trainingSet);
@@ -71,6 +72,8 @@ public class RandomAssignmentSystemTest {
        System.out.println("=== TEST SET begin ===");
        printoutSet(testSet);
        System.out.println("=== TEST SET begin ===");
+       Assert.assertEquals("training size on an incoming set of 10 with an 80/20 split should be 8 test items", 8, trainingSet.size());
+       Assert.assertEquals("test size on an incoming set of 10 with an 80/20 split should be 2 test items", 2, testSet.size());
      }
 
   private void printoutSet(Set<RandomAssignmentItem> set)

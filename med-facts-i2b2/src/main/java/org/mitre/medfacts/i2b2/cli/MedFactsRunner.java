@@ -9,7 +9,6 @@ import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
-import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -29,9 +28,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
-import org.mitre.medfacts.i2b2.annotation.RelationAnnotation;
-import org.mitre.medfacts.i2b2.annotation.RelationType;
+import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
+import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
+import org.mitre.medfacts.i2b2.processors.FileProcessor;
+import org.mitre.medfacts.i2b2.processors.RelationFileProcessor;
+import org.mitre.medfacts.i2b2.processors.ScopeFileProcessor;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
+import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
@@ -115,6 +118,9 @@ public class MedFactsRunner
     } else if (currentFilename.endsWith(Constants.FILE_EXTENSION_RELATION_FILE))
     {
       currentAnnotationType = AnnotationType.RELATION;
+    } else if (currentFilename.endsWith(Constants.FILE_EXTENSION_SCOPE_FILE))
+    {
+      currentAnnotationType = AnnotationType.SCOPE;
     }
     return currentAnnotationType;
   }
@@ -128,6 +134,7 @@ public class MedFactsRunner
       System.out.format(" - %s%n", currentAnnotation);
       Location begin = currentAnnotation.getBegin();
       Location end = currentAnnotation.getEnd();
+      System.out.format("==%n  begin: %s%n  end: %s%n==%n", begin, end);
 
       String targetText = extractTargetText(getTextLookup(), begin, end);
 
@@ -226,6 +233,7 @@ public class MedFactsRunner
     FileProcessor conceptFileProcessor = new ConceptFileProcessor();
     FileProcessor assertionFileProcessor = new AssertionFileProcessor();
     FileProcessor relationFileProcessor = new RelationFileProcessor();
+    FileProcessor scopeFileProcessor = new ScopeFileProcessor();
 
     for (String currentFilename : getAnnotationFilenameList())
     {
@@ -248,6 +256,10 @@ public class MedFactsRunner
         case RELATION:
           currentAnnotationList = relationFileProcessor.processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.RELATION, currentAnnotationList);
+          break;
+        case SCOPE:
+          currentAnnotationList = scopeFileProcessor.processConceptAnnotationFile(currentFilename);
+          annotationsByType.put(AnnotationType.SCOPE, currentAnnotationList);
           break;
       }
 
@@ -305,6 +317,19 @@ public class MedFactsRunner
     int line = begin.getLine();
     int lineOffset = line - 1;
     StringBuilder b = new StringBuilder();
+    int lineLength = textLookup[lineOffset].length;
+    boolean isOffsetLegit =
+            begin.getCharacter() >= 0 &&
+            begin.getCharacter() < lineLength &&
+            end.getCharacter() >= 0 &&
+            end.getCharacter() < lineLength;
+
+    System.err.format("STATUS: checking offset(s): %s to %s%n", begin, end);
+    if (!isOffsetLegit)
+    {
+      System.err.format("ERROR!: invalid line offset(s): %s to %s (%s) TEXT: >>%s<< %n", begin, end, getTextFilename(), ArrayPrinter.toString(textLookup[lineOffset]));
+      return null;
+    }
     for (int i = begin.getCharacter(); i <= end.getCharacter(); i++)
     {
       String currentToken = textLookup[lineOffset][i];
@@ -524,164 +549,5 @@ public class MedFactsRunner
 //    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
 //    return c;
 //  }
-
-}
-
-abstract class FileProcessor
-{
-  protected String patternString;
-
-  public String getPatternString()
-  {
-    return patternString;
-  }
-
-  public void setPatternString(String patternString)
-  {
-    this.patternString = patternString;
-  }
-
-  protected List<Annotation> processConceptAnnotationFile(String currentFilename)
-          throws FileNotFoundException, IOException
-  {
-    FileReader fr = new FileReader(currentFilename);
-    BufferedReader br = new BufferedReader(fr);
-
-    List<Annotation> annotationList = new ArrayList<Annotation>();
-
-    Pattern conceptPattern = Pattern.compile(getPatternString());
-
-    String currentLine = null;
-    //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
-    ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
-    int lineNumber = 0;
-    while ((currentLine = br.readLine()) != null)
-    {
-      Annotation c = processAnnotationLine(currentLine, conceptPattern);
-      annotationList.add(c);
-    }
-
-    br.close();
-    fr.close();
-
-    return annotationList;
-  }
-
-  abstract public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern);
-}
-
-class ConceptFileProcessor extends FileProcessor
-{
-
-  public ConceptFileProcessor()
-  {
-    super();
-    setPatternString(ANNOTATION_FILE_REGEX_CONCEPT);
-  }
-
-  public static final String ANNOTATION_FILE_REGEX_CONCEPT = "^c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)\\|\\|t=\"(.*)\"$";
-  public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
-  {
-    System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
-    String conceptText = matcher.group(1);
-    String beginLine = matcher.group(2);
-    String beginCharacter = matcher.group(3);
-    String endLine = matcher.group(4);
-    String endCharacter = matcher.group(5);
-    String conceptTypeText = matcher.group(6);
-    System.out.format("    concept text: %s%n", conceptText);
-    System.out.format("    concept type text: %s%n", conceptTypeText);
-    ConceptAnnotation a = new ConceptAnnotation();
-    a.setConceptText(conceptText);
-    a.setBegin(new Location(beginLine, beginCharacter));
-    a.setEnd(new Location(endLine, endCharacter));
-    a.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
-    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", a);
-    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
-    return a;
-  }
-
-}
-
-class AssertionFileProcessor extends FileProcessor
-{
-
-  public AssertionFileProcessor()
-  {
-    super();
-    setPatternString(ANNOTATION_FILE_REGEX_ASSERTION);
-  }
-
-  public static final String ANNOTATION_FILE_REGEX_ASSERTION = "^c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)\\|\\|t=\"(.*)\"\\|\\|a=\"(.*)\"$";
-  public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
-  {
-    System.out.format("ASSERTION  PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
-    String conceptText = matcher.group(1);
-    String beginLine = matcher.group(2);
-    String beginCharacter = matcher.group(3);
-    String endLine = matcher.group(4);
-    String endCharacter = matcher.group(5);
-    String conceptTypeText = matcher.group(6);
-    String assertionValue = matcher.group(7);
-    System.out.format("    concept text: %s%n", conceptText);
-    System.out.format("    concept type text: %s%n", conceptTypeText);
-    AssertionAnnotation a = new AssertionAnnotation();
-    a.setConceptText(conceptText);
-    a.setBegin(new Location(beginLine, beginCharacter));
-    a.setEnd(new Location(endLine, endCharacter));
-    a.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
-    a.setAssertionValue(AssertionValue.valueOf(assertionValue.toUpperCase()));
-    System.out.format("    ASSERTION ANNOTATION OBJECT: %s%n", a);
-    System.out.format("    ASSERTION ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
-    return a;
-  }
-
-}
-
-class RelationFileProcessor extends FileProcessor
-{
-
-  public RelationFileProcessor()
-  {
-    super();
-    setPatternString(ANNOTATION_FILE_REGEX_RELATION);
-  }
-
-  public static final String ANNOTATION_FILE_REGEX_RELATION = "^c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)\\|\\|r=\"(.*)\"\\|\\|c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)$";
-  public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
-  {
-    System.out.format("RELATION PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
-
-    String conceptText = matcher.group(1);
-    String beginLine = matcher.group(2);
-    String beginCharacter = matcher.group(3);
-    String endLine = matcher.group(4);
-    String endCharacter = matcher.group(5);
-    String relationTypeText = matcher.group(6);
-    String otherConceptText = matcher.group(7);
-    String otherBeginLine = matcher.group(8);
-    String otherBeginCharacter = matcher.group(9);
-    String otherEndLine = matcher.group(10);
-    String otherEndCharacter = matcher.group(11);
-
-    RelationAnnotation a = new RelationAnnotation();
-    a.setConceptText(conceptText);
-    a.setBegin(new Location(beginLine, beginCharacter));
-    a.setEnd(new Location(endLine, endCharacter));
-    a.setRelationType(RelationType.valueOf(relationTypeText.toUpperCase()));
-    a.setOtherConceptText(otherConceptText);
-    a.setOtherConceptBegin(new Location(otherBeginLine, otherBeginCharacter));
-    a.setOtherConceptEnd(new Location(otherEndLine, otherEndCharacter));
-
-    System.out.format("    RELATION ANNOTATION OBJECT: %s%n", a);
-    System.out.format("    RELATION ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
-    return a;
-  }
 
 }

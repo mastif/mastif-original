@@ -93,11 +93,17 @@ public class BatchRunner
       boolean relationFileExists = relationFile.exists();
       System.out.format("    - relation filename: %s (%s)%n", relationFilename, (relationFileExists ? "EXISTS" : "not present"));
 
+      String scopeFilename = baseFilename + Constants.FILE_EXTENSION_SCOPE_FILE;
+      File scopeFile = new File(scopeFilename);
+      boolean scopeFileExists = scopeFile.exists();
+      System.out.format("    - scope filename: %s (%s)%n", scopeFilename, (scopeFileExists ? "EXISTS" : "not present"));
+
       MedFactsRunner runner = new MedFactsRunner();
       runner.setTextFilename(currentTextFile.getAbsolutePath());
-      runner.addAnnotationFilename(conceptFilename);
-      runner.addAnnotationFilename(assertionFilename);
-      runner.addAnnotationFilename(relationFilename);
+      if (conceptFileExists)    runner.addAnnotationFilename(conceptFilename);
+      if (assertionFileExists)  runner.addAnnotationFilename(assertionFilename);
+      if (relationFileExists)   runner.addAnnotationFilename(relationFilename);
+      if (scopeFileExists)      runner.addAnnotationFilename(scopeFilename);
 
       runner.execute();
 

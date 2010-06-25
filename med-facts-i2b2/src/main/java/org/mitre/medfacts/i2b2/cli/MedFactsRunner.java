@@ -4,7 +4,9 @@
  */
 package org.mitre.medfacts.i2b2.cli;
 
+import java.net.URISyntaxException;
 import java.util.Map;
+import org.mitre.medfacts.i2b2.annotation.ScopeOrCueAnnotation;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
@@ -19,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -28,6 +31,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
+import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
@@ -274,6 +278,37 @@ public class MedFactsRunner
 
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
+
+    String cueModelFileName = "cue.model";
+    String scopeModelFileName = "scope.model";
+    ClassLoader cl = this.getClass().getClassLoader();
+    URL cueModelFileUrl = cl.getResource(cueModelFileName);
+    URL scopeModelFileUrl = cl.getResource(scopeModelFileName);
+    File cueModelFile = null;
+    File scopeModelFile = null;
+    try
+    {
+      cueModelFile = new File(cueModelFileUrl.toURI());
+      scopeModelFile = new File(scopeModelFileUrl.toURI());
+    } catch (URISyntaxException ex)
+    {
+      Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, "problem getting scope or model file URIs", ex);
+      throw new RuntimeException("problem getting scope or model file URIs");
+    }
+
+    String cueModelFileNameFullPath = cueModelFile.getAbsolutePath();
+    String scopeModelFileNameFullPath = scopeModelFile.getAbsolutePath();
+
+    ScopeParser scopeParser =
+        new ScopeParser(scopeModelFileNameFullPath, cueModelFileNameFullPath);
+
+    List<ScopeOrCueAnnotation> scopeOrCueAnnotationList = scopeParser.decodeDocument(textLookup);
+//    Map<AnnotationType,List<Annotation>> map2 = new TreeMap<AnnotationType,List<Annotation>>();
+//    map2.put(AnnotationType.SCOPE, allAnnotationList);
+    List<Annotation> newList = new ArrayList<Annotation>();
+    newList.addAll(scopeOrCueAnnotationList);
+    annotationsByType.put(AnnotationType.SCOPE, newList);
+    allAnnotationList.addAll(scopeOrCueAnnotationList);
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);

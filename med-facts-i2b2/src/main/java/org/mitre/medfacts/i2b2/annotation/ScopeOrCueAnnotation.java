@@ -35,7 +35,7 @@ public class ScopeOrCueAnnotation extends Annotation
   public String toString()
   {
     StringWriter w = new StringWriter();
-    w.append("CONCEPT ANNOTATION {");
+    w.append("SCOPE OR CUE ANNOTATION {");
     w.append("begin: ");
     w.append(begin.toString());
     w.append("; end: " );

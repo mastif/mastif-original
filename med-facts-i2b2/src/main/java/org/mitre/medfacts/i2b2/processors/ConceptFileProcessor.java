@@ -20,24 +20,29 @@ public class ConceptFileProcessor extends FileProcessor
   @Override
   public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
   {
-    System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
+    //System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
+    Matcher matcher = getPattern().matcher(currentLine);
+    if (!matcher.matches())
+    {
+      System.err.format("ERROR!! current concept line does not match concept pattern!  current line: %s%n", currentLine);
+      throw new RuntimeException(String.format("ERROR!! currentline does not match concept pattern! current line %s", currentLine));
+    }
+//    System.out.format("    matches? %b%n", matcher.matches());
     String conceptText = matcher.group(1);
     String beginLine = matcher.group(2);
     String beginCharacter = matcher.group(3);
     String endLine = matcher.group(4);
     String endCharacter = matcher.group(5);
     String conceptTypeText = matcher.group(6);
-    System.out.format("    concept text: %s%n", conceptText);
-    System.out.format("    concept type text: %s%n", conceptTypeText);
+//    System.out.format("    concept text: %s%n", conceptText);
+//    System.out.format("    concept type text: %s%n", conceptTypeText);
     ConceptAnnotation a = new ConceptAnnotation();
     a.setConceptText(conceptText);
     a.setBegin(new Location(beginLine, beginCharacter));
     a.setEnd(new Location(endLine, endCharacter));
     a.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
-    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", a);
-    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
+//    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", a);
+//    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
     return a;
   }
 

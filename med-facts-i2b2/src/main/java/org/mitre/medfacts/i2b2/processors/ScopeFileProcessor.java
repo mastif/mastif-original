@@ -23,9 +23,14 @@ public class ScopeFileProcessor extends FileProcessor
   @Override
   public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
   {
-    System.out.format("SCOPE FILE PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
+//    System.out.format("SCOPE FILE PROCESSING: %s%n", currentLine);
+    Matcher matcher = getPattern().matcher(currentLine);
+    if (!matcher.matches())
+    {
+      System.err.format("ERROR!! currentline does not match scope pattern!  current line: %s%n", currentLine);
+      throw new RuntimeException(String.format("ERROR!! currentline does not match scope pattern! current line %s", currentLine));
+    }
+//    System.out.format("    matches? %b%n", matcher.matches());
 
     String conceptText = matcher.group(1);
     String beginLine = matcher.group(2);
@@ -66,8 +71,8 @@ public class ScopeFileProcessor extends FileProcessor
     annotation.setScopeType(scopeType);
 
 
-    System.out.format("    SCOPE ANNOTATION OBJECT: %s%n", annotation);
-    System.out.format("    SCOPE ANNOTATION OBJECT i2b2: %s%n", annotation.toI2B2String());
+//    System.out.format("    SCOPE ANNOTATION OBJECT: %s%n", annotation);
+//    System.out.format("    SCOPE ANNOTATION OBJECT i2b2: %s%n", annotation.toI2B2String());
     return annotation;
   }
 

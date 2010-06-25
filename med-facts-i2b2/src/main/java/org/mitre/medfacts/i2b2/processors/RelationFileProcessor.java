@@ -20,9 +20,14 @@ public class RelationFileProcessor extends FileProcessor
   @Override
   public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern)
   {
-    System.out.format("RELATION PROCESSING: %s%n", currentLine);
-    Matcher matcher = conceptPattern.matcher(currentLine);
-    System.out.format("    matches? %b%n", matcher.matches());
+//    System.out.format("RELATION PROCESSING: %s%n", currentLine);
+    Matcher matcher = getPattern().matcher(currentLine);
+    if (!matcher.matches())
+    {
+      System.err.format("ERROR!! current relation line does not match concept pattern!  current line: %s%n", currentLine);
+      throw new RuntimeException(String.format("ERROR!! currentline does not match relation pattern! current line %s", currentLine));
+    }
+//    System.out.format("    matches? %b%n", matcher.matches());
 
     String conceptText = matcher.group(1);
     String beginLine = matcher.group(2);
@@ -45,8 +50,8 @@ public class RelationFileProcessor extends FileProcessor
     a.setOtherConceptBegin(new Location(otherBeginLine, otherBeginCharacter));
     a.setOtherConceptEnd(new Location(otherEndLine, otherEndCharacter));
 
-    System.out.format("    RELATION ANNOTATION OBJECT: %s%n", a);
-    System.out.format("    RELATION ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
+//    System.out.format("    RELATION ANNOTATION OBJECT: %s%n", a);
+//    System.out.format("    RELATION ANNOTATION OBJECT i2b2: %s%n", a.toI2B2String());
     return a;
   }
 

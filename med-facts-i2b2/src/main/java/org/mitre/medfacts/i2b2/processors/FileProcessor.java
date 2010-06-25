@@ -12,6 +12,7 @@ import org.mitre.medfacts.i2b2.annotation.Annotation;
 public abstract class FileProcessor
 {
   protected String patternString;
+  protected Pattern pattern;
 
   public String getPatternString()
   {
@@ -21,6 +22,7 @@ public abstract class FileProcessor
   public void setPatternString(String patternString)
   {
     this.patternString = patternString;
+    this.pattern = Pattern.compile(patternString);
   }
 
   public List<Annotation> processConceptAnnotationFile(String currentFilename)
@@ -31,15 +33,13 @@ public abstract class FileProcessor
 
     List<Annotation> annotationList = new ArrayList<Annotation>();
 
-    Pattern conceptPattern = Pattern.compile(getPatternString());
-
     String currentLine = null;
     //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
     ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
     int lineNumber = 0;
     while ((currentLine = br.readLine()) != null)
     {
-      Annotation c = processAnnotationLine(currentLine, conceptPattern);
+      Annotation c = processAnnotationLine(currentLine, pattern);
       annotationList.add(c);
     }
 
@@ -50,5 +50,21 @@ public abstract class FileProcessor
   }
 
   abstract public Annotation processAnnotationLine(String currentLine, Pattern conceptPattern);
+
+  /**
+   * @return the pattern
+   */
+  public Pattern getPattern()
+  {
+    return pattern;
+  }
+
+  /**
+   * @param pattern the pattern to set
+   */
+  public void setPattern(Pattern pattern)
+  {
+    this.pattern = pattern;
+  }
 }
 

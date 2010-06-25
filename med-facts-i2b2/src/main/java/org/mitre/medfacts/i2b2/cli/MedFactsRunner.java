@@ -43,11 +43,17 @@ import org.mitre.medfacts.i2b2.util.StringHandling;
  */
 public class MedFactsRunner
 {
-
   public final static int MAX_WINDOW_LEFT = 12;
   public final static int MAX_WINDOW_RIGHT = 12;
 
+  public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+
   private String textLookup[][];
+
+  protected FileProcessor conceptFileProcessor = new ConceptFileProcessor();
+  protected FileProcessor assertionFileProcessor = new AssertionFileProcessor();
+  protected FileProcessor relationFileProcessor = new RelationFileProcessor();
+  protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
 
   public MedFactsRunner()
   {
@@ -93,7 +99,7 @@ public class MedFactsRunner
       {
         processTextFile();
         processAnnotationFiles();
-        validateAnnotations();
+        //validateAnnotations();
         printOutFeatures();
       } catch (FileNotFoundException ex)
       {
@@ -179,23 +185,21 @@ public class MedFactsRunner
     FileReader fr = new FileReader(getTextFilename());
     BufferedReader br = new BufferedReader(fr);
 
-    Pattern whitespacePattern = Pattern.compile("\\s");
-    
     String currentLine = null;
     //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
     ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
     int lineNumber = 0;
     while ((currentLine = br.readLine()) != null)
     {
-      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
+//      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
       //ArrayList<String> currentTextLookupLine = new ArrayList<String>();
       //textLookup.add(currentTextLookupLine);
       
-      String tokenArray[] = whitespacePattern.split(currentLine);
-      for (String currentToken : tokenArray)
-      {
-        System.out.format("    CURRENT token (pre): %s%n", currentToken);
-      }
+      String tokenArray[] = WHITESPACE_PATTERN.split(currentLine);
+//      for (String currentToken : tokenArray)
+//      {
+//        System.out.format("    CURRENT token (pre): %s%n", currentToken);
+//      }
       textLookupTemp.add(tokenArray);
 
       lineNumber++;
@@ -210,17 +214,17 @@ public class MedFactsRunner
     //String textLookup[][] = null;
     textLookup = textLookupTemp.toArray(twoDimensionalStringArray);
 
-    int lineNumber2 = 0;
-    for (String[] currentTextLookupLine : textLookup)
-    {
-      int tokenNumber2 = 0;
-      for (String currentToken : currentTextLookupLine)
-      {
-        System.out.format("    CURRENT token (post): [%d:%d] \"%s\"%n", lineNumber2, tokenNumber2, currentToken);
-        tokenNumber2++;
-      }
-      lineNumber2++;
-    }
+//    int lineNumber2 = 0;
+//    for (String[] currentTextLookupLine : textLookup)
+//    {
+//      int tokenNumber2 = 0;
+//      for (String currentToken : currentTextLookupLine)
+//      {
+//        System.out.format("    CURRENT token (post): [%d:%d] \"%s\"%n", lineNumber2, tokenNumber2, currentToken);
+//        tokenNumber2++;
+//      }
+//      lineNumber2++;
+//    }
 
     System.out.format("done processing text file \"%s\".%n", textFilename);
   }
@@ -230,35 +234,35 @@ public class MedFactsRunner
     List<Annotation> allAnnotationList = new ArrayList<Annotation>();
     Map<AnnotationType,List<Annotation>> annotationsByType = new TreeMap<AnnotationType,List<Annotation>>();
 
-    FileProcessor conceptFileProcessor = new ConceptFileProcessor();
-    FileProcessor assertionFileProcessor = new AssertionFileProcessor();
-    FileProcessor relationFileProcessor = new RelationFileProcessor();
-    FileProcessor scopeFileProcessor = new ScopeFileProcessor();
+//    FileProcessor conceptFileProcessor = new ConceptFileProcessor();
+//    FileProcessor assertionFileProcessor = new AssertionFileProcessor();
+//    FileProcessor relationFileProcessor = new RelationFileProcessor();
+//    FileProcessor scopeFileProcessor = new ScopeFileProcessor();
 
     for (String currentFilename : getAnnotationFilenameList())
     {
       System.out.format("processing annotation file \"%s\"...%n", currentFilename);
       AnnotationType currentAnnotationType = getAnnotationTypeFromFilename(currentFilename);
-      System.out.format(" - annotationType of file \"%s\" is %s%n", currentFilename, currentAnnotationType);
+      //System.out.format(" - annotationType of file \"%s\" is %s%n", currentFilename, currentAnnotationType);
 
       List<Annotation> currentAnnotationList = null;
       switch (currentAnnotationType)
       {
         case CONCEPT:
           //currentAnnotationList = processConceptAnnotationFile(currentFilename);
-          currentAnnotationList = conceptFileProcessor.processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getConceptFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.CONCEPT, currentAnnotationList);
           break;
         case ASSERTION:
-          currentAnnotationList = assertionFileProcessor.processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getAssertionFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
           break;
         case RELATION:
-          currentAnnotationList = relationFileProcessor.processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getRelationFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.RELATION, currentAnnotationList);
           break;
         case SCOPE:
-          currentAnnotationList = scopeFileProcessor.processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getScopeFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.SCOPE, currentAnnotationList);
           break;
       }
@@ -324,7 +328,7 @@ public class MedFactsRunner
             end.getCharacter() >= 0 &&
             end.getCharacter() < lineLength;
 
-    System.err.format("STATUS: checking offset(s): %s to %s%n", begin, end);
+    //System.err.format("STATUS: checking offset(s): %s to %s%n", begin, end);
     if (!isOffsetLegit)
     {
       System.err.format("ERROR!: invalid line offset(s): %s to %s (%s) TEXT: >>%s<< %n", begin, end, getTextFilename(), ArrayPrinter.toString(textLookup[lineOffset]));
@@ -352,8 +356,8 @@ public class MedFactsRunner
     PrintWriter featuresPrinter = new PrintWriter(featuresBufferedWriter);
 
     Pattern conceptHeadPattern = Pattern.compile(" ([^ ]+)$");
-    System.out.println("$$$$$");
-    System.out.println("$$$$$");
+    //System.out.println("$$$$$");
+    //System.out.println("$$$$$");
 
     int lineNumber = 1;
     for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
@@ -416,14 +420,14 @@ public class MedFactsRunner
       }
 
       String featureLine = sb.toString();
-      System.out.println(featureLine);
+      //System.out.println(featureLine);
       featuresPrinter.println(featureLine);
       getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION).add(trainingInstance);
 
       lineNumber++;
     }
-    System.out.println("$$$$$");
-    System.out.println("$$$$$");
+    //System.out.println("$$$$$");
+    //System.out.println("$$$$$");
 
     featuresPrinter.close();
     featuresBufferedWriter.close();
@@ -503,6 +507,70 @@ public class MedFactsRunner
   public void setMapOfTrainingInstanceLists(Map<AnnotationType, List<TrainingInstance>> mapOfTrainingInstanceLists)
   {
     this.mapOfTrainingInstanceLists = mapOfTrainingInstanceLists;
+  }
+
+  /**
+   * @return the conceptFileProcessor
+   */
+  public FileProcessor getConceptFileProcessor()
+  {
+    return conceptFileProcessor;
+  }
+
+  /**
+   * @param conceptFileProcessor the conceptFileProcessor to set
+   */
+  public void setConceptFileProcessor(FileProcessor conceptFileProcessor)
+  {
+    this.conceptFileProcessor = conceptFileProcessor;
+  }
+
+  /**
+   * @return the assertionFileProcessor
+   */
+  public FileProcessor getAssertionFileProcessor()
+  {
+    return assertionFileProcessor;
+  }
+
+  /**
+   * @param assertionFileProcessor the assertionFileProcessor to set
+   */
+  public void setAssertionFileProcessor(FileProcessor assertionFileProcessor)
+  {
+    this.assertionFileProcessor = assertionFileProcessor;
+  }
+
+  /**
+   * @return the relationFileProcessor
+   */
+  public FileProcessor getRelationFileProcessor()
+  {
+    return relationFileProcessor;
+  }
+
+  /**
+   * @param relationFileProcessor the relationFileProcessor to set
+   */
+  public void setRelationFileProcessor(FileProcessor relationFileProcessor)
+  {
+    this.relationFileProcessor = relationFileProcessor;
+  }
+
+  /**
+   * @return the scopeFileProcessor
+   */
+  public FileProcessor getScopeFileProcessor()
+  {
+    return scopeFileProcessor;
+  }
+
+  /**
+   * @param scopeFileProcessor the scopeFileProcessor to set
+   */
+  public void setScopeFileProcessor(FileProcessor scopeFileProcessor)
+  {
+    this.scopeFileProcessor = scopeFileProcessor;
   }
 
 

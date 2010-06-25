@@ -7,7 +7,6 @@ package org.mitre.medfacts.i2b2.cli;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +21,11 @@ import org.apache.commons.cli.ParseException;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
+import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
+import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
+import org.mitre.medfacts.i2b2.processors.FileProcessor;
+import org.mitre.medfacts.i2b2.processors.RelationFileProcessor;
+import org.mitre.medfacts.i2b2.processors.ScopeFileProcessor;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
@@ -36,6 +40,12 @@ public class BatchRunner
   //protected String baseDirectoryString;
   protected String trainingDirectory;
   protected String decodeDirectory;
+
+  protected FileProcessor conceptFileProcessor = new ConceptFileProcessor();
+  protected FileProcessor assertionFileProcessor = new AssertionFileProcessor();
+  protected FileProcessor relationFileProcessor = new RelationFileProcessor();
+  protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
+
 
   protected List<TrainingInstance> masterTrainingInstanceListTraining = new ArrayList<TrainingInstance>();
   protected List<TrainingInstance> masterTrainingInstanceListEvaluation = new ArrayList<TrainingInstance>();
@@ -116,7 +126,6 @@ public class BatchRunner
     batchRunner.setTrainingDirectory(trainDir);
     batchRunner.setDecodeDirectory(decodeDir);
     batchRunner.execute();
-    batchRunner.execute();
   }
 
 //  /**
@@ -133,23 +142,34 @@ public class BatchRunner
     String currentTextFilename = currentTextFile.getAbsolutePath();
     String baseFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(currentTextFilename).replaceFirst("");
     System.out.format("    - base filename: %s%n", baseFilename);
+
     String conceptFilename = baseFilename + Constants.FILE_EXTENSION_CONCEPT_FILE;
     File conceptFile = new File(conceptFilename);
     boolean conceptFileExists = conceptFile.exists();
     System.out.format("    - concept filename: %s (%s)%n", conceptFilename, conceptFileExists ? "EXISTS" : "not present");
+
     String assertionFilename = baseFilename + Constants.FILE_EXTENSION_ASSERTION_FILE;
     File assertionFile = new File(assertionFilename);
     boolean assertionFileExists = assertionFile.exists();
     System.out.format("    - assertion filename: %s (%s)%n", assertionFilename, assertionFileExists ? "EXISTS" : "not present");
+
     String relationFilename = baseFilename + Constants.FILE_EXTENSION_RELATION_FILE;
     File relationFile = new File(relationFilename);
     boolean relationFileExists = relationFile.exists();
     System.out.format("    - relation filename: %s (%s)%n", relationFilename, relationFileExists ? "EXISTS" : "not present");
+
     String scopeFilename = baseFilename + Constants.FILE_EXTENSION_SCOPE_FILE;
     File scopeFile = new File(scopeFilename);
     boolean scopeFileExists = scopeFile.exists();
     System.out.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present");
+
     MedFactsRunner runner = new MedFactsRunner();
+
+    runner.setConceptFileProcessor(conceptFileProcessor);
+    runner.setAssertionFileProcessor(assertionFileProcessor);
+    runner.setRelationFileProcessor(relationFileProcessor);
+    runner.setScopeFileProcessor(scopeFileProcessor);
+
     runner.setTextFilename(currentTextFile.getAbsolutePath());
     if (conceptFileExists)
     {
@@ -159,10 +179,10 @@ public class BatchRunner
     {
       runner.addAnnotationFilename(assertionFilename);
     }
-    if (relationFileExists)
-    {
-      runner.addAnnotationFilename(relationFilename);
-    }
+//    if (relationFileExists)
+//    {
+//      runner.addAnnotationFilename(relationFilename);
+//    }
     if (scopeFileExists)
     {
       runner.addAnnotationFilename(scopeFilename);

@@ -87,7 +87,7 @@ public class RelationAnnotation extends Annotation
   public String toString()
   {
     StringWriter w = new StringWriter();
-    w.append("CONCEPT ANNOTATION {");
+    w.append("RELATION ANNOTATION {");
     w.append("begin: ");
     w.append(begin.toString());
     w.append("; end: " );

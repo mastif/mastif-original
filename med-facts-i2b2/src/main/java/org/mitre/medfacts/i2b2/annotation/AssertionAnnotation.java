@@ -35,7 +35,7 @@ public class AssertionAnnotation extends ConceptAnnotation
   public String toString()
   {
     StringWriter w = new StringWriter();
-    w.append("CONCEPT ANNOTATION {");
+    w.append("ASSERTION ANNOTATION {");
     w.append("begin: ");
     w.append(begin.toString());
     w.append("; end: " );

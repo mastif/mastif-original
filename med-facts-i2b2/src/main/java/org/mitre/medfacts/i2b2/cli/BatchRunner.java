@@ -7,17 +7,23 @@ package org.mitre.medfacts.i2b2.cli;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
-import org.mitre.medfacts.i2b2.util.ItemType;
 import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 
 /**
@@ -27,43 +33,149 @@ import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 public class BatchRunner
 {
   public static final float TRAINING_RATIO = 0.8f;
-  protected String baseDirectoryString;
+  //protected String baseDirectoryString;
+  protected String trainingDirectory;
+  protected String decodeDirectory;
 
-  protected List<TrainingInstance> masterTrainingInstanceList = new ArrayList<TrainingInstance>();
+  protected List<TrainingInstance> masterTrainingInstanceListTraining = new ArrayList<TrainingInstance>();
+  protected List<TrainingInstance> masterTrainingInstanceListEvaluation = new ArrayList<TrainingInstance>();
   protected List<TrainingInstance> trainingSplitList;
   protected List<TrainingInstance> testSplitList;
 
   public static void main(String args[])
   {
-    String baseDirectory = args[0];
-    System.out.format("base directory: %s%n", baseDirectory);
+
+    Options options = new Options();
+//    options.addOption("t", "train", false, "train the model");
+//    options.addOption("r", "run", false, "run the model");
+    options.addOption("b", "base-dir", true, "base directory from which train and decode directories are located");
+    options.addOption("t", "train", true, "train the model using the given parameter as the training data directory");
+    options.addOption("d", "decode", true, "run the model using the given parameter as the data directory");
+    
+    CommandLineParser parser = new GnuParser();
+    CommandLine cmd = null;
+    try
+    {
+      cmd = parser.parse(options, args);
+    } catch (ParseException ex)
+    {
+      Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, "problem parsing command-line options", ex);
+      throw new RuntimeException("problem parsing command-line options", ex);
+    }
+
+    String baseDir = null;
+    boolean isTrain = cmd.hasOption("train");
+    boolean isDecode = cmd.hasOption("decode");
+
+    if (cmd.hasOption("base-dir"))
+    {
+      baseDir = cmd.getOptionValue("base-dir");
+      System.out.format("using base directory: \"%s\"%n", baseDir);
+    }
+    String trainDir = null;
+    if (isTrain)
+    {
+      System.out.println("running training...");
+      String trainDirRelative = cmd.getOptionValue("train");
+      System.out.format("trainDirRelative: %s%n", trainDirRelative);
+      if (trainDirRelative == null)
+      {
+        trainDir = baseDir;
+      } else
+      {
+        File trainDirFile = new File(baseDir, trainDirRelative);
+        trainDir = trainDirFile.getAbsolutePath();
+      }
+      System.out.format("using training dir: \"%s\"%n", trainDir);
+      System.out.println("finished running training.");
+    }
+
+    String decodeDir = null;
+    if (isDecode)
+    {
+      System.out.println("running decode...");
+      String decodeDirRelative = cmd.getOptionValue("decode");
+      System.out.format("decodeDirRelative: %s%n", decodeDirRelative);
+      if (decodeDirRelative == null)
+      {
+        decodeDir = baseDir;
+      } else
+      {
+        File decodeDirFile = new File(baseDir, decodeDirRelative);
+        decodeDir = decodeDirFile.getAbsolutePath();
+      }
+      System.out.format("using decode dir: \"%s\"%n", decodeDir);
+      System.out.println("finished running decode.");
+    }
+
+//    String baseDirectory = args[0];
+//    System.out.format("base directory: %s%n", baseDirectory);
 
     BatchRunner batchRunner = new BatchRunner();
-    batchRunner.setBaseDirectoryString(baseDirectory);
-
+    //batchRunner.setBaseDirectoryString(baseDirectory);
+    batchRunner.setTrainingDirectory(trainDir);
+    batchRunner.setDecodeDirectory(decodeDir);
+    batchRunner.execute();
     batchRunner.execute();
   }
 
-  /**
-   * @return the baseDirectoryString
-   */
-  public String getBaseDirectoryString()
+//  /**
+//   * @return the baseDirectoryString
+//   */
+//  public String getBaseDirectoryString()
+//  {
+//    return baseDirectoryString;
+//  }
+
+  public List<TrainingInstance> processFile(File currentTextFile)
   {
-    return baseDirectoryString;
+    System.out.format(" * %s%n", currentTextFile);
+    String currentTextFilename = currentTextFile.getAbsolutePath();
+    String baseFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(currentTextFilename).replaceFirst("");
+    System.out.format("    - base filename: %s%n", baseFilename);
+    String conceptFilename = baseFilename + Constants.FILE_EXTENSION_CONCEPT_FILE;
+    File conceptFile = new File(conceptFilename);
+    boolean conceptFileExists = conceptFile.exists();
+    System.out.format("    - concept filename: %s (%s)%n", conceptFilename, conceptFileExists ? "EXISTS" : "not present");
+    String assertionFilename = baseFilename + Constants.FILE_EXTENSION_ASSERTION_FILE;
+    File assertionFile = new File(assertionFilename);
+    boolean assertionFileExists = assertionFile.exists();
+    System.out.format("    - assertion filename: %s (%s)%n", assertionFilename, assertionFileExists ? "EXISTS" : "not present");
+    String relationFilename = baseFilename + Constants.FILE_EXTENSION_RELATION_FILE;
+    File relationFile = new File(relationFilename);
+    boolean relationFileExists = relationFile.exists();
+    System.out.format("    - relation filename: %s (%s)%n", relationFilename, relationFileExists ? "EXISTS" : "not present");
+    String scopeFilename = baseFilename + Constants.FILE_EXTENSION_SCOPE_FILE;
+    File scopeFile = new File(scopeFilename);
+    boolean scopeFileExists = scopeFile.exists();
+    System.out.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present");
+    MedFactsRunner runner = new MedFactsRunner();
+    runner.setTextFilename(currentTextFile.getAbsolutePath());
+    if (conceptFileExists)
+    {
+      runner.addAnnotationFilename(conceptFilename);
+    }
+    if (assertionFileExists)
+    {
+      runner.addAnnotationFilename(assertionFilename);
+    }
+    if (relationFileExists)
+    {
+      runner.addAnnotationFilename(relationFilename);
+    }
+    if (scopeFileExists)
+    {
+      runner.addAnnotationFilename(scopeFilename);
+    }
+    runner.execute();
+    List<TrainingInstance> trainingInstanceList = runner.getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION);
+    return trainingInstanceList;
   }
 
-  /**
-   * @param baseDirectoryString the baseDirectoryString to set
-   */
-  public void setBaseDirectoryString(String baseDirectoryString)
+  public void processFileSet(File baseDirectory, List<TrainingInstance> masterList)
   {
-    this.baseDirectoryString = baseDirectoryString;
-  }
-
-  private void execute()
-  {
-    File baseDirectory = new File(baseDirectoryString);
-    File textFiles[] = baseDirectory.listFiles(new FilenameFilter() {
+    File[] textFiles = baseDirectory.listFiles(new FilenameFilter()
+    {
 
       @Override
       public boolean accept(File dir, String name)
@@ -71,51 +183,39 @@ public class BatchRunner
         return name.endsWith(".txt");
       }
     });
-
     System.out.println("=== TEXT FILE LIST BEGIN ===");
     for (File currentTextFile : textFiles)
     {
-      System.out.format(" * %s%n", currentTextFile);
+      List<TrainingInstance> trainingInstanceList = processFile(currentTextFile);
+      masterList.addAll(trainingInstanceList);
+    }
+  }
 
-      String currentTextFilename = currentTextFile.getAbsolutePath();
-      String baseFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(currentTextFilename).replaceFirst("");
-      System.out.format("    - base filename: %s%n", baseFilename);
+//  /**
+//   * @param baseDirectoryString the baseDirectoryString to set
+//   */
+//  public void setBaseDirectoryString(String baseDirectoryString)
+//  {
+//    this.baseDirectoryString = baseDirectoryString;
+//  }
 
-      String conceptFilename = baseFilename + Constants.FILE_EXTENSION_CONCEPT_FILE;
-      File conceptFile = new File(conceptFilename);
-      boolean conceptFileExists = conceptFile.exists();
-      System.out.format("    - concept filename: %s (%s)%n", conceptFilename, (conceptFileExists ? "EXISTS" : "not present"));
-
-      String assertionFilename = baseFilename + Constants.FILE_EXTENSION_ASSERTION_FILE;
-      File assertionFile = new File(assertionFilename);
-      boolean assertionFileExists = assertionFile.exists();
-      System.out.format("    - assertion filename: %s (%s)%n", assertionFilename, (assertionFileExists ? "EXISTS" : "not present"));
-
-      String relationFilename = baseFilename + Constants.FILE_EXTENSION_RELATION_FILE;
-      File relationFile = new File(relationFilename);
-      boolean relationFileExists = relationFile.exists();
-      System.out.format("    - relation filename: %s (%s)%n", relationFilename, (relationFileExists ? "EXISTS" : "not present"));
-
-      String scopeFilename = baseFilename + Constants.FILE_EXTENSION_SCOPE_FILE;
-      File scopeFile = new File(scopeFilename);
-      boolean scopeFileExists = scopeFile.exists();
-      System.out.format("    - scope filename: %s (%s)%n", scopeFilename, (scopeFileExists ? "EXISTS" : "not present"));
-
-      MedFactsRunner runner = new MedFactsRunner();
-      runner.setTextFilename(currentTextFile.getAbsolutePath());
-      if (conceptFileExists)    runner.addAnnotationFilename(conceptFilename);
-      if (assertionFileExists)  runner.addAnnotationFilename(assertionFilename);
-      if (relationFileExists)   runner.addAnnotationFilename(relationFilename);
-      if (scopeFileExists)      runner.addAnnotationFilename(scopeFilename);
-
-      runner.execute();
-
-      List<TrainingInstance> trainingInstanceList =
-          runner.getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION);
-      masterTrainingInstanceList.addAll(trainingInstanceList);
+  private void execute()
+  {
+    //File baseDirectory = new File(baseDirectoryString);
+    if (trainingDirectory != null)
+    {
+      File trainingDirectoryFile = new File(trainingDirectory);
+      processFileSet(trainingDirectoryFile, masterTrainingInstanceListTraining);
     }
 
-    createTrainingSplit();
+    if (decodeDirectory != null)
+    {
+      File decodeDirectoryFile = new File(decodeDirectory);
+      processFileSet(decodeDirectoryFile, masterTrainingInstanceListEvaluation);
+    }
+
+    // train and evaluate the classifier
+    //createTrainingSplit();
     trainAndEval();
 
     System.out.println("=== TEXT FILE LIST END ===");
@@ -124,17 +224,28 @@ public class BatchRunner
   /**
    * @return the masterTrainingInstanceList
    */
-  public List<TrainingInstance> getMasterTrainingInstanceList()
+  public List<TrainingInstance> getMasterTrainingInstanceListTraining()
   {
-    return masterTrainingInstanceList;
+    return masterTrainingInstanceListTraining;
   }
 
   /**
    * @param masterTrainingInstanceList the masterTrainingInstanceList to set
    */
-  public void setMasterTrainingInstanceList(List<TrainingInstance> masterTrainingInstanceList)
+  public void setMasterTrainingInstanceListTraining(List<TrainingInstance> masterTrainingInstanceList)
   {
-    this.masterTrainingInstanceList = masterTrainingInstanceList;
+    this.masterTrainingInstanceListTraining = masterTrainingInstanceList;
+  }
+
+
+  public List<TrainingInstance> getMasterTrainingInstanceListEvaluation()
+  {
+    return masterTrainingInstanceListEvaluation;
+  }
+
+  public void setMasterTrainingInstanceListEvaluation(List<TrainingInstance> masterTrainingInstanceListEvaluation)
+  {
+    this.masterTrainingInstanceListEvaluation = masterTrainingInstanceListEvaluation;
   }
 
   public void trainAndEval()
@@ -142,7 +253,8 @@ public class BatchRunner
     JarafeMETrainer trainer = new JarafeMETrainer();
 
     Collection<TrainingInstance> trainingInstanceSet =
-        getTrainingSplitList();
+        //getTrainingSplitList();
+        getMasterTrainingInstanceListTraining();
 
     for (TrainingInstance currentTrainingInstance : trainingInstanceSet)
     {
@@ -154,7 +266,9 @@ public class BatchRunner
     JarafeMEDecoder decoder = new JarafeMEDecoder(model);
     int matchCount = 0;
     int notMatchCount = 0;
-    for (TrainingInstance currentEvalInstance : getTestSplitList())
+    Collection<TrainingInstance> evaluationInstanceSet =
+        getMasterTrainingInstanceListEvaluation();
+    for (TrainingInstance currentEvalInstance : evaluationInstanceSet)
     {
       String expectedValue = currentEvalInstance.getExpectedValue();
       List<String> featureList = currentEvalInstance.getFeatureList();
@@ -180,7 +294,7 @@ public class BatchRunner
 
   public void createTrainingSplit()
   {
-    List<TrainingInstance> masterTrainingList = getMasterTrainingInstanceList();
+    List<TrainingInstance> masterTrainingList = getMasterTrainingInstanceListTraining();
     RandomAssignmentSystem system = new RandomAssignmentSystem();
     system.setTrainingRatio(0.8f);
 
@@ -243,5 +357,38 @@ public class BatchRunner
     this.testSplitList = testSplitList;
   }
 
+  /**
+   * @return the trainingDirectory
+   */
+  public String getTrainingDirectory()
+  {
+    return trainingDirectory;
+  }
+
+  /**
+   * @param trainingDirectory the trainingDirectory to set
+   */
+  public void setTrainingDirectory(String trainingDirectory)
+  {
+    this.trainingDirectory = trainingDirectory;
+  }
+
+  /**
+   * @return the decodeDirectory
+   */
+  public String getDecodeDirectory()
+  {
+    return decodeDirectory;
+  }
+
+  /**
+   * @param decodeDirectory the decodeDirectory to set
+   */
+  public void setDecodeDirectory(String decodeDirectory)
+  {
+    this.decodeDirectory = decodeDirectory;
+  }
+
 
 }
+

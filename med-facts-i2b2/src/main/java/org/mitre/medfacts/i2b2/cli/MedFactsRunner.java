@@ -279,6 +279,7 @@ public class MedFactsRunner
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
 
+    /*
     String cueModelFileName = "cue.model";
     String scopeModelFileName = "scope.model";
     ClassLoader cl = this.getClass().getClassLoader();
@@ -299,6 +300,9 @@ public class MedFactsRunner
     String cueModelFileNameFullPath = cueModelFile.getAbsolutePath();
     String scopeModelFileNameFullPath = scopeModelFile.getAbsolutePath();
 
+    System.out.format("cue model: %s%n", cueModelFileNameFullPath);
+    System.out.format("scope model: %s%n", scopeModelFileNameFullPath);
+
     ScopeParser scopeParser =
         new ScopeParser(scopeModelFileNameFullPath, cueModelFileNameFullPath);
 
@@ -309,6 +313,7 @@ public class MedFactsRunner
     newList.addAll(scopeOrCueAnnotationList);
     annotationsByType.put(AnnotationType.SCOPE, newList);
     allAnnotationList.addAll(scopeOrCueAnnotationList);
+    */
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);

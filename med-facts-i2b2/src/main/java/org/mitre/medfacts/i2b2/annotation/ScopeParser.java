@@ -14,7 +14,7 @@ import org.mitre.itc.jcarafe.scopetagger.IndexedAnnot;
  * @author WELLNER
  */
 public class ScopeParser {
-
+/*
     FullDecoder decoder = null;
     public ScopeParser(String sModel, String cModel) {
         decoder = FullDecoder.apply(sModel, cModel);
@@ -44,4 +44,5 @@ public class ScopeParser {
         }
         return annots;
     }
+ */
 }

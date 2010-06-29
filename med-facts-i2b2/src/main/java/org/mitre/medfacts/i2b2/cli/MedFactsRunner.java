@@ -38,6 +38,7 @@ import org.mitre.medfacts.i2b2.processors.FileProcessor;
 import org.mitre.medfacts.i2b2.processors.RelationFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ScopeFileProcessor;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
+import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 
@@ -104,6 +105,7 @@ public class MedFactsRunner
         processTextFile();
         processAnnotationFiles();
         //validateAnnotations();
+        indexAnnotations();
         printOutFeatures();
       } catch (FileNotFoundException ex)
       {
@@ -611,6 +613,12 @@ public class MedFactsRunner
   public void setScopeFileProcessor(FileProcessor scopeFileProcessor)
   {
     this.scopeFileProcessor = scopeFileProcessor;
+  }
+
+  private void indexAnnotations()
+  {
+    AnnotationIndexer indexer = new AnnotationIndexer();
+    indexer.indexAnnotations(getAllAnnotationList());
   }
 
 

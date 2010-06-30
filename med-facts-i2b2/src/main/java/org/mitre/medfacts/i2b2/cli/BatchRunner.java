@@ -184,10 +184,10 @@ public class BatchRunner
 //      runner.addAnnotationFilename(relationFilename);
 //    }
     // todo add back in the scope processing step
-//    if (scopeFileExists)
-//    {
-//      runner.addAnnotationFilename(scopeFilename);
-//    }
+    if (scopeFileExists)
+    {
+      runner.addAnnotationFilename(scopeFilename);
+    }
     runner.execute();
     List<TrainingInstance> trainingInstanceList = runner.getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION);
     return trainingInstanceList;

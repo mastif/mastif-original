@@ -31,6 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
+import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
@@ -59,6 +61,8 @@ public class MedFactsRunner
   protected FileProcessor assertionFileProcessor = new AssertionFileProcessor();
   protected FileProcessor relationFileProcessor = new RelationFileProcessor();
   protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
+
+  AnnotationIndexer indexer = new AnnotationIndexer();
 
   public MedFactsRunner()
   {
@@ -312,7 +316,7 @@ public class MedFactsRunner
 
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
-    processScopeInProcess(annotationsByType, allAnnotationList);
+    //processScopeInProcess(annotationsByType, allAnnotationList);
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);
@@ -398,9 +402,10 @@ public class MedFactsRunner
     //System.out.println("$$$$$");
     //System.out.println("$$$$$");
 
-    int lineNumber = 1;
+    //int lineNumber = 1;
     for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
     {
+      final int lineNumber = currentAnnotation.getBegin().getLine();
       AssertionAnnotation currentAssertionAnnotation = (AssertionAnnotation)currentAnnotation;
       if (!currentAssertionAnnotation.getConceptType().equals(ConceptType.PROBLEM))
       {
@@ -457,13 +462,37 @@ public class MedFactsRunner
         sb.append(currentFeature);
         trainingInstance.addFeature(currentFeature);
       }
+      System.out.format("lineNumber: %d%n", lineNumber);
+      String tokensOnCurrentLine[] = textLookup[lineNumber-1];
+      for (int currentTokenOffset=0; currentTokenOffset < tokensOnCurrentLine.length; currentTokenOffset++)
+      {
+        String currentToken = tokensOnCurrentLine[currentTokenOffset];
+        List<Annotation> annotationsAtCurrentPosition = indexer.findAnnotationsForPosition(lineNumber, currentTokenOffset);
 
-      String featureLine = sb.toString();
+        if (annotationsAtCurrentPosition != null)
+        for (Annotation a : annotationsAtCurrentPosition)
+        {
+          if (a instanceof ScopeAnnotation)
+          {
+            trainingInstance.addFeature("scope");
+            trainingInstance.addFeature("in_scope_" + currentToken);
+          }
+
+          if (a instanceof CueAnnotation)
+          {
+            trainingInstance.addFeature("cue");
+            trainingInstance.addFeature("in_cue_" + currentToken);
+          }
+        }
+      }
+
+      //String featureLine = sb.toString();
+      String featureLine = trainingInstance.toStringWithExpectedValue();
       //System.out.println(featureLine);
       featuresPrinter.println(featureLine);
       getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION).add(trainingInstance);
 
-      lineNumber++;
+      //lineNumber++;
     }
     //System.out.println("$$$$$");
     //System.out.println("$$$$$");
@@ -614,7 +643,6 @@ public class MedFactsRunner
 
   private void indexAnnotations()
   {
-    AnnotationIndexer indexer = new AnnotationIndexer();
     indexer.indexAnnotations(getAllAnnotationList());
   }
 

@@ -76,7 +76,7 @@ public class AnnotationIndexer
 
   }
 
-  List<Annotation> findAnnotationsForPosition(long line, long token)
+  public List<Annotation> findAnnotationsForPosition(long line, long token)
   {
     Map<Long, List<Annotation>> annotationByLineAndTokenCurrentLine = null;
     if (!annotationByLineAndToken.containsKey(line))

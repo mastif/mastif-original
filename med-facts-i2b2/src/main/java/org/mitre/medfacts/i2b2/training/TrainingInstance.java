@@ -87,4 +87,18 @@ public class TrainingInstance
   {
     this.lineNumber = lineNumber;
   }
+
+  public String toStringWithExpectedValue()
+  {
+    StringBuilder b = new StringBuilder();
+    b.append(expectedValue);
+
+    for(String currentFeature : featureList)
+    {
+      b.append(" ");
+      b.append(currentFeature);
+    }
+
+    return b.toString();
+  }
 }

@@ -3,26 +3,26 @@ package org.mitre.medfacts.i2b2.util;
 public class Location
 {
   protected int line;
-  protected int character;
+  protected int tokenOffset;
 
   public Location()
   {
     line = -1;
-    character = -1;
+    tokenOffset = -1;
   }
 
   public Location(int line, int character)
   {
     this.line = line;
-    this.character = character;
+    this.tokenOffset = character;
   }
 
-  public Location(String lineText, String characterText)
+  public Location(String lineText, String tokenOffsetText)
   {
     int line = Integer.parseInt(lineText);
     this.line = line;
-    int character = Integer.parseInt(characterText);
-    this.character = character;
+    int tokenOffset = Integer.parseInt(tokenOffsetText);
+    this.tokenOffset = tokenOffset;
   }
 
   /**
@@ -42,24 +42,24 @@ public class Location
   }
 
   /**
-   * @return the character
+   * @return the tokenOffset
    */
-  public int getCharacter()
+  public int getTokenOffset()
   {
-    return character;
+    return tokenOffset;
   }
 
   /**
-   * @param character the character to set
+   * @param tokenOffset the tokenOffset to set
    */
-  public void setCharacter(int character)
+  public void setTokenOffset(int tokenOffset)
   {
-    this.character = character;
+    this.tokenOffset = tokenOffset;
   }
 
   @Override
   public String toString()
   {
-    return getLine() + ":" + getCharacter();
+    return getLine() + ":" + getTokenOffset();
   }
 }

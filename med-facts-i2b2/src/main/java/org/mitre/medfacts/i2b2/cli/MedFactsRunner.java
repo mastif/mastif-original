@@ -366,10 +366,10 @@ public class MedFactsRunner
     StringBuilder b = new StringBuilder();
     int lineLength = textLookup[lineOffset].length;
     boolean isOffsetLegit =
-            begin.getCharacter() >= 0 &&
-            begin.getCharacter() < lineLength &&
-            end.getCharacter() >= 0 &&
-            end.getCharacter() < lineLength;
+            begin.getTokenOffset() >= 0 &&
+            begin.getTokenOffset() < lineLength &&
+            end.getTokenOffset() >= 0 &&
+            end.getTokenOffset() < lineLength;
 
     //System.err.format("STATUS: checking offset(s): %s to %s%n", begin, end);
     if (!isOffsetLegit)
@@ -377,11 +377,11 @@ public class MedFactsRunner
       System.err.format("ERROR!: invalid line offset(s): %s to %s (%s) TEXT: >>%s<< %n", begin, end, getTextFilename(), ArrayPrinter.toString(textLookup[lineOffset]));
       return null;
     }
-    for (int i = begin.getCharacter(); i <= end.getCharacter(); i++)
+    for (int i = begin.getTokenOffset(); i <= end.getTokenOffset(); i++)
     {
       String currentToken = textLookup[lineOffset][i];
       b.append(currentToken);
-      boolean isLast = (i == end.getCharacter());
+      boolean isLast = (i == end.getTokenOffset());
       if (!isLast) { b.append(" "); }
     }
     return b.toString();
@@ -442,12 +442,12 @@ public class MedFactsRunner
 
       Location conceptBeginLocation = currentAssertionAnnotation.getBegin();
       int conceptBeginLine = conceptBeginLocation.getLine();
-      int conceptBeginCharacter = conceptBeginLocation.getCharacter();
+      int conceptBeginTokenOffset = conceptBeginLocation.getTokenOffset();
       Location conceptEndLocation = currentAssertionAnnotation.getEnd();
-      int conceptEndCharacter = conceptEndLocation.getCharacter();
+      int conceptEndTokenOffset = conceptEndLocation.getTokenOffset();
       String currentLine[] = textLookup[conceptBeginLine-1];
 
-      List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginCharacter, conceptEndCharacter, currentLine);
+      List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
       for (String currentFeature : wordLeftFeatureList)
       {
         sb.append(" ");
@@ -455,7 +455,7 @@ public class MedFactsRunner
         trainingInstance.addFeature(currentFeature);
       }
 
-      List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginCharacter, conceptEndCharacter, currentLine);
+      List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
       for (String currentFeature : wordRightFeatureList)
       {
         sb.append(" ");

@@ -30,8 +30,8 @@ public class AnnotationIndexer
       Location begin = currentAnnotation.getBegin();
       Location end = currentAnnotation.getEnd();
       long beginLine = begin.getLine();
-      long beginToken = begin.getCharacter();
-      long endToken = end.getCharacter();
+      long beginToken = begin.getTokenOffset();
+      long endToken = end.getTokenOffset();
 
       List<Annotation> annotationByLineCurrent = null;
       if (!annotationByLine.containsKey(beginLine))

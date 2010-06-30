@@ -6,7 +6,9 @@
 package org.mitre.medfacts.i2b2.training;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -17,7 +19,7 @@ public class TrainingInstance
   protected String filename;
   protected int lineNumber;
   protected String expectedValue;
-  protected List<String> featureList = new ArrayList<String>();
+  protected Set<String> featureSet = new HashSet<String>();
 
   /**
    * @return the expectedValue
@@ -38,22 +40,22 @@ public class TrainingInstance
   /**
    * @return the featureList
    */
-  public List<String> getFeatureList()
+  public Set<String> getFeatureSet()
   {
-    return featureList;
+    return featureSet;
   }
 
   /**
    * @param featureList the featureList to set
    */
-  public void setFeatureList(List<String> featureList)
+  public void setFeatureSet(Set<String> featureList)
   {
-    this.featureList = featureList;
+    this.featureSet = featureList;
   }
 
   public void addFeature(String conceptTextFeature)
   {
-    featureList.add(conceptTextFeature);
+    featureSet.add(conceptTextFeature);
   }
 
   /**
@@ -93,7 +95,7 @@ public class TrainingInstance
     StringBuilder b = new StringBuilder();
     b.append(expectedValue);
 
-    for(String currentFeature : featureList)
+    for(String currentFeature : featureSet)
     {
       b.append(" ");
       b.append(currentFeature);

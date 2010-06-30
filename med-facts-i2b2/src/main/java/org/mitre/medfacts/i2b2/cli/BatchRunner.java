@@ -279,7 +279,9 @@ public class BatchRunner
 
     for (TrainingInstance currentTrainingInstance : trainingInstanceSet)
     {
-      trainer.addTrainingInstance(currentTrainingInstance.getExpectedValue(), currentTrainingInstance.getFeatureList());
+      Set<String> featureSet = currentTrainingInstance.getFeatureSet();
+      List<String> featureList = new ArrayList<String>(featureSet);
+      trainer.addTrainingInstance(currentTrainingInstance.getExpectedValue(), featureList);
     }
     String model = trainer.train();
 
@@ -292,7 +294,8 @@ public class BatchRunner
     for (TrainingInstance currentEvalInstance : evaluationInstanceSet)
     {
       String expectedValue = currentEvalInstance.getExpectedValue();
-      List<String> featureList = currentEvalInstance.getFeatureList();
+      Set<String> featureSet = currentEvalInstance.getFeatureSet();
+      List<String> featureList = new ArrayList<String>(featureSet);
       String actualValue = decoder.classifyInstance(featureList);
 
       boolean actualMatchesExpected = actualValue.equalsIgnoreCase(expectedValue);

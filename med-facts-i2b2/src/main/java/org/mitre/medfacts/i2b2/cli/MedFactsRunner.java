@@ -469,11 +469,13 @@ public class MedFactsRunner
         String currentToken = tokensOnCurrentLine[currentTokenOffset];
         List<Annotation> annotationsAtCurrentPosition = indexer.findAnnotationsForPosition(lineNumber, currentTokenOffset);
 
+        int scopeCount = 0;
         if (annotationsAtCurrentPosition != null)
         for (Annotation a : annotationsAtCurrentPosition)
         {
           if (a instanceof ScopeAnnotation)
           {
+            scopeCount++;
             trainingInstance.addFeature("scope");
             trainingInstance.addFeature("in_scope_" + currentToken);
           }
@@ -483,6 +485,12 @@ public class MedFactsRunner
             trainingInstance.addFeature("cue");
             trainingInstance.addFeature("in_cue_" + currentToken);
           }
+        }
+        if (scopeCount > 0)
+        {
+          trainingInstance.addFeature("scope_count_" + scopeCount);
+          boolean scopeCountIsEven = (scopeCount % 2) == 0;
+          trainingInstance.addFeature("scope_count_" + (scopeCountIsEven ? "even" : "odd"));
         }
       }
 

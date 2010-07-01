@@ -413,7 +413,6 @@ public class MedFactsRunner
         continue;
       }
 
-      StringBuilder sb = new StringBuilder();
       TrainingInstance trainingInstance = new TrainingInstance();
 
       trainingInstance.setFilename(getTextFilename());
@@ -421,13 +420,10 @@ public class MedFactsRunner
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
       String assertionValueString = assertionValue.toString().toLowerCase();
-      sb.append(assertionValueString);
       trainingInstance.setExpectedValue(assertionValueString);
 
       String conceptText = currentAssertionAnnotation.getConceptText();
       String conceptTextFeature = constructConceptPhraseFeature(conceptText);
-      sb.append(" ");
-      sb.append(conceptTextFeature);
       trainingInstance.addFeature(conceptTextFeature);
 
       Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);
@@ -435,8 +431,6 @@ public class MedFactsRunner
       {
         String conceptHeadText = conceptHeadMatcher.group(1);
         String conceptHeadFeature = constructConceptHeadFeature(conceptHeadText);
-        sb.append(" ");
-        sb.append(conceptHeadFeature);
         trainingInstance.addFeature(conceptHeadFeature);
       }
 
@@ -450,16 +444,12 @@ public class MedFactsRunner
       List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
       for (String currentFeature : wordLeftFeatureList)
       {
-        sb.append(" ");
-        sb.append(currentFeature);
         trainingInstance.addFeature(currentFeature);
       }
 
       List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
       for (String currentFeature : wordRightFeatureList)
       {
-        sb.append(" ");
-        sb.append(currentFeature);
         trainingInstance.addFeature(currentFeature);
       }
       System.out.format("lineNumber: %d%n", lineNumber);
@@ -494,9 +484,7 @@ public class MedFactsRunner
         }
       }
 
-      //String featureLine = sb.toString();
       String featureLine = trainingInstance.toStringWithExpectedValue();
-      //System.out.println(featureLine);
       featuresPrinter.println(featureLine);
       getMapOfTrainingInstanceLists().get(AnnotationType.ASSERTION).add(trainingInstance);
 

@@ -465,15 +465,19 @@ public class MedFactsRunner
         {
           if (a instanceof ScopeAnnotation)
           {
+            ScopeAnnotation scope = (ScopeAnnotation)a;
             scopeCount++;
             trainingInstance.addFeature("scope");
             trainingInstance.addFeature("in_scope_" + currentToken);
+            trainingInstance.addFeature("in_scope_id_" + scope.getScopeId() + "_" + currentToken);
           }
 
           if (a instanceof CueAnnotation)
           {
+            CueAnnotation cue = (CueAnnotation)a;
             trainingInstance.addFeature("cue");
             trainingInstance.addFeature("in_cue_" + currentToken);
+            trainingInstance.addFeature("in_cue_for_scope_id_" + cue.getScopeIdReference() + "_" + currentToken);
           }
         }
         if (scopeCount > 0)

@@ -316,7 +316,7 @@ public class MedFactsRunner
 
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
-    //processScopeInProcess(annotationsByType, allAnnotationList);
+    processScopeInProcess(annotationsByType, allAnnotationList);
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);

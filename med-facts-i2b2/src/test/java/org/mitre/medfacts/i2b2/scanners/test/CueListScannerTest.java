@@ -16,6 +16,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.scanners.CueListScanner;
 
 /**
@@ -63,7 +64,7 @@ public class CueListScannerTest {
        File negationCueFile = new File(negationCueFileUri);
        System.out.format("negation cue list url: %s%n", negationCueFile);
 
-       CueListScanner scanner = new CueListScanner(negationCueFile);
+       CueListScanner scanner = new CueListScanner(negationCueFile, CueWordType.NEGATION);
        scanner.setTextLookup(textLookup);
        scanner.execute();
        List<Annotation> annotationList = scanner.getAnnotationList();
@@ -97,7 +98,7 @@ public class CueListScannerTest {
        File negationCueFile = new File(negationCueFileUri);
        System.out.format("negation cue list url: %s%n", negationCueFile);
 
-       CueListScanner scanner = new CueListScanner(negationCueFile);
+       CueListScanner scanner = new CueListScanner(negationCueFile, CueWordType.SPECULATION);
        scanner.setTextLookup(textLookup);
        scanner.execute();
        List<Annotation> annotationList = scanner.getAnnotationList();

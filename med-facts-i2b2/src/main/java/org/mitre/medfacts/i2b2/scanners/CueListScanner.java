@@ -15,6 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
+import org.mitre.medfacts.i2b2.annotation.CueWordType;
+import org.mitre.medfacts.i2b2.util.Location;
 
 /**
  *
@@ -24,14 +27,17 @@ public class CueListScanner
 {
   public static Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
-  public CueListScanner(File scannerTermsFile)
+  protected CueWordType cueWordType;
+
+  public CueListScanner(File scannerTermsFile, CueWordType cueWordType)
   {
     loadScannerTermsFile(scannerTermsFile);
+    this.cueWordType = cueWordType;
   }
 
   protected String[][] textLookup;
   protected List<CueItem> cueItemList = new ArrayList<CueItem>();
-
+  protected List<Annotation> annotationList = new ArrayList<Annotation>();
 
   public void execute()
   {
@@ -47,11 +53,38 @@ public class CueListScanner
           if (matched)
           {
             System.out.format("MATCHES!!!%n  BEGIN MATCH%n  cue: %s%n  inputLine: %s%n  position: %d%n  END MATCH%n%n", cueItem.toString(), convertLineToString(currentLine), tokenOffset);
-
+            CueWordAnnotation a = new CueWordAnnotation();
+            int beginOffset = tokenOffset;
+            int endOffset = tokenOffset + size - 1;
+            Location beginLocation = new Location();
+            beginLocation.setLine(lineNumber);
+            beginLocation.setTokenOffset(beginOffset);
+            Location endLocation = new Location();
+            endLocation.setLine(lineNumber);
+            endLocation.setTokenOffset(endOffset);
+            a.setBegin(beginLocation);
+            a.setEnd(endLocation);
+            a.setCueWordType(getCueWordType());
+            a.setCueWordText(constructWordSequenceText(currentLine, beginOffset, endOffset));
+            annotationList.add(a);
           }
         }
       }
     }
+  }
+
+  public String constructWordSequenceText(String line[], int begin, int endOffset)
+  {
+    StringBuilder sb = new StringBuilder();
+    int last = Math.min(line.length - 1, endOffset);
+    for (int i = begin; i <= last; i++)
+    {
+      boolean isLast = (i == line.length - 1);
+      String currentToken = line[i];
+      sb.append(currentToken);
+      if (!isLast) { sb.append(" "); }
+    }
+    return sb.toString();
   }
 
   public String convertLineToString(String currentLine[])
@@ -90,7 +123,6 @@ public class CueListScanner
   {
     this.textLookup = textLookup;
   }
-  protected List<Annotation> annotationList;
 
   /**
    * Get the value of annotationList
@@ -152,6 +184,22 @@ public class CueListScanner
       matches = cueItemToken.equals(sourceToken);
     }
     return matches;
+  }
+
+  /**
+   * @return the cueWordType
+   */
+  public CueWordType getCueWordType()
+  {
+    return cueWordType;
+  }
+
+  /**
+   * @param cueWordType the cueWordType to set
+   */
+  public void setCueWordType(CueWordType cueWordType)
+  {
+    this.cueWordType = cueWordType;
   }
 
 }

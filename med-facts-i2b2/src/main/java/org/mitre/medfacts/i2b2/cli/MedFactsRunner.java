@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
+import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
@@ -660,10 +661,11 @@ public class MedFactsRunner
       System.out.format("negation cue list uri: %s%n", negationCueFileUri);
       File negationCueFile = new File(negationCueFileUri);
       System.out.format("negation cue list url: %s%n", negationCueFile);
-      CueListScanner scanner = new CueListScanner(negationCueFile);
+      CueListScanner scanner = new CueListScanner(negationCueFile, CueWordType.NEGATION);
       scanner.setTextLookup(textLookup);
       scanner.execute();
       List<Annotation> annotationList = scanner.getAnnotationList();
+
     }
     catch (URISyntaxException e)
     {

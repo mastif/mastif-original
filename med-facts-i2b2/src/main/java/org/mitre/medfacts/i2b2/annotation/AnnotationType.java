@@ -13,5 +13,6 @@ public enum AnnotationType
   CONCEPT,
   ASSERTION,
   RELATION,
-  SCOPE
+  SCOPE,
+  CUEWORD
 }

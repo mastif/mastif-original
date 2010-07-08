@@ -145,6 +145,29 @@ public class MedFactsRunner
     return currentAnnotationType;
   }
 
+  public void processCueList(String cueListFilename, CueWordType cueWordType) throws URISyntaxException
+  {
+    ClassLoader classLoader = getClass().getClassLoader();
+    URL cueFileUrl = classLoader.getResource(cueListFilename);
+    System.out.format("cue list url: %s%n", cueFileUrl);
+    URI cueFileUri = cueFileUrl.toURI();
+    System.out.format("cue list uri: %s%n", cueFileUri);
+    File cueFile = new File(cueFileUri);
+    System.out.format("cue list url: %s%n", cueFile);
+    CueListScanner scanner = new CueListScanner(cueFile, cueWordType);
+    scanner.setTextLookup(textLookup);
+    scanner.execute();
+    List<Annotation> annotationList = scanner.getAnnotationList();
+    allAnnotationList.addAll(annotationList);
+    List<Annotation> cueWordAnnotationList = annotationsByType.get(AnnotationType.CUEWORD);
+    if (cueWordAnnotationList == null)
+    {
+      cueWordAnnotationList = new ArrayList<Annotation>();
+      annotationsByType.put(AnnotationType.CUEWORD, cueWordAnnotationList);
+    }
+    cueWordAnnotationList.addAll(annotationList);
+  }
+
   public void processScopeInProcess(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList) throws RuntimeException
   {
     String cueModelFileName = "cue.model";
@@ -654,17 +677,8 @@ public class MedFactsRunner
   {
     try
     {
-      ClassLoader classLoader = getClass().getClassLoader();
-      URL negationCueFileUrl = classLoader.getResource("org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt");
-      System.out.format("negation cue list url: %s%n", negationCueFileUrl);
-      URI negationCueFileUri = negationCueFileUrl.toURI();
-      System.out.format("negation cue list uri: %s%n", negationCueFileUri);
-      File negationCueFile = new File(negationCueFileUri);
-      System.out.format("negation cue list url: %s%n", negationCueFile);
-      CueListScanner scanner = new CueListScanner(negationCueFile, CueWordType.NEGATION);
-      scanner.setTextLookup(textLookup);
-      scanner.execute();
-      List<Annotation> annotationList = scanner.getAnnotationList();
+      processCueList("org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt", CueWordType.NEGATION);
+      processCueList("org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt", CueWordType.SPECULATION);
 
     }
     catch (URISyntaxException e)

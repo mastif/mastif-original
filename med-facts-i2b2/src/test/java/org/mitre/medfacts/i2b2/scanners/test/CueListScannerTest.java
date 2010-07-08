@@ -6,7 +6,7 @@
 package org.mitre.medfacts.i2b2.scanners.test;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.Annotation;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;

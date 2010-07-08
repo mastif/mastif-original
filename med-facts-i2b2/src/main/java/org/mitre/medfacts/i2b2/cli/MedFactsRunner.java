@@ -108,6 +108,7 @@ public class MedFactsRunner
       {
         processTextFile();
         processAnnotationFiles();
+        postProcess();
         //validateAnnotations();
         indexAnnotations();
         printOutFeatures();
@@ -644,6 +645,11 @@ public class MedFactsRunner
   private void indexAnnotations()
   {
     indexer.indexAnnotations(getAllAnnotationList());
+  }
+
+  public void postProcess()
+  {
+    
   }
 
 

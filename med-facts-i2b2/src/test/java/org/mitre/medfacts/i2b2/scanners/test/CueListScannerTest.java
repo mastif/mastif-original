@@ -56,7 +56,7 @@ public class CueListScannerTest {
        };
 
        ClassLoader classLoader = getClass().getClassLoader();
-       URL negationCueFileUrl = classLoader.getResource("updated_negation_cue_list.txt");
+       URL negationCueFileUrl = classLoader.getResource("org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt");
        System.out.format("negation cue list url: %s%n", negationCueFileUrl);
        URI negationCueFileUri = negationCueFileUrl.toURI();
        System.out.format("negation cue list uri: %s%n", negationCueFileUri);
@@ -90,7 +90,7 @@ public class CueListScannerTest {
        };
 
        ClassLoader classLoader = getClass().getClassLoader();
-       URL negationCueFileUrl = classLoader.getResource("updated_speculation_cue_list.txt");
+       URL negationCueFileUrl = classLoader.getResource("org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt");
        System.out.format("negation cue list url: %s%n", negationCueFileUrl);
        URI negationCueFileUri = negationCueFileUrl.toURI();
        System.out.format("negation cue list uri: %s%n", negationCueFileUri);

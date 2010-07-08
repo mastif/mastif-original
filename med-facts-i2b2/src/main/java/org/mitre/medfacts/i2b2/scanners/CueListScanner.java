@@ -121,7 +121,7 @@ public class CueListScanner
 
       for(String input = null; (input = bufferedReader.readLine()) != null; )
       {
-        System.out.format(" - INPUT LINE: %s%n", input);
+        //System.out.format(" - INPUT LINE: %s%n", input);
         String tokens[] = WHITESPACE_PATTERN.split(input);
         CueItem cueItem = new CueItem();
 

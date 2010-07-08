@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
 import org.mitre.medfacts.i2b2.processors.RelationFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ScopeFileProcessor;
+import org.mitre.medfacts.i2b2.scanners.CueListScanner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
@@ -649,8 +651,78 @@ public class MedFactsRunner
 
   public void postProcess()
   {
+    try
+    {
+      ClassLoader classLoader = getClass().getClassLoader();
+      URL negationCueFileUrl = classLoader.getResource("org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt");
+      System.out.format("negation cue list url: %s%n", negationCueFileUrl);
+      URI negationCueFileUri = negationCueFileUrl.toURI();
+      System.out.format("negation cue list uri: %s%n", negationCueFileUri);
+      File negationCueFile = new File(negationCueFileUri);
+      System.out.format("negation cue list url: %s%n", negationCueFile);
+      CueListScanner scanner = new CueListScanner(negationCueFile);
+      scanner.setTextLookup(textLookup);
+      scanner.execute();
+      List<Annotation> annotationList = scanner.getAnnotationList();
+    }
+    catch (URISyntaxException e)
+    {
+      Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, "URISyntaxException when trying to load cue word", e);
+      throw new RuntimeException("URISyntaxException when trying to load cue word", e);
+    }
+    //  private List<Annotation> processConceptAnnotationFile(String currentFilename)
+    //          throws FileNotFoundException, IOException
+    //  {
+    //    FileReader fr = new FileReader(currentFilename);
+    //    BufferedReader br = new BufferedReader(fr);
+    //
+    //    List<Annotation> annotationList = new ArrayList<Annotation>();
+    //
+    //    Pattern conceptPattern = Pattern.compile("^c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)\\|\\|t=\"(.*)\"$");
+    //
+    //    String currentLine = null;
+    //    //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
+    //    ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
+    //    int lineNumber = 0;
+    //    while ((currentLine = br.readLine()) != null)
+    //    {
+    //      ConceptAnnotation c = processConceptAnnotationLine(currentLine, conceptPattern);
+    //      annotationList.add(c);
+    //    }
+    //
+    //    br.close();
+    //    fr.close();
+    //
+    //    return annotationList;
+    //
+    //  }
+    //
+    //  public ConceptAnnotation processConceptAnnotationLine(String currentLine, Pattern conceptPattern)
+    //  {
+    //    System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
+    //    Matcher matcher = conceptPattern.matcher(currentLine);
+    //    System.out.format("    matches? %b%n", matcher.matches());
+    //    String conceptText = matcher.group(1);
+    //    String beginLine = matcher.group(2);
+    //    String beginCharacter = matcher.group(3);
+    //    String endLine = matcher.group(4);
+    //    String endCharacter = matcher.group(5);
+    //    String conceptTypeText = matcher.group(6);
+    //    System.out.format("    concept text: %s%n", conceptText);
+    //    System.out.format("    concept type text: %s%n", conceptTypeText);
+    //    ConceptAnnotation c = new ConceptAnnotation();
+    //    c.setConceptText(conceptText);
+    //    c.setBegin(new Location(beginLine, beginCharacter));
+    //    c.setEnd(new Location(endLine, endCharacter));
+    //    c.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
+    //    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", c);
+    //    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
+    //    return c;
+    //  }
     
   }
+
+
 
 
 //  private List<Annotation> processConceptAnnotationFile(String currentFilename)

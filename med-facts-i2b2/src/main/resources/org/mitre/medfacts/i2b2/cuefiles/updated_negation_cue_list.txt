@@ -1,18 +1,18 @@
 not
-n\'t
-\&apos;t
-didn\'t
-doesn\'t
-don\'t
-isn\'t
-aren\'t
-wasn\'t
-weren\'t
-hadn\'t
-hasn\'t
-haven\'t
-won\'t
-wouldn\'t
+n't
+&apos;t
+didn't
+doesn't
+don't
+isn't
+aren't
+wasn't
+weren't
+hadn't
+hasn't
+haven't
+won't
+wouldn't
 never
 no longer
 in no way
@@ -33,8 +33,8 @@ unremarkable for
 unassociated with
 impossible
 cannot
-can\'t
-couldn\'t
+can't
+couldn't
 inability
 unable
 forget
@@ -61,8 +61,8 @@ avoidance
 prevent
 prevention
 prophylaxis against
-shouldn\'t
-mustn\'t
+shouldn't
+mustn't
 unwilling
 unwillingness
 reluctance
@@ -146,11 +146,11 @@ aside from
 other than
 resolved
 resolving
-w\/o
+w/o
 clear of
 clear to
 fixed
-\( - \)
+( - )
 non
 lack of
 lack

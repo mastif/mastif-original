@@ -1,4 +1,4 @@
-\?
+?
 apparent
 apparently
 appear
@@ -112,8 +112,8 @@ questionable
 questioned
 questioning
 questions
-r \/ o
-r\/o
+r / o
+r/o
 reportedly
 risk for
 risk of
@@ -173,7 +173,7 @@ unclear
 unknown
 unlikely
 unsure
-v\.s\.
+v.s.
 versus
 vs
 whether

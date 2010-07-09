@@ -1,0 +1,18 @@
+on exertion
+on exercise
+with exertion
+with exercise
+exertional
+allergy
+allergies
+allergic to
+intolerance
+with DRUG
+DRUG cause SYMPTOM
+DRUG give SYMPTOM
+DRUG lead to SYMPTOM
+DRUG induce SYMPTOM
+after
+post
+while
+when

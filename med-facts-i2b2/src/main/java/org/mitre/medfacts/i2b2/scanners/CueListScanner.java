@@ -76,32 +76,13 @@ public class CueListScanner
         // generate alternative sentences for the current line with any
         // combinationthe of the PROBLEM/TREATMENT/TEST annotations substituted
         // out to create new sentences
-        List<Annotation> annotationsForCurrentLine =
-            findAnnotationsForCurrentLine(annotationList, lineNumberOffset + 1);
-
-        String alternativeLines[][] = generateAlternatives(currentLine, annotationsForCurrentLine);
+//        List<Annotation> annotationsForCurrentLine =
+//            findAnnotationsForCurrentLine(annotationList, lineNumberOffset + 1);
+//
+//        String alternativeLines[][] = generateAlternatives(currentLine, annotationsForCurrentLine);
 
       }
     }
-  }
-
-  String[][] generateAlternatives(String currentLine[], List<Annotation> annotationList)
-  {
-    List<Annotation> conceptAnnotations = new ArrayList<Annotation>();
-    for (Annotation currentAnnotation : annotationList)
-    {
-      if (currentAnnotation instanceof ConceptAnnotation)
-      {
-        conceptAnnotations.add(currentAnnotation);
-      }
-    }
-
-    int conceptCount = conceptAnnotations.size();
-    List<Set<Integer>> combinations = new ArrayList<Set<Integer>>();
-    combinations = generateCombinations(conceptCount);
-
-    // todo finish this...
-    return null;
   }
 
   public String constructWordSequenceText(String line[], int begin, int endOffset)
@@ -244,27 +225,6 @@ public class CueListScanner
       }
     }
     return filteredAnnotationList;
-  }
-
-  public List<Set<Integer>> generateCombinations(int conceptCount)
-  {
-    List<Set<Integer>> accumulatedList = new ArrayList<Set<Integer>>(conceptCount);
-
-    long max = 2 ^ conceptCount;
-    for (int i = 1; i <= max; i++)
-    {
-      Set<Integer> currentSet = new TreeSet<Integer>();
-      for (int j = 1; j <= conceptCount; j++)
-      {
-        if ((i & (2^j)) != 0)
-        {
-          currentSet.add(j);
-        }
-      }
-      accumulatedList.add(currentSet);
-    }
-
-    return accumulatedList;
   }
 
 }

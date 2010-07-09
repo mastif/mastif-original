@@ -11,10 +11,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.util.Location;
@@ -44,9 +47,9 @@ public class CueListScanner
     for (CueItem cueItem : cueItemList)
     {
       int size = cueItem.getSize();
-      for (int lineNumber=0; lineNumber < textLookup.length; lineNumber++)
+      for (int lineNumberOffset=0; lineNumberOffset < textLookup.length; lineNumberOffset++)
       {
-        String currentLine[] = textLookup[lineNumber];
+        String currentLine[] = textLookup[lineNumberOffset];
         for (int tokenOffset=0; tokenOffset + size - 1 < currentLine.length; tokenOffset++)
         {
           boolean matched = compareForCueMatch(cueItem, currentLine, tokenOffset);
@@ -57,10 +60,10 @@ public class CueListScanner
             int beginOffset = tokenOffset;
             int endOffset = tokenOffset + size - 1;
             Location beginLocation = new Location();
-            beginLocation.setLine(lineNumber);
+            beginLocation.setLine(lineNumberOffset + 1);
             beginLocation.setTokenOffset(beginOffset);
             Location endLocation = new Location();
-            endLocation.setLine(lineNumber);
+            endLocation.setLine(lineNumberOffset + 1);
             endLocation.setTokenOffset(endOffset);
             a.setBegin(beginLocation);
             a.setEnd(endLocation);
@@ -69,8 +72,36 @@ public class CueListScanner
             annotationList.add(a);
           }
         }
+
+        // generate alternative sentences for the current line with any
+        // combinationthe of the PROBLEM/TREATMENT/TEST annotations substituted
+        // out to create new sentences
+        List<Annotation> annotationsForCurrentLine =
+            findAnnotationsForCurrentLine(annotationList, lineNumberOffset + 1);
+
+        String alternativeLines[][] = generateAlternatives(currentLine, annotationsForCurrentLine);
+
       }
     }
+  }
+
+  String[][] generateAlternatives(String currentLine[], List<Annotation> annotationList)
+  {
+    List<Annotation> conceptAnnotations = new ArrayList<Annotation>();
+    for (Annotation currentAnnotation : annotationList)
+    {
+      if (currentAnnotation instanceof ConceptAnnotation)
+      {
+        conceptAnnotations.add(currentAnnotation);
+      }
+    }
+
+    int conceptCount = conceptAnnotations.size();
+    List<Set<Integer>> combinations = new ArrayList<Set<Integer>>();
+    combinations = generateCombinations(conceptCount);
+
+    // todo finish this...
+    return null;
   }
 
   public String constructWordSequenceText(String line[], int begin, int endOffset)
@@ -200,6 +231,40 @@ public class CueListScanner
   public void setCueWordType(CueWordType cueWordType)
   {
     this.cueWordType = cueWordType;
+  }
+
+  public List<Annotation> findAnnotationsForCurrentLine(List<Annotation> allAnnotationList, int lineNumber)
+  {
+    List<Annotation> filteredAnnotationList = new ArrayList<Annotation>();
+    for (Annotation candidateAnnotation : allAnnotationList)
+    {
+      if (candidateAnnotation.getBegin().getLine() == lineNumber)
+      {
+        filteredAnnotationList.add(candidateAnnotation);
+      }
+    }
+    return filteredAnnotationList;
+  }
+
+  public List<Set<Integer>> generateCombinations(int conceptCount)
+  {
+    List<Set<Integer>> accumulatedList = new ArrayList<Set<Integer>>(conceptCount);
+
+    long max = 2 ^ conceptCount;
+    for (int i = 1; i <= max; i++)
+    {
+      Set<Integer> currentSet = new TreeSet<Integer>();
+      for (int j = 1; j <= conceptCount; j++)
+      {
+        if ((i & (2^j)) != 0)
+        {
+          currentSet.add(j);
+        }
+      }
+      accumulatedList.add(currentSet);
+    }
+
+    return accumulatedList;
   }
 
 }

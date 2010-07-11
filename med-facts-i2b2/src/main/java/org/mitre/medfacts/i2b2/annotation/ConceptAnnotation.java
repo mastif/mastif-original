@@ -6,6 +6,7 @@
 package org.mitre.medfacts.i2b2.annotation;
 
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  *
@@ -14,6 +15,9 @@ import java.io.StringWriter;
 public class ConceptAnnotation extends Annotation
 {
   protected ConceptType conceptType;
+  protected List<ScopeAnnotation> EnclosingScopes; /* Alex Yeh: list of scopes that contain this concept.
+                                                    *  Declare here instead of in AssertionAnnotation class because the latter might not be used with "assertions" that do not mention the expected value.
+                                                    */
 
   /**
    * @return the conceptType
@@ -29,6 +33,22 @@ public class ConceptAnnotation extends Annotation
   public void setConceptType(ConceptType conceptType)
   {
     this.conceptType = conceptType;
+  }
+
+  /**
+   * @return the EnclosingScopes
+   */
+  public List<ScopeAnnotation> getEnclosingScopes()
+  {
+    return EnclosingScopes;
+  }
+
+  /**
+   * @param EnclosingScopes the EnclosingScopes to set
+   */
+  public void setEnclosingScopes(List<ScopeAnnotation> EnclosingScopes)
+  {
+    this.EnclosingScopes = EnclosingScopes;
   }
 
   @Override

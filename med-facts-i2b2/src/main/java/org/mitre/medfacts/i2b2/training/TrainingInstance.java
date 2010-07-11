@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 
 /**
  *
@@ -20,6 +21,7 @@ public class TrainingInstance
   protected int lineNumber;
   protected String expectedValue;
   protected Set<String> featureSet = new HashSet<String>();
+  protected AssertionAnnotation AssertAnnotateForTI; /* Alex Yeh: the assertion annotation associated with this training instance */
 
   /**
    * @return the expectedValue
@@ -88,6 +90,22 @@ public class TrainingInstance
   public void setLineNumber(int lineNumber)
   {
     this.lineNumber = lineNumber;
+  }
+
+  /**
+   * @return the lineNumber
+   */
+  public AssertionAnnotation getAssertAnnotateForTI()
+  {
+    return AssertAnnotateForTI;
+  }
+
+  /**
+   * @param lineNumber the lineNumber to set
+   */
+  public void setAssertAnnotateForTI(AssertionAnnotation AssertAnnotateForTI)
+  {
+    this.AssertAnnotateForTI = AssertAnnotateForTI;
   }
 
   public String toStringWithExpectedValue()

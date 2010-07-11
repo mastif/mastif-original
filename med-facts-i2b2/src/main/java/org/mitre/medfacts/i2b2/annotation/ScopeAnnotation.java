@@ -14,6 +14,7 @@ import java.io.StringWriter;
 public class ScopeAnnotation extends ScopeOrCueAnnotation
 {
   protected int scopeId;
+  protected CueAnnotation CueForScope; /* Alex Yeh: assume 1 cue for this scope */
 
   /**
    * @return the scopeId
@@ -29,6 +30,22 @@ public class ScopeAnnotation extends ScopeOrCueAnnotation
   public void setScopeId(int scopeId)
   {
     this.scopeId = scopeId;
+  }
+
+  /**
+   * @return the CueForScope
+   */
+  public CueAnnotation getCueForScope()
+  {
+    return CueForScope;
+  }
+
+  /**
+   * @param CueForScope the CueForScope to set
+   */
+  public void setCueForScope(CueAnnotation CueForScope)
+  {
+    this.CueForScope = CueForScope;
   }
 
   @Override

@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
+import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
@@ -505,6 +506,13 @@ public class MedFactsRunner
             trainingInstance.addFeature("cue");
             trainingInstance.addFeature("in_cue_" + currentToken);
             trainingInstance.addFeature("in_cue_for_scope_id_" + cue.getScopeIdReference() + "_" + currentToken);
+          }
+
+          if (a instanceof CueWordAnnotation)
+          {
+            CueWordAnnotation cueWord = (CueWordAnnotation)a;
+            trainingInstance.addFeature("cueword");
+            trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
           }
         }
         if (scopeCount > 0)

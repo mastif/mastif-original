@@ -21,6 +21,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
@@ -38,6 +39,7 @@ import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
+import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
@@ -48,6 +50,9 @@ import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
+import org.mitre.medfacts.zoner.LineAndTokenPosition;
+import org.mitre.medfacts.zoner.ZonerCli;
+import org.mitre.medfacts.zoner.ZonerCli.Range;
 
 /**
  *
@@ -68,6 +73,7 @@ public class MedFactsRunner
   protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
 
   AnnotationIndexer indexer = new AnnotationIndexer();
+  protected String entireContents;
 
   public MedFactsRunner()
   {
@@ -114,6 +120,7 @@ public class MedFactsRunner
         processTextFile();
         processAnnotationFiles();
         postProcess();
+        processZones();
         //validateAnnotations();
         indexAnnotations();
         linkAnnotations();
@@ -127,6 +134,74 @@ public class MedFactsRunner
         Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, null, ex);
         throw new RuntimeException("problem processing files; IOException", ex);
       }
+  }
+
+  public void processZones()
+  {
+    ZonerCli zoner = new ZonerCli();
+    zoner.setEntireContents(getEntireContents());
+    zoner.findHeadings();
+    List<Range> zonerRangeList = zoner.getRangeList();
+
+    for (Range currentRange : zonerRangeList)
+    {
+      LineAndTokenPosition rangeBegin = currentRange.getBeginLineAndToken();
+      LineAndTokenPosition rangeEnd = currentRange.getEndLineAndToken();
+
+      int firstLine = rangeBegin.getLine();
+      int lastLine = rangeEnd.getLine();
+
+      for (int i=firstLine; i <= lastLine; i++)
+      {
+        boolean isFirstLine = (i == firstLine);
+        boolean isLastLine  = (i == lastLine);
+
+        int beginToken;
+        if (isFirstLine)
+        {
+          beginToken = rangeBegin.getTokenOffset();
+        } else
+        {
+          beginToken = 0;
+        }
+
+        int endToken;
+        if (isLastLine)
+        {
+          endToken = rangeEnd.getTokenOffset();
+        } else
+        {
+          // todo fix logic here
+          if (i >= textLookup.length)
+          {
+            System.out.println("This should not be happening, fix me... (can be ignored for now)");
+            continue;
+          }
+          endToken = textLookup[i].length - 1;
+        }
+
+        ZoneAnnotation zone = new ZoneAnnotation();
+        zone.setZoneName(currentRange.getLabel());
+        Location begin = new Location();
+        begin.setLine(i);
+        begin.setTokenOffset(beginToken);
+        zone.setBegin(begin);
+        Location end = new Location();
+        end.setLine(i);
+        end.setTokenOffset(endToken);
+        zone.setEnd(end);
+
+        allAnnotationList.add(zone);
+        List<Annotation> zoneAnnotationList = annotationsByType.get(AnnotationType.ZONE);
+        if (zoneAnnotationList == null)
+        {
+          zoneAnnotationList = new ArrayList<Annotation>();
+          annotationsByType.put(AnnotationType.ZONE, zoneAnnotationList);
+        }
+        zoneAnnotationList.add(zone);
+      }
+    }
+
   }
 
   public AnnotationType getAnnotationTypeFromFilename(String currentFilename)
@@ -257,12 +332,16 @@ public class MedFactsRunner
     FileReader fr = new FileReader(getTextFilename());
     BufferedReader br = new BufferedReader(fr);
 
+    StringWriter writer = new StringWriter();
+    PrintWriter printer = new PrintWriter(writer);
+
     String currentLine = null;
     //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
     ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
     int lineNumber = 0;
     while ((currentLine = br.readLine()) != null)
     {
+      printer.println(currentLine);
 //      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
       //ArrayList<String> currentTextLookupLine = new ArrayList<String>();
       //textLookup.add(currentTextLookupLine);
@@ -276,6 +355,11 @@ public class MedFactsRunner
 
       lineNumber++;
     }
+
+    setEntireContents(writer.toString());
+
+    printer.close();
+    writer.close();
 
     br.close();
     fr.close();
@@ -417,7 +501,7 @@ public class MedFactsRunner
     return b.toString();
   }
 
-  private void printOutFeatures() throws IOException
+  public void printOutFeatures() throws IOException
   {
     String featuresFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(getTextFilename()).replaceFirst(".features");
     File featuresFile = new File(featuresFilename);
@@ -515,6 +599,12 @@ public class MedFactsRunner
             CueWordAnnotation cueWord = (CueWordAnnotation)a;
             trainingInstance.addFeature("cueword");
             trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+          }
+
+          if (a instanceof ZoneAnnotation)
+          {
+            ZoneAnnotation zone = (ZoneAnnotation)a;
+            trainingInstance.addFeature("zone_" + escapeFeatureName(zone.getZoneName()));
           }
         }
         if (scopeCount > 0)
@@ -748,6 +838,16 @@ public class MedFactsRunner
     
   }
 
+  public String getEntireContents()
+  {
+    return entireContents;
+  }
+
+  public void setEntireContents(String entireContents)
+  {
+    this.entireContents = entireContents;
+  }
+
 
 
 
@@ -800,6 +900,14 @@ public class MedFactsRunner
 //    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
 //    return c;
 //  }
+
+  protected static final Pattern SPACE_PATTERN = Pattern.compile(" ");
+  public String escapeFeatureName(String originalFeatureName)
+  {
+    Matcher m = SPACE_PATTERN.matcher(originalFeatureName);
+    String cleanFeatureName = m.replaceAll("_");
+    return cleanFeatureName;
+  }
 
   //Create links between annotations needed by some status rules
   private void linkAnnotations()

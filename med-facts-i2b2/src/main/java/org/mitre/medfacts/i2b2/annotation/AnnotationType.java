@@ -14,5 +14,6 @@ public enum AnnotationType
   ASSERTION,
   RELATION,
   SCOPE,
-  CUEWORD
+  CUEWORD,
+  ZONE
 }

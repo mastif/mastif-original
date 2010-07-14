@@ -6,6 +6,7 @@ package org.mitre.medfacts.i2b2.cli;
 
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.mitre.medfacts.i2b2.annotation.ScopeOrCueAnnotation;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.Location;
@@ -115,6 +116,7 @@ public class MedFactsRunner
         postProcess();
         //validateAnnotations();
         indexAnnotations();
+        linkAnnotations();
         printOutFeatures();
       } catch (FileNotFoundException ex)
       {
@@ -798,5 +800,68 @@ public class MedFactsRunner
 //    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
 //    return c;
 //  }
+
+  //Create links between annotations needed by some status rules
+  private void linkAnnotations()
+  {
+    //Linking scopes to their cues
+    List<Annotation> scopeFileAnnotationList = annotationsByType.get(AnnotationType.SCOPE);
+    Map<Integer, ScopeAnnotation> scopeIdMap = new TreeMap<Integer, ScopeAnnotation>();
+    Map<Integer, CueAnnotation> cueForScopeIdMap = new TreeMap<Integer, CueAnnotation>();
+
+    for (Annotation current : scopeFileAnnotationList)
+    {
+        if (current instanceof ScopeAnnotation)
+        {
+            ScopeAnnotation scope = (ScopeAnnotation)current;
+            int scopeId = scope.getScopeId();
+            scopeIdMap.put(scopeId, scope);
+        } else if (current instanceof CueAnnotation)
+        {
+            CueAnnotation cue = (CueAnnotation)current;
+            int scopeIdForThisCue = cue.getScopeIdReference();
+            cueForScopeIdMap.put(scopeIdForThisCue, cue);
+        }
+    }
+
+    for (Entry<Integer, ScopeAnnotation> current : scopeIdMap.entrySet())
+    {
+        int currentId = current.getKey();
+        ScopeAnnotation scope = current.getValue();
+
+        CueAnnotation cue = cueForScopeIdMap.get(currentId);
+        scope.setCueForScope(cue);
+    }
+
+    //Find enclosing scopes for each assertion annotation
+    List<Annotation> assertionFileAnnotationList = annotationsByType.get(AnnotationType.ASSERTION);
+
+    for (Annotation current : assertionFileAnnotationList)
+    {
+      Location annotationBegin = current.getBegin();
+      int beginLine = annotationBegin.getLine();
+      int beginTokenOffset = annotationBegin.getTokenOffset();
+      Location annotationEnd = current.getEnd();
+      // Assume that 'annotationEnd.getLine()' will return the same line number as 'beginLine'
+      int endTokenOffset = annotationEnd.getTokenOffset();
+      List<Annotation> annotationsForFirstToken = indexer.findAnnotationsForPosition(beginLine, beginTokenOffset);
+      List<ScopeAnnotation> enclosingScopesFound = new ArrayList<ScopeAnnotation>();
+
+      for (Annotation annotationForFirstToken : annotationsForFirstToken)
+      {
+        if ((annotationForFirstToken instanceof ScopeAnnotation) &&
+                (endTokenOffset <= annotationForFirstToken.getEnd().getTokenOffset()))
+        {
+          //This annotation containing the first token of the current assertion annotation
+          // is a ScopeAnnotation that contains all the tokens of the current assertion annotation.
+          //Add it to the list of enclosing scopes.
+          ScopeAnnotation scope = (ScopeAnnotation)annotationForFirstToken;
+          enclosingScopesFound.add(scope);
+        }
+      }
+      AssertionAnnotation assertion = (AssertionAnnotation)current;
+      assertion.setEnclosingScopes(enclosingScopesFound);
+    }
+  }
 
 }

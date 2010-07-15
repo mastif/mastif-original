@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections>
+  <section>
+    <regex>((?:admission\s+date)|(?:date\s+of\s+admission))</regex>
+    <label>admission date</label>
+  </section>
+  <section>
+    <regex>discharge\s+date|date\s+of\s+discharge</regex>
+    <label>discharge date</label>
+  </section>
+  <section>
+    <regex>(?:family\s+(?:(?:medical|social)\s+)?history|fhx?|fam\s+hx)</regex>
+    <label>family history</label>
+  </section>
+  <section>
+    <regex>(?:physical\s+exam)</regex>
+    <label>physical exam</label>
+  </section>
+</sections>

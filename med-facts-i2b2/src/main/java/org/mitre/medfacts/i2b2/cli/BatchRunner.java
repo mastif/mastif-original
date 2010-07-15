@@ -5,10 +5,14 @@
 
 package org.mitre.medfacts.i2b2.cli;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -51,6 +55,7 @@ public class BatchRunner
   protected List<TrainingInstance> masterTrainingInstanceListEvaluation = new ArrayList<TrainingInstance>();
   protected List<TrainingInstance> trainingSplitList;
   protected List<TrainingInstance> testSplitList;
+  protected Set<String> enabledFeatureIdSet;
 
   public static void main(String args[])
   {
@@ -61,6 +66,7 @@ public class BatchRunner
     options.addOption("b", "base-dir", true, "base directory from which train and decode directories are located");
     options.addOption("t", "train", true, "train the model using the given parameter as the training data directory");
     options.addOption("d", "decode", true, "run the model using the given parameter as the data directory");
+    options.addOption("f", "features-file", true, "run the system and read in the 'features file' which lists featureids of features that should be used");
     
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -82,6 +88,15 @@ public class BatchRunner
       baseDir = cmd.getOptionValue("base-dir");
       System.out.format("using base directory: \"%s\"%n", baseDir);
     }
+
+    boolean hasFeaturesFile = false;
+    String featuresFileName = null;
+    if (cmd.hasOption("features-file"))
+    {
+      hasFeaturesFile = true;
+      featuresFileName = cmd.getOptionValue("features-file");
+    }
+
     String trainDir = null;
     if (isTrain)
     {
@@ -118,6 +133,12 @@ public class BatchRunner
       System.out.println("finished running decode.");
     }
 
+    File featuresFile = null;
+    if (hasFeaturesFile)
+    {
+      featuresFile = new File(baseDir, featuresFileName);
+    }
+
 //    String baseDirectory = args[0];
 //    System.out.format("base directory: %s%n", baseDirectory);
 
@@ -125,6 +146,10 @@ public class BatchRunner
     //batchRunner.setBaseDirectoryString(baseDirectory);
     batchRunner.setTrainingDirectory(trainDir);
     batchRunner.setDecodeDirectory(decodeDir);
+    if (featuresFileName != null)
+    {
+      batchRunner.processFeaturesFile(featuresFile);
+    }
     batchRunner.execute();
   }
 
@@ -169,6 +194,7 @@ public class BatchRunner
     runner.setAssertionFileProcessor(assertionFileProcessor);
     runner.setRelationFileProcessor(relationFileProcessor);
     runner.setScopeFileProcessor(scopeFileProcessor);
+    runner.setEnabledFeatureIdSet(enabledFeatureIdSet);
 
     runner.setTextFilename(currentTextFile.getAbsolutePath());
     if (conceptFileExists)
@@ -411,6 +437,61 @@ public class BatchRunner
   public void setDecodeDirectory(String decodeDirectory)
   {
     this.decodeDirectory = decodeDirectory;
+  }
+
+  private void processFeaturesFile(File featuresFile)
+  {
+    FileReader fileReader = null;
+    Set<String> featureIdSet = new HashSet<String>();
+    try
+    {
+      System.out.format("opening enabled features file: %s%n", featuresFile);
+      fileReader = new FileReader(featuresFile);
+      BufferedReader br = new BufferedReader(fileReader);
+
+      System.out.println("=== FEATURE IDS BEGIN ===");
+      for (String currentLine = null; (currentLine = br.readLine()) != null; )
+      {
+        // skip the current line if it's empty or if it's commented out
+        if (currentLine.isEmpty() || currentLine.startsWith("#"))
+        {
+          continue;
+        }
+        System.out.format(" - FEATURE ID: %s%n", currentLine);
+        featureIdSet.add(currentLine);
+      }
+      System.out.println("=== FEATURE IDS END ===");
+      setEnabledFeatureIdSet(featureIdSet);
+    } catch (IOException ex)
+    {
+      String message = "problem loading features file (IOException)";
+      Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, message, ex);
+      throw new RuntimeException(message, ex);
+    } finally
+    {
+      try
+      {
+        if (fileReader != null)
+        {
+          fileReader.close();
+        }
+      } catch (IOException ex)
+      {
+        String message = "problem closing features file";
+        Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, message, ex);
+        throw new RuntimeException(message, ex);
+      }
+    }
+  }
+
+  public Set<String> getEnabledFeatureIdSet()
+  {
+    return enabledFeatureIdSet;
+  }
+
+  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
+  {
+    this.enabledFeatureIdSet = enabledFeatureIdSet;
   }
 
 

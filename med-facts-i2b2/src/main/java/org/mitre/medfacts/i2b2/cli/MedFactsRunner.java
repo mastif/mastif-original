@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -71,6 +72,7 @@ public class MedFactsRunner
   protected FileProcessor assertionFileProcessor = new AssertionFileProcessor();
   protected FileProcessor relationFileProcessor = new RelationFileProcessor();
   protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
+  protected Set<String> enabledFeatureIdSet = null;
 
   AnnotationIndexer indexer = new AnnotationIndexer();
   protected String entireContents;
@@ -501,6 +503,11 @@ public class MedFactsRunner
     return b.toString();
   }
 
+  public boolean checkForEnabledFeature(String featureId)
+  {
+    return (enabledFeatureIdSet == null) || enabledFeatureIdSet.contains(featureId);
+  }
+
   public void printOutFeatures() throws IOException
   {
     String featuresFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(getTextFilename()).replaceFirst(".features");
@@ -537,15 +544,21 @@ public class MedFactsRunner
       trainingInstance.setExpectedValue(assertionValueString);
 
       String conceptText = currentAssertionAnnotation.getConceptText();
-      String conceptTextFeature = constructConceptPhraseFeature(conceptText);
-      trainingInstance.addFeature(conceptTextFeature);
-
-      Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);
-      if (conceptHeadMatcher.find())
+      if (checkForEnabledFeature("conceptTextFeature"))
       {
-        String conceptHeadText = conceptHeadMatcher.group(1);
-        String conceptHeadFeature = constructConceptHeadFeature(conceptHeadText);
-        trainingInstance.addFeature(conceptHeadFeature);
+        String conceptTextFeature = constructConceptPhraseFeature(conceptText);
+        trainingInstance.addFeature(conceptTextFeature);
+      }
+
+      if (checkForEnabledFeature("conceptPseudoHeadFeature"))
+      {
+        Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);
+        if (conceptHeadMatcher.find())
+        {
+          String conceptHeadText = conceptHeadMatcher.group(1);
+          String conceptHeadFeature = constructConceptHeadFeature(conceptHeadText);
+          trainingInstance.addFeature(conceptHeadFeature);
+        }
       }
 
       Location conceptBeginLocation = currentAssertionAnnotation.getBegin();
@@ -555,18 +568,25 @@ public class MedFactsRunner
       int conceptEndTokenOffset = conceptEndLocation.getTokenOffset();
       String currentLine[] = textLookup[conceptBeginLine-1];
 
-      List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
-      for (String currentFeature : wordLeftFeatureList)
+      if (checkForEnabledFeature("wordLeftFeature"))
       {
-        trainingInstance.addFeature(currentFeature);
+        List<String> wordLeftFeatureList = constructWordLeftFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
+        for (String currentFeature : wordLeftFeatureList)
+        {
+          trainingInstance.addFeature(currentFeature);
+        }
       }
 
-      List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
-      for (String currentFeature : wordRightFeatureList)
+      if (checkForEnabledFeature("wordRightFeature"))
       {
-        trainingInstance.addFeature(currentFeature);
+        List<String> wordRightFeatureList = constructWordRightFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, currentLine);
+        for (String currentFeature : wordRightFeatureList)
+        {
+          trainingInstance.addFeature(currentFeature);
+        }
       }
-      System.out.format("lineNumber: %d%n", lineNumber);
+
+      //System.out.format("lineNumber: %d%n", lineNumber);
       String tokensOnCurrentLine[] = textLookup[lineNumber-1];
       for (int currentTokenOffset=0; currentTokenOffset < tokensOnCurrentLine.length; currentTokenOffset++)
       {
@@ -581,37 +601,70 @@ public class MedFactsRunner
           {
             ScopeAnnotation scope = (ScopeAnnotation)a;
             scopeCount++;
-            trainingInstance.addFeature("scope");
-            trainingInstance.addFeature("in_scope_" + currentToken);
-            trainingInstance.addFeature("in_scope_id_" + scope.getScopeId() + "_" + currentToken);
+            if (checkForEnabledFeature("scope"))
+            {
+              trainingInstance.addFeature("scope");
+            }
+            if (checkForEnabledFeature("inScope"))
+            {
+              trainingInstance.addFeature("in_scope_" + currentToken);
+            }
+            if (checkForEnabledFeature("inScopeId"))
+            {
+              trainingInstance.addFeature("in_scope_id_" + scope.getScopeId() + "_" + currentToken);
+            }
           }
 
           if (a instanceof CueAnnotation)
           {
             CueAnnotation cue = (CueAnnotation)a;
-            trainingInstance.addFeature("cue");
-            trainingInstance.addFeature("in_cue_" + currentToken);
-            trainingInstance.addFeature("in_cue_for_scope_id_" + cue.getScopeIdReference() + "_" + currentToken);
+            if (checkForEnabledFeature("cue"))
+            {
+              trainingInstance.addFeature("cue");
+            }
+            if (checkForEnabledFeature("inCue"))
+            {
+              trainingInstance.addFeature("in_cue_" + currentToken);
+            }
+            if (checkForEnabledFeature("inCueForScopeId"))
+            {
+              trainingInstance.addFeature("in_cue_for_scope_id_" + cue.getScopeIdReference() + "_" + currentToken);
+            }
           }
 
           if (a instanceof CueWordAnnotation)
           {
             CueWordAnnotation cueWord = (CueWordAnnotation)a;
-            trainingInstance.addFeature("cueword");
-            trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+            if (checkForEnabledFeature("cueWord"))
+            {
+              trainingInstance.addFeature("cueword");
+            }
+            if (checkForEnabledFeature("cueWordValue"))
+            {
+              trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+            }
           }
 
-          if (a instanceof ZoneAnnotation)
+          if (checkForEnabledFeature("zone"))
           {
-            ZoneAnnotation zone = (ZoneAnnotation)a;
-            trainingInstance.addFeature("zone_" + escapeFeatureName(zone.getZoneName()));
+            if (a instanceof ZoneAnnotation)
+            {
+              ZoneAnnotation zone = (ZoneAnnotation)a;
+              trainingInstance.addFeature("zone_" + escapeFeatureName(zone.getZoneName()));
+            }
           }
         }
         if (scopeCount > 0)
         {
-          trainingInstance.addFeature("scope_count_" + scopeCount);
-          boolean scopeCountIsEven = (scopeCount % 2) == 0;
-          trainingInstance.addFeature("scope_count_" + (scopeCountIsEven ? "even" : "odd"));
+          if (checkForEnabledFeature("scopeCountNumber"))
+          {
+            trainingInstance.addFeature("scope_count_" + scopeCount);
+          }
+          if (checkForEnabledFeature("scopeCountEvenOrOdd"))
+          {
+            boolean scopeCountIsEven = (scopeCount % 2) == 0;
+            trainingInstance.addFeature("scope_count_" + (scopeCountIsEven ? "even" : "odd"));
+          }
         }
       }
 
@@ -970,6 +1023,16 @@ public class MedFactsRunner
       AssertionAnnotation assertion = (AssertionAnnotation)current;
       assertion.setEnclosingScopes(enclosingScopesFound);
     }
+  }
+
+  public Set<String> getEnabledFeatureIdSet()
+  {
+    return enabledFeatureIdSet;
+  }
+
+  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
+  {
+    this.enabledFeatureIdSet = enabledFeatureIdSet;
   }
 
 }

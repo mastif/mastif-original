@@ -52,7 +52,7 @@ public class CueAnnotation extends ScopeOrCueAnnotation
   public String toString()
   {
     StringWriter w = new StringWriter();
-    w.append("SCOPE ANNOTATION {");
+    w.append("CUE ANNOTATION {");
     w.append("begin: ");
     w.append(begin.toString());
     w.append("; end: " );

@@ -422,6 +422,15 @@ public class MedFactsRunner
         case SCOPE:
           currentAnnotationList = getScopeFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.SCOPE, currentAnnotationList);
+
+          List<Annotation> scopeOrCueAnnotationList = annotationsByType.get(AnnotationType.SCOPE);
+
+          System.out.format("=== BEGIN SCOPE AND CUE ANNOTATIONS === %n");
+          for (Annotation a : scopeOrCueAnnotationList)
+          {
+            System.out.format(" - scope or cue annotation: (%s) %s%n", a.getClass().getName().toString(), a.toString());
+          }
+          System.out.format("=== END SCOPE AND CUE ANNOTATIONS === %n");
           break;
       }
 
@@ -432,7 +441,7 @@ public class MedFactsRunner
 
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
-    processScopeInProcess(annotationsByType, allAnnotationList);
+    //processScopeInProcess(annotationsByType, allAnnotationList);
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);
@@ -976,7 +985,7 @@ public class MedFactsRunner
 
     for (Annotation current : scopeFileAnnotationList)
     {
-//        System.out.format("  ScopeOrCue: %s%n", current.toString()); //For testing
+        System.out.format("  ScopeOrCue (%s): %s%n", current.getClass().getName(), current.toString()); //For testing
         if (current instanceof ScopeAnnotation)
         {
             ScopeAnnotation scope = (ScopeAnnotation)current;

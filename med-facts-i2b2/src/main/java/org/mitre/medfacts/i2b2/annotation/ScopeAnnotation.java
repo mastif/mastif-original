@@ -54,13 +54,13 @@ public class ScopeAnnotation extends ScopeOrCueAnnotation
     StringWriter w = new StringWriter();
     w.append("SCOPE ANNOTATION {");
     w.append("begin: ");
-    w.append(begin.toString());
+    w.append((begin == null) ? "null" : begin.toString());
     w.append("; end: " );
-    w.append(end.toString());
+    w.append((end == null) ? "null" : end.toString());
     w.append("; scope type: ");
-    w.append(scopeType.toString().toLowerCase());
+    w.append((scopeType == null) ? "null" : scopeType.toString().toLowerCase());
     w.append("; conceptText: \"");
-    w.append(conceptText.replaceAll("\"", "\\\""));
+    w.append((conceptText == null) ? "null" : conceptText.replaceAll("\"", "\\\""));
     w.append("\"; scope id: ");
     w.append(Integer.toString(scopeId));
     w.append("}");

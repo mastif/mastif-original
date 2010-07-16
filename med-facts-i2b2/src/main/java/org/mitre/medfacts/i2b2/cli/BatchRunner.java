@@ -56,6 +56,7 @@ public class BatchRunner
   protected List<TrainingInstance> trainingSplitList;
   protected List<TrainingInstance> testSplitList;
   protected Set<String> enabledFeatureIdSet;
+  protected Mode mode;
 
   public static void main(String args[])
   {
@@ -67,6 +68,7 @@ public class BatchRunner
     options.addOption("t", "train", true, "train the model using the given parameter as the training data directory");
     options.addOption("d", "decode", true, "run the model using the given parameter as the data directory");
     options.addOption("f", "features-file", true, "run the system and read in the 'features file' which lists featureids of features that should be used");
+    options.addOption("m", "mode", true, "mode should either be \"eval\" or \"decode\".  eval is used if you have assertion files with expected assertion values.  decode is used if you have no assertion files and thus no known assertion values.");
     
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -77,6 +79,17 @@ public class BatchRunner
     {
       Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, "problem parsing command-line options", ex);
       throw new RuntimeException("problem parsing command-line options", ex);
+    }
+
+    Mode mode = Mode.EVAL;
+    if (cmd.hasOption("mode"))
+    {
+      String modeString = cmd.getOptionValue("mode");
+      if (modeString != null && !modeString.isEmpty())
+      {
+        modeString = modeString.toUpperCase();
+        mode = Mode.valueOf(modeString);
+      }
     }
 
     String baseDir = null;
@@ -146,6 +159,7 @@ public class BatchRunner
     //batchRunner.setBaseDirectoryString(baseDirectory);
     batchRunner.setTrainingDirectory(trainDir);
     batchRunner.setDecodeDirectory(decodeDir);
+    batchRunner.setMode(mode);
     if (featuresFileName != null)
     {
       batchRunner.processFeaturesFile(featuresFile);
@@ -161,7 +175,7 @@ public class BatchRunner
 //    return baseDirectoryString;
 //  }
 
-  public List<TrainingInstance> processFile(File currentTextFile)
+  public List<TrainingInstance> processFile(File currentTextFile, Mode mode)
   {
     System.out.format(" * %s%n", currentTextFile);
     String currentTextFilename = currentTextFile.getAbsolutePath();
@@ -195,6 +209,7 @@ public class BatchRunner
     runner.setRelationFileProcessor(relationFileProcessor);
     runner.setScopeFileProcessor(scopeFileProcessor);
     runner.setEnabledFeatureIdSet(enabledFeatureIdSet);
+    runner.setMode(mode);
 
     runner.setTextFilename(currentTextFile.getAbsolutePath());
     if (conceptFileExists)
@@ -219,7 +234,7 @@ public class BatchRunner
     return trainingInstanceList;
   }
 
-  public void processFileSet(File baseDirectory, List<TrainingInstance> masterList)
+  public void processFileSet(File baseDirectory, List<TrainingInstance> masterList, Mode mode)
   {
     File[] textFiles = baseDirectory.listFiles(new FilenameFilter()
     {
@@ -233,7 +248,7 @@ public class BatchRunner
     System.out.println("=== TEXT FILE LIST BEGIN ===");
     for (File currentTextFile : textFiles)
     {
-      List<TrainingInstance> trainingInstanceList = processFile(currentTextFile);
+      List<TrainingInstance> trainingInstanceList = processFile(currentTextFile, mode);
       masterList.addAll(trainingInstanceList);
     }
   }
@@ -252,13 +267,13 @@ public class BatchRunner
     if (trainingDirectory != null)
     {
       File trainingDirectoryFile = new File(trainingDirectory);
-      processFileSet(trainingDirectoryFile, masterTrainingInstanceListTraining);
+      processFileSet(trainingDirectoryFile, masterTrainingInstanceListTraining, Mode.TRAIN);
     }
 
     if (decodeDirectory != null)
     {
       File decodeDirectoryFile = new File(decodeDirectory);
-      processFileSet(decodeDirectoryFile, masterTrainingInstanceListEvaluation);
+      processFileSet(decodeDirectoryFile, masterTrainingInstanceListEvaluation, mode);
     }
 
     // train and evaluate the classifier
@@ -492,6 +507,16 @@ public class BatchRunner
   public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
   {
     this.enabledFeatureIdSet = enabledFeatureIdSet;
+  }
+
+  public Mode getMode()
+  {
+    return mode;
+  }
+
+  public void setMode(Mode mode)
+  {
+    this.mode = mode;
   }
 
 

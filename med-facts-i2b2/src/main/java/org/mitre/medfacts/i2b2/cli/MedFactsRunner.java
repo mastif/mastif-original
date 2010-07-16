@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
+import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
@@ -76,6 +77,7 @@ public class MedFactsRunner
 
   AnnotationIndexer indexer = new AnnotationIndexer();
   protected String entireContents;
+  protected Mode mode;
 
   public MedFactsRunner()
   {
@@ -410,10 +412,25 @@ public class MedFactsRunner
           //currentAnnotationList = processConceptAnnotationFile(currentFilename);
           currentAnnotationList = getConceptFileProcessor().processConceptAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.CONCEPT, currentAnnotationList);
+          if (mode == Mode.DECODE)
+          {
+            System.out.println(">>>processed concept file in decode mode; building assertions from concepts...");
+            List<Annotation> assertionAnnotationList =
+              buildAssertionsFromConcepts(currentAnnotationList);
+            annotationsByType.put(AnnotationType.ASSERTION, assertionAnnotationList);
+            // currentAnnotationList is added to the full list after this switch
+            // statement, so all the assertions are also added to the
+            // currentAnnotationList
+            currentAnnotationList.addAll(assertionAnnotationList);
+          }
           break;
         case ASSERTION:
-          currentAnnotationList = getAssertionFileProcessor().processConceptAnnotationFile(currentFilename);
-          annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
+          if (mode == Mode.EVAL || mode == Mode.TRAIN)
+          {
+            System.out.println(">>>in eval mode, reading assertions file");
+            currentAnnotationList = getAssertionFileProcessor().processConceptAnnotationFile(currentFilename);
+            annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
+          }
           break;
         case RELATION:
           currentAnnotationList = getRelationFileProcessor().processConceptAnnotationFile(currentFilename);
@@ -549,7 +566,7 @@ public class MedFactsRunner
       trainingInstance.setLineNumber(lineNumber);
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
-      String assertionValueString = assertionValue.toString().toLowerCase();
+      String assertionValueString = (assertionValue == null) ? "" : assertionValue.toString().toLowerCase();
       trainingInstance.setExpectedValue(assertionValueString);
 
       String conceptText = currentAssertionAnnotation.getConceptText();
@@ -1070,6 +1087,33 @@ public class MedFactsRunner
   public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
   {
     this.enabledFeatureIdSet = enabledFeatureIdSet;
+  }
+
+  public Mode getMode()
+  {
+    return mode;
+  }
+
+  public void setMode(Mode mode)
+  {
+    this.mode = mode;
+  }
+
+  public List<Annotation> buildAssertionsFromConcepts(List<Annotation> conceptList)
+  {
+    List<Annotation> assertionList = new ArrayList<Annotation>();
+    for (Annotation a : conceptList)
+    {
+      ConceptAnnotation concept = (ConceptAnnotation)a;
+      AssertionAnnotation assertion = new AssertionAnnotation();
+      assertion.setAssertionValue(null);
+      assertion.setBegin(concept.getBegin());
+      assertion.setEnd(concept.getEnd());
+      assertion.setConceptText(concept.getConceptText());
+      assertion.setConceptType(concept.getConceptType());
+      assertionList.add(assertion);
+    }
+    return assertionList;
   }
 
 }

@@ -970,19 +970,27 @@ public class MedFactsRunner
     Map<Integer, ScopeAnnotation> scopeIdMap = new TreeMap<Integer, ScopeAnnotation>();
     Map<Integer, CueAnnotation> cueForScopeIdMap = new TreeMap<Integer, CueAnnotation>();
 
+    //For testing -Alex Yeh
+    System.out.format("SCOPE ANNOTATIONS for FILE %s%n", textFilename);
+    System.out.format("  LIST SIZE: %s%n", scopeFileAnnotationList.size());
+
     for (Annotation current : scopeFileAnnotationList)
     {
+//        System.out.format("  ScopeOrCue: %s%n", current.toString()); //For testing
         if (current instanceof ScopeAnnotation)
         {
             ScopeAnnotation scope = (ScopeAnnotation)current;
+            System.out.format("  Found SCOPE: %s%n", scope.toString()); //For testing
             int scopeId = scope.getScopeId();
             scopeIdMap.put(scopeId, scope);
         } else if (current instanceof CueAnnotation)
         {
             CueAnnotation cue = (CueAnnotation)current;
+            System.out.format("  Found CUE: %n"); //rest gives error: %s%n", cue.toString()); //For testing
             int scopeIdForThisCue = cue.getScopeIdReference();
             cueForScopeIdMap.put(scopeIdForThisCue, cue);
         }
+        else { System.out.println("Found OTHER"); } //For testing
     }
 
     for (Entry<Integer, ScopeAnnotation> current : scopeIdMap.entrySet())
@@ -993,10 +1001,19 @@ public class MedFactsRunner
         CueAnnotation cue = cueForScopeIdMap.get(currentId);
         scope.setCueForScope(cue);
     }
+    //For testing -Alex Yeh
+    System.out.format("CUES for SCOPES in FILE %s%n", textFilename);
+    System.out.format("  MAP size: %s. The MAP: %s%n", scopeIdMap.entrySet().size(), scopeIdMap.entrySet().toString());
+    for (Entry<Integer, ScopeAnnotation> current : scopeIdMap.entrySet())
+    {
+        ScopeAnnotation scope = current.getValue();
+        System.out.format("  Scope: %s => Cue: %s%n", scope.toString(), scope.getCueForScope().toString());
+    }
 
     //Find enclosing scopes for each assertion annotation
     List<Annotation> assertionFileAnnotationList = annotationsByType.get(AnnotationType.ASSERTION);
 
+//    System.out.format("ASSERTIONS for FILE %s%n", textFilename); //For testing
     for (Annotation current : assertionFileAnnotationList)
     {
       Location annotationBegin = current.getBegin();
@@ -1007,7 +1024,9 @@ public class MedFactsRunner
       int endTokenOffset = annotationEnd.getTokenOffset();
       List<Annotation> annotationsForFirstToken = indexer.findAnnotationsForPosition(beginLine, beginTokenOffset);
       List<ScopeAnnotation> enclosingScopesFound = new ArrayList<ScopeAnnotation>();
+      AssertionAnnotation assertion = (AssertionAnnotation)current;
 
+//      System.out.format("   ASRT: %s => %s annotations for 1st token%n", assertion.toString(), annotationsForFirstToken.size()); //for testing
       for (Annotation annotationForFirstToken : annotationsForFirstToken)
       {
         if ((annotationForFirstToken instanceof ScopeAnnotation) &&
@@ -1020,9 +1039,18 @@ public class MedFactsRunner
           enclosingScopesFound.add(scope);
         }
       }
-      AssertionAnnotation assertion = (AssertionAnnotation)current;
       assertion.setEnclosingScopes(enclosingScopesFound);
     }
+    //For testing -Alex Yeh
+//    for (Annotation current : assertionFileAnnotationList)
+//    {
+//      AssertionAnnotation assertion = (AssertionAnnotation)current;
+//      System.out.format("   ASRT: %s => %s COVERING SCOPES%n", assertion.toString(), assertion.getEnclosingScopes().size());
+//      for (ScopeAnnotation scope: assertion.getEnclosingScopes())
+//      {
+//        System.out.format("      CVR SCP: %s%n", scope.toString());
+//      }
+//    }
   }
 
   public Set<String> getEnabledFeatureIdSet()

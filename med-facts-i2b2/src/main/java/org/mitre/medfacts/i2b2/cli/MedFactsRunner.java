@@ -37,6 +37,7 @@ import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
+import org.mitre.medfacts.i2b2.annotation.CueSubType;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
@@ -564,6 +565,7 @@ public class MedFactsRunner
 
       trainingInstance.setFilename(getTextFilename());
       trainingInstance.setLineNumber(lineNumber);
+      trainingInstance.setAssertAnnotateForTI(currentAssertionAnnotation); //link training instance to corresponding assertion
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
       String assertionValueString = (assertionValue == null) ? "" : assertionValue.toString().toLowerCase();
@@ -693,6 +695,21 @@ public class MedFactsRunner
           }
         }
       }
+
+      //Features based on negation and speculation scopes enclosing the text of the entire training instance -Alex Yeh
+      int enclosingNegationScopeCnt = 0;
+      int enclosingSpeculationScopeCnt = 0;
+      AssertionAnnotation assertForTI = trainingInstance.getAssertAnnotateForTI();
+      for (ScopeAnnotation enclosingScope : assertForTI.getEnclosingScopes())
+      {
+        CueAnnotation cueForScope = enclosingScope.getCueForScope();
+        CueSubType scopeType = cueForScope.getCueSubType();
+        if (scopeType == CueSubType.NEGATION) enclosingNegationScopeCnt++;
+        else if (scopeType == CueSubType.SPECULATION) enclosingSpeculationScopeCnt++;
+        else System.out.format("WARNING: CUE %s%n  FOR SCOPE %s%n ENCLOSING %s%n is neither a negation nor speculation cue%n", cueForScope, enclosingScope,assertForTI);
+      }
+      System.out.format("TI on line %s with value %s%n  => %s%n     has %s neg and %s spec enclosing scopes%n", trainingInstance.getLineNumber(), trainingInstance.toStringWithExpectedValue(), assertForTI.toString(), enclosingNegationScopeCnt, enclosingSpeculationScopeCnt); //For testing
+      //Yet to actually write out features based on enclosing scopes
 
       String featureLine = trainingInstance.toStringWithExpectedValue();
       featuresPrinter.println(featureLine);

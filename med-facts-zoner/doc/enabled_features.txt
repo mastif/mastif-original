@@ -13,3 +13,6 @@ wordRightFeature
 #zone
 #scopeCountNumber
 #scopeCountEvenOrOdd
+#statusRuleMixNMatchFeature
+#statusRuleStandAloneFeature
+

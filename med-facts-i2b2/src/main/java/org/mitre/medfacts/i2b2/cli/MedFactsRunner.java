@@ -1156,13 +1156,16 @@ public class MedFactsRunner
     for (Annotation a : conceptList)
     {
       ConceptAnnotation concept = (ConceptAnnotation)a;
-      AssertionAnnotation assertion = new AssertionAnnotation();
-      assertion.setAssertionValue(null);
-      assertion.setBegin(concept.getBegin());
-      assertion.setEnd(concept.getEnd());
-      assertion.setConceptText(concept.getConceptText());
-      assertion.setConceptType(concept.getConceptType());
-      assertionList.add(assertion);
+      if (concept.getConceptType() == ConceptType.PROBLEM)
+      {
+        AssertionAnnotation assertion = new AssertionAnnotation();
+        assertion.setAssertionValue(null);
+        assertion.setBegin(concept.getBegin());
+        assertion.setEnd(concept.getEnd());
+        assertion.setConceptText(concept.getConceptText());
+        assertion.setConceptType(concept.getConceptType());
+        assertionList.add(assertion);
+      }
     }
     return assertionList;
   }

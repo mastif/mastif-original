@@ -6,17 +6,25 @@
 package org.mitre.medfacts.i2b2.cli;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -25,6 +33,8 @@ import org.apache.commons.cli.ParseException;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
+import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
+import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
@@ -41,6 +51,7 @@ import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 public class BatchRunner
 {
   public static final float TRAINING_RATIO = 0.8f;
+  public static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile("\\..*$");
   //protected String baseDirectoryString;
   protected String trainingDirectory;
   protected String decodeDirectory;
@@ -57,6 +68,8 @@ public class BatchRunner
   protected List<TrainingInstance> testSplitList;
   protected Set<String> enabledFeatureIdSet;
   protected Mode mode;
+  protected Map<String, List<AssertionAnnotation>> mapOfResultBySourceFile =
+    new HashMap<String, List<AssertionAnnotation>>();
 
   public static void main(String args[])
   {
@@ -334,22 +347,55 @@ public class BatchRunner
         getMasterTrainingInstanceListEvaluation();
     for (TrainingInstance currentEvalInstance : evaluationInstanceSet)
     {
-      String expectedValue = currentEvalInstance.getExpectedValue();
       Set<String> featureSet = currentEvalInstance.getFeatureSet();
       List<String> featureList = new ArrayList<String>(featureSet);
-      String actualValue = decoder.classifyInstance(featureList);
+      String actualAssertionValueString = decoder.classifyInstance(featureList);
 
-      boolean actualMatchesExpected = actualValue.equalsIgnoreCase(expectedValue);
-      if (actualMatchesExpected)
+      AssertionAnnotation originalAssertion = currentEvalInstance.getAssertAnnotateForTI();
+      AssertionAnnotation resultAssertion = new AssertionAnnotation();
+
+      AssertionValue actualAssertionValue = null;
+      if (actualAssertionValueString != null)
       {
-        System.out.format("MATCHES (actual/expected) %s/%s [%s:%d]%n", actualValue, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
-        matchCount++;
-      } else
+        actualAssertionValue = AssertionValue.valueOf(actualAssertionValueString.toUpperCase());
+      }
+      resultAssertion.setAssertionValue(actualAssertionValue);
+      resultAssertion.setBegin(originalAssertion.getBegin());
+      resultAssertion.setEnd(originalAssertion.getEnd());
+      resultAssertion.setConceptText(originalAssertion.getConceptText());
+      resultAssertion.setConceptType(originalAssertion.getConceptType());
+
+      List<AssertionAnnotation> listOfResultAssertions = mapOfResultBySourceFile.get(currentEvalInstance.getFilename());
+
+      if (listOfResultAssertions == null)
       {
-        System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d]%n", actualValue, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
-        notMatchCount++;
+        listOfResultAssertions = new ArrayList<AssertionAnnotation>();
+        mapOfResultBySourceFile.put(currentEvalInstance.getFilename(), listOfResultAssertions);
+      }
+
+      listOfResultAssertions.add(resultAssertion);
+
+      if (mode == Mode.EVAL)
+      {
+        String expectedValue = currentEvalInstance.getExpectedValue();
+        boolean actualMatchesExpected = actualAssertionValueString.equalsIgnoreCase(expectedValue);
+        if (actualMatchesExpected)
+        {
+          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d]%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
+          matchCount++;
+        } else
+        {
+          System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d]%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
+          notMatchCount++;
+        }
+      } else if (mode == Mode.DECODE)
+      {
+
       }
     }
+
+    printOutResultFiles();
+
     System.out.format("matches: %d%n", matchCount);
     System.out.format("not matches: %d%n", notMatchCount);
 //    String classification1 = decoder.classifyInstance(l1);
@@ -517,6 +563,57 @@ public class BatchRunner
   public void setMode(Mode mode)
   {
     this.mode = mode;
+  }
+
+  public Map<String, List<AssertionAnnotation>> getMapOfResultBySourceFile()
+  {
+    return mapOfResultBySourceFile;
+  }
+
+  public void setMapOfResultBySourceFile(Map<String, List<AssertionAnnotation>> mapOfResultBySourceFile)
+  {
+    this.mapOfResultBySourceFile = mapOfResultBySourceFile;
+  }
+
+  private void printOutResultFiles()
+  {
+    for (Entry<String, List<AssertionAnnotation>> currentResultEntry : mapOfResultBySourceFile.entrySet())
+    {
+      String oldFileName = currentResultEntry.getKey();
+      List<AssertionAnnotation> assertionList = currentResultEntry.getValue();
+
+      Matcher oldFileNameMatcher = FILE_EXTENSION_PATTERN.matcher(oldFileName);
+
+      String newFileName = oldFileNameMatcher.replaceFirst(".ast.output");
+
+      System.out.format("assertion output filename: %s%n", newFileName);
+
+      FileWriter fileWriter = null;
+      BufferedWriter bw = null;
+      PrintWriter printer;
+      try
+      {
+        fileWriter = new FileWriter(newFileName);
+        bw = new BufferedWriter(fileWriter);
+        printer = new PrintWriter(bw);
+
+        for (AssertionAnnotation a : assertionList)
+        {
+          printer.println(a.toI2B2String());
+        }
+
+        printer.close();
+        bw.close();
+        fileWriter.close();
+
+      } catch (IOException ex)
+      {
+        String message = "problem writing to output assertion file (IOException)";
+        Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, message, ex);
+        throw new RuntimeException(message, ex);
+      }
+
+    }
   }
 
 

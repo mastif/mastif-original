@@ -700,6 +700,7 @@ public class MedFactsRunner
       int enclosingNegationScopeCnt = 0;
       int enclosingSpeculationScopeCnt = 0;
       AssertionAnnotation assertForTI = trainingInstance.getAssertAnnotateForTI();
+      //Count number of enclosing negation and speculation scopes
       for (ScopeAnnotation enclosingScope : assertForTI.getEnclosingScopes())
       {
         CueAnnotation cueForScope = enclosingScope.getCueForScope();
@@ -708,8 +709,44 @@ public class MedFactsRunner
         else if (scopeType == CueSubType.SPECULATION) enclosingSpeculationScopeCnt++;
         else System.out.format("WARNING: CUE %s%n  FOR SCOPE %s%n ENCLOSING %s%n is neither a negation nor speculation cue%n", cueForScope, enclosingScope,assertForTI);
       }
-      System.out.format("TI on line %s with value %s%n  => %s%n     has %s neg and %s spec enclosing scopes%n", trainingInstance.getLineNumber(), trainingInstance.toStringWithExpectedValue(), assertForTI.toString(), enclosingNegationScopeCnt, enclosingSpeculationScopeCnt); //For testing
-      //Yet to actually write out features based on enclosing scopes
+      if (checkForEnabledFeature("statusRuleMixNMatchFeature"))
+      {
+        //Write out status rule features for this instance that are meant to be mixed with non status rule features
+        trainingInstance.addFeature("status_rule_mix_n_match_" + enclosingNegationScopeCnt + "negation_" + enclosingSpeculationScopeCnt + "spec_enclosing_scopes");
+      }
+      if (checkForEnabledFeature("statusRuleStandAloneFeature"))
+      {
+        //Write out status rule features for this instance that are meant to stand by themselves
+        switch (enclosingNegationScopeCnt)
+        {
+          case 0:
+          {
+            if (enclosingSpeculationScopeCnt == 0)
+              trainingInstance.addFeature("status_rule_standAlone_present");
+            else if (enclosingSpeculationScopeCnt == 1)
+              trainingInstance.addFeature("status_rule_standAlone_possible");
+            else trainingInstance.addFeature("status_rule_standAlone_unhandled_case");
+            break;
+          }
+          case 1:
+          {
+            if (enclosingSpeculationScopeCnt == 0)
+              trainingInstance.addFeature("status_rule_standAlone_absent");
+            else trainingInstance.addFeature("status_rule_standAlone_unhandled_case");
+            break;
+          }
+          case 2:
+          {
+            if (enclosingSpeculationScopeCnt == 0)
+              trainingInstance.addFeature("status_rule_standAlone_present");
+             else trainingInstance.addFeature("status_rule_standAlone_unhandled_case");
+           break;
+          }
+          default: trainingInstance.addFeature("status_rule_standAlone_unhandled_case");
+        }
+      }
+//      System.out.format("TI on line %s with value %s%n  => %s%n     has %s neg and %s spec enclosing scopes%n", trainingInstance.getLineNumber(), trainingInstance.toStringWithExpectedValue(), assertForTI.toString(), enclosingNegationScopeCnt, enclosingSpeculationScopeCnt); //For testing
+      
 
       String featureLine = trainingInstance.toStringWithExpectedValue();
       featuresPrinter.println(featureLine);

@@ -56,6 +56,8 @@ public class ZonerCli
         XPath xpath = factory.newXPath();
         XPathExpression sectionExpression = xpath.compile("/sections/section");
         XPathExpression regexExpression = xpath.compile("./regex/text()");
+        XPathExpression regexIgnoreCaseExpression = xpath.compile("./regex/@ignore-case");
+        XPathExpression regexFindAllExpression = xpath.compile("./regex/@find-all");
         XPathExpression labelExpression = xpath.compile("./label/text()");
 
         sectionRegexDefinitionList = new ArrayList<SectionRegexDefinition>();
@@ -69,15 +71,35 @@ public class ZonerCli
           System.out.println("found section element");
 
           String regexString = regexExpression.evaluate(sectionElement);
+          String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
+          if (regexIgnoreCaseString == null || regexIgnoreCaseString.isEmpty())
+          {
+            regexIgnoreCaseString = "true";
+          }
+          boolean regexIgnoreCase = regexIgnoreCaseString.equalsIgnoreCase("true");
+          String regexFindAllString = regexFindAllExpression.evaluate(sectionElement);
+          if (regexFindAllString == null || regexFindAllString.isEmpty())
+          {
+            regexFindAllString = "true";
+          }
+          boolean regexFindAll = regexFindAllString.equalsIgnoreCase("true");
           String labelString = labelExpression.evaluate(sectionElement);
-          System.out.format(" - section -- label: \"%s\"; regex: \"%s\"%n",
-                  labelString, regexString);
+          System.out.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"%n",
+                  labelString, regexString, regexIgnoreCaseString, regexFindAllString);
 
-          Pattern currentRegex = Pattern.compile(regexString, Pattern.CASE_INSENSITIVE);
+          int flags = 0;
+          if (regexIgnoreCase)
+          {
+            flags += Pattern.CASE_INSENSITIVE;
+          }
+          flags += Pattern.MULTILINE;
+
+          Pattern currentRegex = Pattern.compile(regexString, flags);
 
           SectionRegexDefinition definition = new SectionRegexDefinition();
           definition.setLabel(labelString);
           definition.setRegex(currentRegex);
+          definition.setFindAll(regexFindAll);
           sectionRegexDefinitionList.add(definition);
         }
 
@@ -234,6 +256,9 @@ public class ZonerCli
       for (SectionRegexDefinition currentDefinition: sectionRegexDefinitionList)
       {
         Matcher currentMatcher = currentDefinition.regex.matcher(getEntireContents());
+        boolean findAll = currentDefinition.isFindAll();
+        boolean findFirstOnly = !findAll;
+        int i = 0;
         while (currentMatcher.find())
         {
           System.out.format(" trying %s ...%n", currentDefinition.getLabel());
@@ -246,6 +271,8 @@ public class ZonerCli
           currentRange.setBegin(start);
           currentRange.setEnd(end);
           getRangeList().add(currentRange);
+
+          if (findFirstOnly) { break; }
         }
       }
 
@@ -447,6 +474,7 @@ public class ZonerCli
 
       protected Pattern regex;
       protected String label;
+      protected boolean findAll;
 
       public Pattern getRegex()
       {
@@ -466,6 +494,16 @@ public class ZonerCli
       public void setLabel(String label)
       {
         this.label = label;
+      }
+
+      public boolean isFindAll()
+      {
+        return findAll;
+      }
+
+      public void setFindAll(boolean findAll)
+      {
+        this.findAll = findAll;
       }
 
     }

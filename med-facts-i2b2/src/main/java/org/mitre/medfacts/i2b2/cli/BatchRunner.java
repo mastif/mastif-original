@@ -338,6 +338,7 @@ public class BatchRunner
       trainer.addTrainingInstance(currentTrainingInstance.getExpectedValue(), featureList);
     }
     String model = trainer.train();
+    //For testing: print out the model as a string -Alex Yeh
 
     // decoding
     JarafeMEDecoder decoder = new JarafeMEDecoder(model);

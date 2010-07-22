@@ -346,6 +346,9 @@ public class BatchRunner
     int notMatchCount = 0;
     Collection<TrainingInstance> evaluationInstanceSet =
         getMasterTrainingInstanceListEvaluation();
+    if (mode == Mode.EVAL)
+      //Warning about not relying on commas to separate features -Alex Yeh
+      System.err.format("%n%nOn 'DOES NOT MATCH' lines, Features are separated by ', ', but commas are also part of some feature names.%n%n");
     for (TrainingInstance currentEvalInstance : evaluationInstanceSet)
     {
       Set<String> featureSet = currentEvalInstance.getFeatureSet();
@@ -386,7 +389,11 @@ public class BatchRunner
           matchCount++;
         } else
         {
-          System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d]%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
+          //Added more information on 'DOES NOT MATCH' printouts (what the assertion looks like, list of features for this instance).
+          //Keep everyhing on one line so it will be easier to pull out using 'grep', etc.
+          //Features are separated by ', ', but only the space is reliable as many features have a comma as part of their name.
+          //-Alex Yeh
+          System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d] %s Features: %s%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
           notMatchCount++;
         }
       } else if (mode == Mode.DECODE)

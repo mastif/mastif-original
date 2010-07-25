@@ -32,6 +32,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.itc.jcarafe.jarafe.JarafeMETrainer;
+import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
@@ -395,6 +396,15 @@ public class BatchRunner
           //-Alex Yeh
           System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d] %s Features: %s%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
           notMatchCount++;
+          //Print out string tokens and annotations for the line of this instance with a mismatch in value -Alex Yeh
+          //  Side note: because this prints out in the "err stream" and "matches" prints out in the "out stream", this line may end-up appearing inbetween some of the "matches" line print outs
+          System.err.format("  LnTk[%d]=> %s%n", currentEvalInstance.getLineNumber(), currentEvalInstance.getTokensForLine().toString());
+          for (Annotation annotationInLine : currentEvalInstance.getAnnotationsForLine())
+          {
+            //Side note: because this prints out in the "err stream" and "matches" prints out in the "out stream",
+            // some of these lines may get interleaved with some of the "matches" line print outs
+            System.err.format("  LnAn=> %s%n", annotationInLine.toString());
+          }
         }
       } else if (mode == Mode.DECODE)
       {

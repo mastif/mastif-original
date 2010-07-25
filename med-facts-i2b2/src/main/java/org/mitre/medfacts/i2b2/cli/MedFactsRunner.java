@@ -566,6 +566,8 @@ public class MedFactsRunner
       trainingInstance.setFilename(getTextFilename());
       trainingInstance.setLineNumber(lineNumber);
       trainingInstance.setAssertAnnotateForTI(currentAssertionAnnotation); //link training instance to corresponding assertion
+      trainingInstance.setAnnotationsForLine(indexer.getAnnotationByLine().get((long) lineNumber)); //list of annotations for the line this training instance is on
+      trainingInstance.setTokensForLine(textLookup[lineNumber-1]); //token string for the line this training instance is on
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
       String assertionValueString = (assertionValue == null) ? "" : assertionValue.toString().toLowerCase();

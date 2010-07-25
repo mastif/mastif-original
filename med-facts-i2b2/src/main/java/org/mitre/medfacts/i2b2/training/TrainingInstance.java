@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 
 /**
@@ -21,7 +22,9 @@ public class TrainingInstance
   protected int lineNumber;
   protected String expectedValue;
   protected Set<String> featureSet = new HashSet<String>();
-  protected AssertionAnnotation AssertAnnotateForTI; /* Alex Yeh: the assertion annotation associated with this training instance */
+  protected AssertionAnnotation AssertAnnotateForTI; //The assertion annotation associated with this training instance -Alex Yeh
+  protected List<Annotation> annotationsForLine; //List of annotations for the line that this training instance is on (use for print outs) -Alex Yeh
+  protected String tokensForLine[]; //String with the tokens for the line that this training instance is on (use for print outs) -Alex Yeh
 
   /**
    * @return the expectedValue
@@ -93,7 +96,7 @@ public class TrainingInstance
   }
 
   /**
-   * @return the lineNumber
+   * @return the assertion annotation for this training instance
    */
   public AssertionAnnotation getAssertAnnotateForTI()
   {
@@ -101,11 +104,43 @@ public class TrainingInstance
   }
 
   /**
-   * @param lineNumber the lineNumber to set
+   * @param AssertAnnotateForTI the AssertAnnotateForTI to set
    */
   public void setAssertAnnotateForTI(AssertionAnnotation AssertAnnotateForTI)
   {
     this.AssertAnnotateForTI = AssertAnnotateForTI;
+  }
+
+  /**
+   * @return the annotations for the line that this training instance is on
+   */
+  public List<Annotation> getAnnotationsForLine()
+  {
+    return annotationsForLine;
+  }
+
+  /**
+   * @param annotationsForLine the annotationsForLine to set
+   */
+  public void setAnnotationsForLine(List<Annotation> annotationsForLine)
+  {
+    this.annotationsForLine = annotationsForLine;
+  }
+
+/**
+   * @return the token string for the line that this training instance is on
+   */
+  public String[] getTokensForLine()
+  {
+    return tokensForLine;
+  }
+
+  /**
+   * @param tokensForLine the tokensForLine to set
+   */
+  public void setTokensForLine(String[] tokensForLine)
+  {
+    this.tokensForLine = tokensForLine;
   }
 
   public String toStringWithExpectedValue()

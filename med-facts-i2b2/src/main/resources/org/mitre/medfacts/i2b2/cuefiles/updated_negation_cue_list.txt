@@ -131,12 +131,6 @@ resolve
 resolution
 disappear
 disappearance
-allergic to
-allergies
-allergy
-intolerant
-intolerance
-intolerances
 rather than
 instead of
 except

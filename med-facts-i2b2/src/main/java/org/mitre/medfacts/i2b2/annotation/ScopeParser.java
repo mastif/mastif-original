@@ -29,7 +29,7 @@ public class ScopeParser {
             org.mitre.itc.jcarafe.crf.Annotation an = a.a();
             String typ = an.typ().labelHead();
             int lineNum = Integer.parseInt(an.vl().get());
-            if (typ.equals("scope")) {
+            if (typ.equals("xcope")) {
                 ScopeAnnotation s = new ScopeAnnotation();
                 s.setScopeId(a.i());
                 s.setBegin(new Location(lineNum,an.st()));

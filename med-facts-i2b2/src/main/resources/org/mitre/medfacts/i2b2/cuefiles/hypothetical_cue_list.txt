@@ -6,6 +6,7 @@ monitoring for
 prn
 PRN
 p.r.n.
+P.R.N.
 as needed for
 as necessary for 
 call for
@@ -17,6 +18,3 @@ should he experience
 should she experience
 should the patient experience
 instructions for
-should PROBLEM return 
-should PROBLEM develop
-should PROBLEM recur

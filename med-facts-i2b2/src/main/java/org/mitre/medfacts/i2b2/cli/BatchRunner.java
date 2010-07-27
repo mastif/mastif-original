@@ -398,7 +398,12 @@ public class BatchRunner
           notMatchCount++;
           //Print out string tokens and annotations for the line of this instance with a mismatch in value -Alex Yeh
           //  Side note: because this prints out in the "err stream" and "matches" prints out in the "out stream", this line may end-up appearing inbetween some of the "matches" line print outs
-          System.err.format("  LnTk[%d]=> %s%n", currentEvalInstance.getLineNumber(), currentEvalInstance.getTokensForLine().toString());
+          String stringTokens = "=> ";
+          for (String nxtToken : currentEvalInstance.getTokensForLine())
+          {
+            stringTokens = stringTokens + " " + nxtToken;
+          }
+          System.err.format("  LnTk[%d]%s%n", currentEvalInstance.getLineNumber(), stringTokens);
           for (Annotation annotationInLine : currentEvalInstance.getAnnotationsForLine())
           {
             //Side note: because this prints out in the "err stream" and "matches" prints out in the "out stream",

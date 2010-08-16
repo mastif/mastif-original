@@ -33,6 +33,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Collections;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
@@ -562,11 +563,11 @@ public class MedFactsRunner
       }
 
       TrainingInstance trainingInstance = new TrainingInstance();
-
+      List<Annotation> allLineAnnotations = indexer.getAnnotationByLine().get((long) lineNumber);
       trainingInstance.setFilename(getTextFilename());
       trainingInstance.setLineNumber(lineNumber);
       trainingInstance.setAssertAnnotateForTI(currentAssertionAnnotation); //link training instance to corresponding assertion
-      trainingInstance.setAnnotationsForLine(indexer.getAnnotationByLine().get((long) lineNumber)); //list of annotations for the line this training instance is on
+      trainingInstance.setAnnotationsForLine(allLineAnnotations); //list of annotations for the line this training instance is on
       trainingInstance.setTokensForLine(textLookup[lineNumber-1]); //token string for the line this training instance is on
 
       AssertionValue assertionValue = currentAssertionAnnotation.getAssertionValue();
@@ -603,10 +604,10 @@ public class MedFactsRunner
       int conceptEndTokenOffset = conceptEndLocation.getTokenOffset();
       String currentLine[] = textLookup[conceptBeginLine-1];
 
-        if (checkForEnabledFeature("conceptUnigrams")) {
-            for (int k = conceptBeginTokenOffset; k <= conceptEndTokenOffset; k++) {
-                trainingInstance.addFeature("concept_unigram_" + StringHandling.escapeStringForFeatureName(currentLine[k]));
-            }
+      if (checkForEnabledFeature("conceptUnigrams")) {
+          for (int k = conceptBeginTokenOffset; k <= conceptEndTokenOffset; k++) {
+              trainingInstance.addFeature("concept_unigram_" + StringHandling.escapeStringForFeatureName(currentLine[k]));
+          }
       }
 
       if (checkForEnabledFeature("wordLeftFeature"))
@@ -627,6 +628,22 @@ public class MedFactsRunner
         }
       }
 
+      if (checkForEnabledFeature("cueWordOrderingsLeft")) {
+          List<CueWordAnnotation> annots = new ArrayList<CueWordAnnotation>();
+          for (Annotation a : allLineAnnotations) {
+              if ((a instanceof CueWordAnnotation) && (a.getBegin().getTokenOffset() < conceptBeginTokenOffset)) {
+                  annots.add((CueWordAnnotation)a);
+              }
+          }
+          Collections.sort(annots);
+          StringBuilder str = new StringBuilder("CWS_left");
+          for (CueWordAnnotation a : annots) {
+              str.append("_");
+              str.append(a.getCueWordType());
+          }
+          trainingInstance.addFeature(str.toString());
+      }
+
       //System.out.format("lineNumber: %d%n", lineNumber);
       String tokensOnCurrentLine[] = textLookup[lineNumber-1];
       for (int currentTokenOffset=0; currentTokenOffset < tokensOnCurrentLine.length; currentTokenOffset++)
@@ -643,9 +660,17 @@ public class MedFactsRunner
                 ConceptAnnotation concept = (ConceptAnnotation) a;
 
                 String conceptType = concept.getConceptType().toString();
+                int thisConceptBegin = concept.getBegin().getTokenOffset();
+                int thisConceptEnd = concept.getEnd().getTokenOffset();
                 if (concept.getBegin().getTokenOffset() < conceptBeginTokenOffset) {
                     trainingInstance.addFeature("concept_" + conceptType + "_left");
+                    if ((conceptBeginTokenOffset - thisConceptEnd) < 4) {
+                        trainingInstance.addFeature("concept_" + conceptType + "_left_3");
+                    }
                 } else {
+                    if ((thisConceptBegin - conceptEndTokenOffset) < 4) {
+                        trainingInstance.addFeature("concept_" + conceptType + "_right_3");
+                    }
                     trainingInstance.addFeature("concept_" + conceptType + "_right");
                 }
             }
@@ -706,17 +731,19 @@ public class MedFactsRunner
             if (checkForEnabledFeature("cueWord"))
             {
               int cueWordBegin = cueWord.getBegin().getTokenOffset();
+              int cueWordEnd = cueWord.getEnd().getTokenOffset();
               if (cueWordBegin < conceptBeginTokenOffset) {
                   trainingInstance.addFeature("cueWord_" + cueWordType + "_left");
                   if ((conceptBeginTokenOffset - cueWordBegin) < 4) {
                       trainingInstance.addFeature("cueWord_" + cueWordType + "_left_3");
                   }
-              } else {
+              } else if (cueWordBegin > conceptEndTokenOffset) {
                     trainingInstance.addFeature("cueWord_" + cueWordType + "_right");
-                    int cueWordEnd = cueWord.getEnd().getTokenOffset();
                     if ((cueWordEnd - conceptEndTokenOffset) < 4) {
                         trainingInstance.addFeature("cueWord_" + cueWordType + "_right_3");
                     }
+              } else {
+                  trainingInstance.addFeature("cueWord_" + cueWordType + "_within");
               }
             }
             if (checkForEnabledFeature("cueWordValue"))

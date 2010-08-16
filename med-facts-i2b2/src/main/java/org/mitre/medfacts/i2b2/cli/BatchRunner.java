@@ -72,6 +72,8 @@ public class BatchRunner
   protected Map<String, List<AssertionAnnotation>> mapOfResultBySourceFile =
     new HashMap<String, List<AssertionAnnotation>>();
 
+  protected static double gaussianPrior = 10.0;
+
   public static void main(String args[])
   {
 
@@ -83,6 +85,7 @@ public class BatchRunner
     options.addOption("d", "decode", true, "run the model using the given parameter as the data directory");
     options.addOption("f", "features-file", true, "run the system and read in the 'features file' which lists featureids of features that should be used");
     options.addOption("m", "mode", true, "mode should either be \"eval\" or \"decode\".  eval is used if you have assertion files with expected assertion values.  decode is used if you have no assertion files and thus no known assertion values.");
+    options.addOption("g", "gaussian-prior", true, "Gaussian prior to use for MaxEnt model");
     
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -109,6 +112,16 @@ public class BatchRunner
     String baseDir = null;
     boolean isTrain = cmd.hasOption("train");
     boolean isDecode = cmd.hasOption("decode");
+    if (cmd.hasOption("gaussian-prior")) {
+        String gpStr = cmd.getOptionValue("gaussian-prior");
+        if (gpStr != null && !gpStr.isEmpty()) {
+            try {
+                gaussianPrior = Double.parseDouble(gpStr);
+            } catch (Exception e) {
+                Logger.getLogger(BatchRunner.class.getName()).log(Level.SEVERE, "gaussian prior command-line value not parsed properly");
+            }
+        }
+    }
 
     if (cmd.hasOption("base-dir"))
     {
@@ -326,7 +339,7 @@ public class BatchRunner
 
   public void trainAndEval()
   {
-    JarafeMETrainer trainer = new JarafeMETrainer();
+    JarafeMETrainer trainer = new JarafeMETrainer(gaussianPrior);
 
     Collection<TrainingInstance> trainingInstanceSet =
         //getTrainingSplitList();

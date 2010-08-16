@@ -11,11 +11,12 @@ import org.mitre.medfacts.i2b2.util.Location;
  *
  * @author MCOARR
  */
-abstract public class Annotation
+abstract public class Annotation implements Comparable<Annotation>
 {
   protected Location begin;
   protected Location end;
   protected String conceptText;
+
 
   /**
    * @return the begin
@@ -39,6 +40,24 @@ abstract public class Annotation
   public Location getEnd()
   {
     return end;
+  }
+
+  public int compareTo(Annotation that) {
+      if (end.getLine() < that.getEnd().getLine()) {
+          return -1;
+      } else if (end.getLine() > that.getEnd().getLine()) {
+          return 1;
+      } else if (begin.getTokenOffset() < that.getBegin().getTokenOffset()) {
+          return -1;
+      } else if (begin.getTokenOffset() > that.getBegin().getTokenOffset()) {
+          return 1;
+      } else if (end.getTokenOffset() > that.getEnd().getTokenOffset()) {
+          return -1;
+      } else if (end.getTokenOffset() == that.getEnd().getTokenOffset()) {
+          return 0;
+      } else {
+          return 1;
+      }
   }
 
   /**

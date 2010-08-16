@@ -29,6 +29,7 @@ consistent with
 could
 differential diagnoses
 differential diagnosis
+ddx
 either
 equivocal for
 estimate
@@ -58,6 +59,7 @@ hypothesizes
 hypothesizing
 hypothetical
 if
+unless
 implication
 implications
 implied
@@ -98,6 +100,7 @@ preliminary
 presumably
 presumed
 presumptive
+prevent
 probabilities
 probability
 probable
@@ -117,6 +120,8 @@ r/o
 reportedly
 risk for
 risk of
+risk from
+risk stratification for
 ro
 rule - out
 rule out
@@ -183,3 +188,5 @@ workup for
 worrisome for
 worrisome for
 would
+to avoid
+t/c

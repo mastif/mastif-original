@@ -94,6 +94,17 @@ public class AnnotationIndexer
     return annotationByLineAndTokenCurrentLine.get(token);
   }
 
+  public List<Annotation> findAnnotationsForLine(long line)
+  {
+      List<Annotation> annots = new ArrayList<Annotation>();
+      Map<Long,List<Annotation>> annotsByLine = annotationByLineAndToken.get(line);
+
+      for (Map.Entry<Long,List<Annotation>> entry : annotsByLine.entrySet()) {
+          annots.addAll(entry.getValue());
+      }
+      return annots;
+  }
+
   /**
    * @return the annotationByLine
    */

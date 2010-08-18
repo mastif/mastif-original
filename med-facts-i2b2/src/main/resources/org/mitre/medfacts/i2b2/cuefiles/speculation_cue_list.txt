@@ -1,0 +1,137 @@
+uncertain
+unsure
+improbable
+unlikely
+possible
+hypothetical
+questionable
+consistent
+potential
+suspicious for
+unclear
+unknown
+possibly
+seemingly
+potentially
+maybe
+perhaps
+possibilities
+possibility
+question
+questioned
+questioning
+questions
+speculation
+?
+differential diagnosis
+differential diagnoses
+believe
+believed
+believes
+believing
+consider
+considered
+considering
+considers
+postulate
+postulated
+postulating
+postulates
+speculate
+speculated
+speculates
+speculating
+can
+could
+may
+might
+should
+would
+whether or not
+whether
+either
+or
+if
+probable
+likely
+presumed
+presumptive
+apparent
+preliminary
+putative
+suggestive of
+probably
+likely
+presumably
+apparently
+reportedly
+supposedly
+must
+appear
+appeared
+appearing
+appears
+seem
+seemed
+seems
+seeming
+estimate
+estimated
+estimates
+estimating
+hypothesize
+hypothesized
+hypothesizes
+hypothesizing
+implied
+implies
+imply
+implying
+propose
+proposed
+proposes
+proposing
+suggest
+suggested
+suggesting
+suggests
+support
+supported
+supporting
+supports
+suppose
+supposed
+supposes
+supposing
+suspect
+suspected
+suspecting
+suspects
+think
+thinks
+thinking
+thought
+implication
+implications
+suspicion
+suspicions
+suggestion
+suggestions
+hypothesis
+hypotheses
+r/o
+ro
+rule out
+ruling out
+test for
+tested for
+testing for
+tests for
+check for
+checked for
+checking for
+checks for
+evaluate for
+evaluated for
+evaluates for
+evaluating for

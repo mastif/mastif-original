@@ -1,0 +1,145 @@
+not	not
+n't	not
+&apos;t	not
+didn't	not
+doesn't	not
+don't	not
+isn't	not
+aren't	not
+wasn't	not
+weren't	not
+hadn't	not
+hasn't	not
+haven't	not
+won't
+wouldn't
+never	not
+no longer	not
+in no way	not
+neither	neither
+nor	neither
+none	none
+nobody	none
+no one	none
+nowhere	none
+no place	none
+no	no
+without	no
+absence of	no
+free of 	no
+negative for 	no
+unremarkable for 	no
+unassociated with	no
+impossible	fail
+cannot	fail
+can't	fail
+couldn't	fail
+inability	fail
+unable	fail
+forget	fail
+forgets	fail
+forgetting	fail
+forgot	fail
+forgotten	fail
+fail	fail
+failed	fail
+failing	fail
+fails	fail
+failure	fail
+free	absent
+absent	absent
+denied	deny
+denies	deny
+deny	deny
+denying	deny
+avoid	avoid
+avoided	avoid
+avoiding	avoid
+avoids	avoid
+avoidance	avoid
+prevent	avoid
+prevention	avoid
+prophylaxis against	avoid
+shouldn't	avoid
+mustn't	avoid
+unwilling	decline
+unwillingness	decline
+reluctance	decline
+reluctant	decline
+decline 	decline
+declined 	decline
+declines 	decline
+declining 	decline
+refusal	decline
+refuse	decline
+refused	decline
+refuses	decline
+refusing	decline
+excluded 	ruleout
+excludes 	ruleout
+ruled out	ruleout
+rules out	ruleout
+discontinuance	stop
+discontinuation	stop
+discontinue	stop
+discontinued	stop
+discontinues	stop
+discontinuing	stop
+quit	stop
+quits	stop
+quitting	stop
+stop	stop
+stopped	stop
+stopping	stop
+stops	stop
+used to 	stop
+held	stop
+hold	stop
+holding	stop
+holds	stop
+on hold	stop
+off	stop
+elimination	stop
+eliminate	stop
+eliminated	stop
+eliminates	stop
+eliminating	stop
+eradication	stop
+eradicate	stop
+eradicated	stop
+eradicates	stop
+eradicating	stop
+removal 	stop
+remove	stop
+removed	stop
+removes	stop
+removing	stop
+purge	stop
+purged	stop
+purges	stop
+purging	stop
+wipe out	stop
+wiped out	stop
+wipes out	stop
+wiping out	stop
+rid	stop
+interrupt	stop
+interruption	stop
+interruptions	stop
+resolve	disappear
+resolution	disappear
+disappear	disappear
+disappearance	disappear
+allergic to	allergy
+allergies	allergy
+allergy	allergy
+intolerant		allergy
+intolerance	allergy
+intolerances	allergy
+rather than 	exception
+instead of	exception
+except	exception
+exception	exception
+besides	exception
+aside from	exception
+other than	exception

@@ -80,6 +80,7 @@ public class MedFactsRunner
   AnnotationIndexer indexer = new AnnotationIndexer();
   protected String entireContents;
   protected Mode mode;
+  protected ScopeParser scopeParser;
 
   public MedFactsRunner()
   {
@@ -254,27 +255,6 @@ public class MedFactsRunner
 
   public void processScopeInProcess(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList) throws RuntimeException
   {
-    String cueModelFileName = "cue.model";
-    String scopeModelFileName = "scope.model";
-    ClassLoader cl = this.getClass().getClassLoader();
-    URL cueModelFileUrl = cl.getResource(cueModelFileName);
-    URL scopeModelFileUrl = cl.getResource(scopeModelFileName);
-    File cueModelFile = null;
-    File scopeModelFile = null;
-    try
-    {
-      cueModelFile = new File(cueModelFileUrl.toURI());
-      scopeModelFile = new File(scopeModelFileUrl.toURI());
-    } catch (URISyntaxException ex)
-    {
-      Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, "problem getting scope or model file URIs", ex);
-      throw new RuntimeException("problem getting scope or model file URIs");
-    }
-    String cueModelFileNameFullPath = cueModelFile.getAbsolutePath();
-    String scopeModelFileNameFullPath = scopeModelFile.getAbsolutePath();
-    System.out.format("cue model: %s%n", cueModelFileNameFullPath);
-    System.out.format("scope model: %s%n", scopeModelFileNameFullPath);
-    ScopeParser scopeParser = new ScopeParser(scopeModelFileNameFullPath, cueModelFileNameFullPath);
     List<ScopeOrCueAnnotation> scopeOrCueAnnotationList = scopeParser.decodeDocument(textLookup);
     //    Map<AnnotationType,List<Annotation>> map2 = new TreeMap<AnnotationType,List<Annotation>>();
     //    map2.put(AnnotationType.SCOPE, allAnnotationList);
@@ -465,6 +445,10 @@ public class MedFactsRunner
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);
 
+  }
+
+  public void setScopeParser(ScopeParser parser) {
+      scopeParser = parser;
   }
 
   /**

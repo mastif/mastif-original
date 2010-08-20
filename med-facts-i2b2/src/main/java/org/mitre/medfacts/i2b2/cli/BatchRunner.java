@@ -36,6 +36,7 @@ import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
+import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
@@ -74,6 +75,8 @@ public class BatchRunner
 
   protected static double gaussianPrior = 10.0;
 
+  protected static ScopeParser scopeParser = null;
+
   public static void main(String args[])
   {
 
@@ -86,6 +89,8 @@ public class BatchRunner
     options.addOption("f", "features-file", true, "run the system and read in the 'features file' which lists featureids of features that should be used");
     options.addOption("m", "mode", true, "mode should either be \"eval\" or \"decode\".  eval is used if you have assertion files with expected assertion values.  decode is used if you have no assertion files and thus no known assertion values.");
     options.addOption("g", "gaussian-prior", true, "Gaussian prior to use for MaxEnt model");
+    options.addOption("c", "cue-model", true, "Cue identification model");
+    options.addOption("s", "scope-model", true, "Scope model");
     
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -178,6 +183,9 @@ public class BatchRunner
     {
       featuresFile = new File(baseDir, featuresFileName);
     }
+    //initialize scope/cue parser
+    scopeParser = new ScopeParser(cmd.getOptionValue("scope-model"), cmd.getOptionValue("cue-model"));
+
 
 //    String baseDirectory = args[0];
 //    System.out.format("base directory: %s%n", baseDirectory);
@@ -192,7 +200,10 @@ public class BatchRunner
       batchRunner.processFeaturesFile(featuresFile);
     }
     batchRunner.execute();
+
   }
+
+  
 
 //  /**
 //   * @return the baseDirectoryString
@@ -236,6 +247,7 @@ public class BatchRunner
     runner.setRelationFileProcessor(relationFileProcessor);
     runner.setScopeFileProcessor(scopeFileProcessor);
     runner.setEnabledFeatureIdSet(enabledFeatureIdSet);
+    runner.setScopeParser(scopeParser);
     runner.setMode(mode);
 
     runner.setTextFilename(currentTextFile.getAbsolutePath());

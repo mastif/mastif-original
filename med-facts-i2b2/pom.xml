@@ -42,26 +42,50 @@
             <skipTests>true</skipTests>
           </configuration>
         </plugin>
-	<plugin> 
-            <groupId>org.apache.maven.plugins</groupId> 
-            <artifactId>maven-jar-plugin</artifactId> 
-            <configuration> 
-              <archive> 
-                    <manifest> 
-                      <addClasspath>true</addClasspath> 
-                      <mainClass>org.mitre.medfacts.i2b2.cli.BatchRunner</mainClass> 
-                    </manifest> 
-              </archive>
-            </configuration> 
-            </plugin> 
-            <plugin> 
-            <artifactId>maven-assembly-plugin</artifactId> 
-            <configuration> 
-              <descriptorRefs> 
-                    <descriptorRef>jar-with-dependencies</descriptorRef> 
-              </descriptorRefs> 
-            </configuration> 
-            </plugin> 
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.2</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>java</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <mainClass>org.mitre.medfacts.i2b2.cli.BatchRunner</mainClass>
+            <arguments>
+              <argument>--base-dir="C:/workspace.medical_facts/med_facts_work.2010-08-18T1000/med-facts-i2b2-data/"</argument>
+              <argument>--train=train</argument>
+              <argument>--decode=eval</argument>
+              <argument>--features-file=featureFile9</argument>
+              <argument>--gaussian-prior=1.0</argument>
+              <argument>--mode=eval</argument>
+            </arguments>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <configuration>
+            <archive>
+              <manifest>
+                <addClasspath>true</addClasspath>
+                <mainClass>org.mitre.medfacts.i2b2.cli.BatchRunner</mainClass>
+              </manifest>
+            </archive>
+          </configuration>
+        </plugin> 
+        <plugin> 
+          <artifactId>maven-assembly-plugin</artifactId>
+          <configuration>
+            <descriptorRefs>
+              <descriptorRef>jar-with-dependencies</descriptorRef>
+            </descriptorRefs>
+          </configuration>
+        </plugin> 
     </plugins>
   </build>
 

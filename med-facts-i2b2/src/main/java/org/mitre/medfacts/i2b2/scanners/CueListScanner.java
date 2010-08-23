@@ -32,6 +32,12 @@ public class CueListScanner
 
   protected CueWordType cueWordType;
 
+  public CueListScanner(BufferedReader scannerTermsReader, CueWordType cueWordType)
+  {
+    loadScannerTermsFromReader(scannerTermsReader);
+    this.cueWordType = cueWordType;
+  }
+
   public CueListScanner(File scannerTermsFile, CueWordType cueWordType)
   {
     loadScannerTermsFile(scannerTermsFile);
@@ -163,6 +169,22 @@ public class CueListScanner
       FileReader fileReader = new FileReader(scannerTermsFile);
       BufferedReader bufferedReader = new BufferedReader(fileReader);
 
+      loadScannerTermsFromReader(bufferedReader);
+
+      bufferedReader.close();
+      fileReader.close();
+    } catch (IOException ex)
+    {
+      Logger.getLogger(CueListScanner.class.getName()).log(Level.SEVERE, String.format("problem reading scanner terms file \"%s\"", scannerTermsFile.getAbsolutePath()), ex);
+      throw new RuntimeException(String.format("problem reading scanner terms file \"%s\""));
+    }
+
+  }
+
+  public void loadScannerTermsFromReader(BufferedReader bufferedReader)
+  {
+    try
+    {
       for(String input = null; (input = bufferedReader.readLine()) != null; )
       {
         //System.out.format(" - INPUT LINE: %s%n", input);
@@ -175,12 +197,9 @@ public class CueListScanner
         }
         cueItemList.add(cueItem);
       }
-
-      bufferedReader.close();
-      fileReader.close();
     } catch (IOException ex)
     {
-      Logger.getLogger(CueListScanner.class.getName()).log(Level.SEVERE, String.format("problem reading scanner terms file \"%s\"", scannerTermsFile.getAbsolutePath()), ex);
+      Logger.getLogger(CueListScanner.class.getName()).log(Level.SEVERE, String.format("problem reading scanner terms from buffered reader"));
       throw new RuntimeException(String.format("problem reading scanner terms file \"%s\""));
     }
 

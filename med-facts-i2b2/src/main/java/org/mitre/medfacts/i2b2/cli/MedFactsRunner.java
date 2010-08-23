@@ -20,11 +20,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URI;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -233,16 +233,36 @@ public class MedFactsRunner
   public void processCueList(String cueListFilename, CueWordType cueWordType) throws URISyntaxException
   {
     ClassLoader classLoader = getClass().getClassLoader();
-    URL cueFileUrl = classLoader.getResource(cueListFilename);
-    System.out.format("cue list url: %s%n", cueFileUrl);
-    URI cueFileUri = cueFileUrl.toURI();
-    System.out.format("cue list uri: %s%n", cueFileUri);
-    File cueFile = new File(cueFileUri);
-    System.out.format("cue file: %s%n", cueFile);
-    CueListScanner scanner = new CueListScanner(cueFile, cueWordType);
-    scanner.setTextLookup(textLookup);
-    scanner.execute();
-    List<Annotation> annotationList = scanner.getAnnotationList();
+//    URL cueFileUrl = classLoader.getResource(cueListFilename);
+//    System.out.format("cue list url: %s%n", cueFileUrl);
+//    URI cueFileUri = cueFileUrl.toURI();
+//    System.out.format("cue list uri: %s%n", cueFileUri);
+//    File cueFile = new File(cueFileUri);
+//    System.out.format("cue file: %s%n", cueFile);
+
+    List<Annotation> annotationList = null;
+
+    try
+    {
+      InputStream cueFileInputStream = classLoader.getResourceAsStream(cueListFilename);
+      InputStreamReader inputStreamReader = new InputStreamReader(cueFileInputStream);
+      BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+      CueListScanner scanner = new CueListScanner(bufferedReader, cueWordType);
+      scanner.setTextLookup(textLookup);
+      scanner.execute();
+      annotationList = scanner.getAnnotationList();
+
+      bufferedReader.close();
+      inputStreamReader.close();
+      cueFileInputStream.close();
+    } catch (IOException ex)
+    {
+      Logger.getLogger(CueListScanner.class.getName()).log(Level.SEVERE, String.format("problem reading scanner terms file "), ex);
+      throw new RuntimeException(String.format("problem reading scanner terms file \"%s\""));
+    }
+
+
     allAnnotationList.addAll(annotationList);
     List<Annotation> cueWordAnnotationList = annotationsByType.get(AnnotationType.CUEWORD);
     if (cueWordAnnotationList == null)

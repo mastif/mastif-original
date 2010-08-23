@@ -36,11 +36,13 @@ public abstract class FileProcessor
     String currentLine = null;
     //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
     ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
-    int lineNumber = 0;
+    int lineNumber = 1;
     while ((currentLine = br.readLine()) != null)
     {
       Annotation c = processAnnotationLine(currentLine, pattern);
+      c.setAnnotationFileLineNumber(lineNumber);
       annotationList.add(c);
+      lineNumber++;
     }
 
     br.close();

@@ -238,7 +238,7 @@ public class MedFactsRunner
     URI cueFileUri = cueFileUrl.toURI();
     System.out.format("cue list uri: %s%n", cueFileUri);
     File cueFile = new File(cueFileUri);
-    System.out.format("cue list url: %s%n", cueFile);
+    System.out.format("cue file: %s%n", cueFile);
     CueListScanner scanner = new CueListScanner(cueFile, cueWordType);
     scanner.setTextLookup(textLookup);
     scanner.execute();

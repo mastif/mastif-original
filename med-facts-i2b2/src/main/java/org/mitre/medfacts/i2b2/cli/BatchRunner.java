@@ -411,7 +411,8 @@ public class BatchRunner
         boolean actualMatchesExpected = actualAssertionValueString.equalsIgnoreCase(expectedValue);
         if (actualMatchesExpected)
         {
-          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d]%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber());
+          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d] [assertion line: %d]", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber());
+          System.out.format("  ###BEGIN FEATURES###%s###END FEATURES###%n", currentEvalInstance.getFeatureSet().toString());
           matchCount++;
         } else
         {

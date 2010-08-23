@@ -16,6 +16,7 @@ abstract public class Annotation implements Comparable<Annotation>
   protected Location begin;
   protected Location end;
   protected String conceptText;
+  protected int annotationFileLineNumber;
 
 
   /**
@@ -101,4 +102,14 @@ abstract public class Annotation implements Comparable<Annotation>
   }
 
   abstract public String toI2B2String();
+
+  public int getAnnotationFileLineNumber()
+  {
+    return annotationFileLineNumber;
+  }
+
+  public void setAnnotationFileLineNumber(int annotationFileLineNumber)
+  {
+    this.annotationFileLineNumber = annotationFileLineNumber;
+  }
 }

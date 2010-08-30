@@ -45,6 +45,7 @@ import org.mitre.medfacts.i2b2.processors.ScopeFileProcessor;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
+import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
  *
@@ -53,7 +54,7 @@ import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 public class BatchRunner
 {
   public static final float TRAINING_RATIO = 0.8f;
-  public static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile("\\..*$");
+  public static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile("\\.[a-zA-Z0-9]*$");
   //protected String baseDirectoryString;
   protected String trainingDirectory;
   protected String decodeDirectory;
@@ -183,8 +184,28 @@ public class BatchRunner
     {
       featuresFile = new File(baseDir, featuresFileName);
     }
+    String scopeModelFileName = cmd.getOptionValue("scope-model");
+    String cueModelFileName = cmd.getOptionValue("cue-model");
+    File scopeModelFile = null;
+    File cueModelFile = null;
+    if (StringHandling.isAbsoluteFileName(scopeModelFileName))
+    {
+      scopeModelFile = new File(scopeModelFileName);
+    } else
+    {
+      scopeModelFile = new File(baseDir, scopeModelFileName);
+    }
+    System.out.format("scope model file: %s%n", scopeModelFile.getAbsolutePath());
+    if (StringHandling.isAbsoluteFileName(cueModelFileName))
+    {
+      cueModelFile = new File(cueModelFileName);
+    } else
+    {
+      cueModelFile = new File(baseDir, cueModelFileName);
+    }
+    System.out.format("cue model file: %s%n", cueModelFile.getAbsolutePath());
     //initialize scope/cue parser
-    scopeParser = new ScopeParser(cmd.getOptionValue("scope-model"), cmd.getOptionValue("cue-model"));
+    scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(), cueModelFile.getAbsolutePath());
 
 
 //    String baseDirectory = args[0];
@@ -202,8 +223,6 @@ public class BatchRunner
     batchRunner.execute();
 
   }
-
-  
 
 //  /**
 //   * @return the baseDirectoryString

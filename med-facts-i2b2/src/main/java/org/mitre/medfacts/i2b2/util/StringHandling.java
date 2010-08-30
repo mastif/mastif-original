@@ -24,4 +24,22 @@ public class StringHandling
     String output = matcher.replaceAll(RESERVED_CHARACTER_REPLACEMENT);
     return output;
   }
+
+  protected static final String ABSOLUTE_FILE_NAME_PREFIX_REGEX_STRING;
+  protected static Pattern ABSOLUTE_FILE_NAME_PREFIX_REGEX;
+
+  static
+  {
+    ABSOLUTE_FILE_NAME_PREFIX_REGEX_STRING =
+      "^((/)|([A-Za-z]:[/\\\\])).*";
+    ABSOLUTE_FILE_NAME_PREFIX_REGEX =
+      Pattern.compile(ABSOLUTE_FILE_NAME_PREFIX_REGEX_STRING);
+  }
+
+  public static boolean isAbsoluteFileName(String fileName)
+  {
+    Matcher matcher = ABSOLUTE_FILE_NAME_PREFIX_REGEX.matcher(fileName);
+    return matcher.matches();
+  }
+
 }

@@ -62,6 +62,8 @@
               <argument>--features-file=featureFile9</argument>
               <argument>--gaussian-prior=1.0</argument>
               <argument>--mode=eval</argument>
+              <argument>--scope-model=scope.model</argument>
+              <argument>--cue-model=cue.model</argument>
             </arguments>
           </configuration>
         </plugin>

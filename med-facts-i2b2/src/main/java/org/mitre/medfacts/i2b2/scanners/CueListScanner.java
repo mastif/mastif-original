@@ -212,7 +212,7 @@ public class CueListScanner
     {
       String cueItemToken = cueItem.tokenAtPosition(i);
       String sourceToken = currentLine[i + beginTokenOffset];
-      matches = cueItemToken.equals(sourceToken);
+      matches = cueItemToken.equalsIgnoreCase(sourceToken);
     }
     return matches;
   }

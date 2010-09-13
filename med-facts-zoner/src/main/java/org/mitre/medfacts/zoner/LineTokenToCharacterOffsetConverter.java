@@ -90,7 +90,7 @@ public class LineTokenToCharacterOffsetConverter
     if (token == 0)
     {
       System.out.format("token 0 was requested on line %d, so not going through second loop%n", line);
-      return (currentEntry == null) ? 0 : currentEntry.getKey();
+      return (currentEntry == null) ? 0 : currentEntry.getKey() + 2;
     }
 
     boolean tokenFound = false;
@@ -121,6 +121,8 @@ public class LineTokenToCharacterOffsetConverter
       {
         tokenFound = true;
         System.out.format("found requested token!%n");
+        Entry<Integer, WhitespaceType> whatWouldHaveBeenNext = iterator.next();
+        System.out.format("::currentEntry (%d, %s) [token loop]%n", whatWouldHaveBeenNext.getKey(), whatWouldHaveBeenNext.getValue());
       }
     }
     System.out.println("after line loop");
@@ -128,7 +130,7 @@ public class LineTokenToCharacterOffsetConverter
     if (lineFound && tokenFound)
     {
       System.out.format("token 0 was requested on line %d, so not going through second loop%n", line);
-      return (currentEntry == null) ? null : currentEntry.getKey();
+      return (currentEntry == null) ? null : currentEntry.getKey() + 2;
     } else
     {
       return null;

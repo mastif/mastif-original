@@ -27,18 +27,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptType;
+import org.mitre.medfacts.i2b2.util.Location;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
+import org.mitre.medfacts.zoner.LineAndTokenPosition;
+import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 /**
  *
  * @author WELLNER
  */
-public class AssertionDocumentObject<ConceptType> {
+public class AssertionDocumentObject<ConceptTypeParam> {
 
     public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
     public class AssertionStatusPair {
-        ConceptType concept;
+        ConceptTypeParam concept;
         String assertionStatus;
-        public AssertionStatusPair(ConceptType c, String aS) {
+        public AssertionStatusPair(ConceptTypeParam c, String aS) {
             concept = c;
             assertionStatus = aS;
         }
@@ -46,15 +53,19 @@ public class AssertionDocumentObject<ConceptType> {
             return assertionStatus;
         }
 
-        public ConceptType getConcept() {
+        public ConceptTypeParam getConcept() {
             return concept;
         }
     }
 
     private HashSet<AssertionStatusPair> assertionStatusPairs = new HashSet<AssertionStatusPair>();
 
+    private List<ConceptAnnotation> conceptAnnotationList =
+        new ArrayList<ConceptAnnotation>();
+
 
     private String textLookup[][];
+    private String wholeText;
 
     public void setDocument(java.io.File f) {
         try {
@@ -68,18 +79,23 @@ public class AssertionDocumentObject<ConceptType> {
     }
 
     private void processText(Reader reader) {
+        String eol = System.getProperty("line.separator");
         BufferedReader br = new BufferedReader(reader);
 
         StringWriter writer = new StringWriter();
         PrintWriter printer = new PrintWriter(writer);
 
         String currentLine = null;
+        StringBuilder builder = new StringBuilder();
         ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
         int lineNumber = 0;
         try {
             while ((currentLine = br.readLine()) != null)
           {
             printer.println(currentLine);
+            builder.append(currentLine);
+            builder.append(eol);
+
             String tokenArray[] = WHITESPACE_PATTERN.split(currentLine);
             textLookupTemp.add(tokenArray);
 
@@ -97,10 +113,34 @@ public class AssertionDocumentObject<ConceptType> {
         String twoDimensionalStringArray[][] = new String[1][];
         //String textLookup[][] = null;
         textLookup = textLookupTemp.toArray(twoDimensionalStringArray);
+        wholeText = builder.toString();
     }
 
-    public void addConceptAnnotation(int startCharOffset, int endCharOffset, String typ, ConceptType concept) {
+    public void addConceptAnnotation(int startCharOffset, int endCharOffset, String typ, ConceptTypeParam conceptType) {
+      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverter(wholeText);
 
+      LineAndTokenPosition startLineAndTokenPosition = converter.convert(startCharOffset);
+      LineAndTokenPosition endLineAndTokenPosition = converter.convert(endCharOffset);
+
+      ConceptAnnotation conceptAnnotation = new ConceptAnnotation();
+
+      Location beginLocation = new Location();
+      beginLocation.setLine(startLineAndTokenPosition.getLine());
+      beginLocation.setTokenOffset(startLineAndTokenPosition.getTokenOffset());
+      conceptAnnotation.setBegin(beginLocation);
+
+      Location endLocation = new Location();
+      endLocation.setLine(endLineAndTokenPosition.getLine());
+      endLocation.setTokenOffset(endLineAndTokenPosition.getTokenOffset());
+      conceptAnnotation.setEnd(endLocation);
+
+      String conceptText = wholeText.substring(startCharOffset, endCharOffset+1);
+      conceptAnnotation.setConceptText(conceptText);
+
+      // todo: what should be used as the parameter to setConceptType???
+      conceptAnnotation.setConceptType(ConceptType.valueOf(conceptType.toString()));
+
+      conceptAnnotationList.add(conceptAnnotation);
     }
 
     public ArrayList<AssertionStatusPair> getAssertions() {

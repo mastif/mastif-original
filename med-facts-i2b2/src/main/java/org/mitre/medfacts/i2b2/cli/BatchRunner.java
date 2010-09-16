@@ -259,7 +259,7 @@ public class BatchRunner
     boolean scopeFileExists = scopeFile.exists();
     System.out.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present");
 
-    MedFactsRunner runner = new MedFactsRunner();
+    FileRunner runner = new FileRunner();
 
     runner.setConceptFileProcessor(conceptFileProcessor);
     runner.setAssertionFileProcessor(assertionFileProcessor);

@@ -50,7 +50,7 @@ public class LineTokenToCharacterOffsetConverterTest
     input1.setLine(testLine1);
     input1.setTokenOffset(testToken1);
 
-    Integer actualCharacterOffset1 = c.convert(input1);
+    Integer actualCharacterOffset1 = c.convert(input1).getBegin();
     Integer expectedCharacterOffset1 = 0;
     System.out.format("BEGIN TEST #1%ninput line:token: %d:%d%nexpected character offset: %d%nactual character offset: %d%nEND TEST #1%n%n",
         testLine1, testToken1, expectedCharacterOffset1, actualCharacterOffset1);
@@ -61,7 +61,7 @@ public class LineTokenToCharacterOffsetConverterTest
     LineAndTokenPosition input2 = new LineAndTokenPosition();
     input2.setLine(testLine2);
     input2.setTokenOffset(testToken2);
-    Integer actualCharacterOffset2 = c.convert(input2);
+    Integer actualCharacterOffset2 = c.convert(input2).getBegin();
     Integer expectedCharacterOffset2 = 197;
     System.out.format("BEGIN TEST #2%ninput line:token: %d:%d%nexpected character offset: %d%nactual character offset: %d%nEND TEST #2%n%n",
         testLine2, testToken2, expectedCharacterOffset2, actualCharacterOffset2);

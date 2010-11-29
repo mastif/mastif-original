@@ -31,11 +31,11 @@ public class LineTokenToCharacterOffsetConverter
   protected TreeSet<Integer> eolPositionSet = new TreeSet<Integer>();
   protected TreeMap<Integer,WhitespaceType> eolOrSpacePositionMap = new TreeMap<Integer,WhitespaceType>();
 
-  protected ArrayList<ArrayList<Integer>> offsets = null;
+  protected ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>> offsets = null;
 
   public LineTokenToCharacterOffsetConverter(String inputString)
   {
-    ArrayList<ArrayList<Integer>> all = new ArrayList<ArrayList<Integer>>();
+    ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>> all = new ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>>();
 
 //    ArrayList<Integer> currentLine = new ArrayList<Integer>();
 //    all.add(currentLine);
@@ -46,7 +46,7 @@ public class LineTokenToCharacterOffsetConverter
     //ArrayList<String> lineList = new ArrayList<String>();
     //ArrayList<Integer> lineBeginOffsetList = new ArrayList<Integer>();
 
-    ArrayList<ArrayList<Integer>> offsets = new ArrayList<ArrayList<Integer>>();
+    ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>> offsets = new ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>>();
 
     int i = 0;
     while (eolMatcher.find())
@@ -54,7 +54,7 @@ public class LineTokenToCharacterOffsetConverter
       int eolStart = eolMatcher.start();
       int eolEnd = eolMatcher.end();
 
-      ArrayList<Integer> lineOffsets = new ArrayList<Integer>();
+      ArrayList<BeginAndEndCharacterOffsetPair> lineOffsets = new ArrayList<BeginAndEndCharacterOffsetPair>();
       offsets.add(lineOffsets);
 
       String line = inputString.substring(i, eolStart);
@@ -69,7 +69,7 @@ public class LineTokenToCharacterOffsetConverter
     if (i < inputString.length())
     {
       String line = inputString.substring(i);
-      ArrayList<Integer> lineOffsets = new ArrayList<Integer>();
+      ArrayList<BeginAndEndCharacterOffsetPair> lineOffsets = new ArrayList<BeginAndEndCharacterOffsetPair>();
       logger.info(String.format("LINE (before eof) [%d-%d] \"%s\"", i, inputString.length() - 1, line));
       offsets.add(lineOffsets);
 
@@ -79,7 +79,7 @@ public class LineTokenToCharacterOffsetConverter
     this.offsets = offsets;
   }
 
-  private void parseLine(String line, ArrayList<Integer> lineOffsets, int startOfLineOffset)
+  private void parseLine(String line, ArrayList<BeginAndEndCharacterOffsetPair> lineOffsets, int startOfLineOffset)
   {
     Matcher spaceMatcher = spacePattern.matcher(line);
     int j = 0;
@@ -97,7 +97,10 @@ public class LineTokenToCharacterOffsetConverter
       String token = line.substring(j, spaceBegin);
 
       logger.info(String.format("    TOKEN [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
-      lineOffsets.add(wordBeginOverall);
+      BeginAndEndCharacterOffsetPair current = new BeginAndEndCharacterOffsetPair();
+      current.setBegin(wordBeginOverall);
+      current.setEnd(wordEndOverall);
+      lineOffsets.add(current);
       j = spaceEnd;
     }
     if (j < line.length())
@@ -111,20 +114,23 @@ public class LineTokenToCharacterOffsetConverter
       String token = line.substring(j);
       logger.info(String.format("    TOKEN (before eol) [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
 
-      lineOffsets.add(j);
+      BeginAndEndCharacterOffsetPair current = new BeginAndEndCharacterOffsetPair();
+      current.setBegin(wordBeginOverall);
+      current.setEnd(wordEndOverall);
+      lineOffsets.add(current);
     }
   }
 
-  public Integer convert(LineAndTokenPosition lineAndTokenPosition)
+  public BeginAndEndCharacterOffsetPair convert(LineAndTokenPosition lineAndTokenPosition)
   {
     int line = lineAndTokenPosition.getLine();
     int token = lineAndTokenPosition.getTokenOffset();
 
-    ArrayList<Integer> lineArray = offsets.get(line - 1);
+    ArrayList<BeginAndEndCharacterOffsetPair> lineArray = offsets.get(line - 1);
     if (lineArray == null) { return null; }
-    Integer offsetForToken = lineArray.get(token);
+    BeginAndEndCharacterOffsetPair offsetsForToken = lineArray.get(token);
     
-    return offsetForToken;
+    return offsetsForToken;
   }
 
   public Integer convertOld(LineAndTokenPosition lineAndTokenPosition)
@@ -243,4 +249,31 @@ public class LineTokenToCharacterOffsetConverter
       this.whitespaceType = whitespaceType;
     }
   }
+
+  public class BeginAndEndCharacterOffsetPair
+  {
+    protected int begin;
+    protected int end;
+
+    public int getBegin()
+    {
+      return begin;
+    }
+
+    public void setBegin(int begin)
+    {
+      this.begin = begin;
+    }
+
+    public int getEnd()
+    {
+      return end;
+    }
+
+    public void setEnd(int end)
+    {
+      this.end = end;
+    }
+  }
 }
+

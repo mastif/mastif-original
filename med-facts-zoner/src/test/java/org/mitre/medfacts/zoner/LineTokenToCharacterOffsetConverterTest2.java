@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter.BeginAndEndCharacterOffsetPair;
 
 /**
  *
@@ -39,7 +40,8 @@ public class LineTokenToCharacterOffsetConverterTest2
 
     LineTokenToCharacterOffsetConverter c = new LineTokenToCharacterOffsetConverter(inputDocument);
 
-    Integer beginExpectedOutput = 5896; //5800;
+    Integer beginExpectedOutputFirstCharacter = 5896; //5800;
+    Integer beginExpectedOutputLastCharacter = 5898;
        // 5896 would be the beginning of the word;
        // 5898 would be the end of the word
 
@@ -49,12 +51,16 @@ public class LineTokenToCharacterOffsetConverterTest2
     LineAndTokenPosition beginPosition = new LineAndTokenPosition();
     beginPosition.setLine(111);
     beginPosition.setTokenOffset(20);
-    Integer beginActualOutput = c.convert(beginPosition);
+    BeginAndEndCharacterOffsetPair firstWordPosition = c.convert(beginPosition);
+    Integer beginActualOutputFirstCharacter = firstWordPosition.getBegin();
+    Integer beginActualOutputLastCharacter = firstWordPosition.getEnd();
 
-    assertEquals("111:20's output character offset did not match", beginExpectedOutput, beginActualOutput);
+    assertEquals("111:20's output first character offset did not match", beginExpectedOutputFirstCharacter, beginActualOutputFirstCharacter);
+    assertEquals("111:20's output last character offset did not match", beginExpectedOutputLastCharacter, beginActualOutputLastCharacter);
 
 
-    Integer endExpectedOutput = 5909; //5813;
+    Integer endExpectedOutputFirstCharacter = 5909; //5813;
+    Integer endExpectedOutputLastCharacter = 5913;
        // 5909 would be the beginning of the word;
        // 5913 would be the end of the word
 //       // 5813 would be the beginning of the word;
@@ -63,9 +69,12 @@ public class LineTokenToCharacterOffsetConverterTest2
     LineAndTokenPosition endPosition = new LineAndTokenPosition();
     endPosition.setLine(111);
     endPosition.setTokenOffset(23);
-    Integer endActualOutput = c.convert(endPosition);
+    BeginAndEndCharacterOffsetPair lastWordPosition = c.convert(endPosition);
+    Integer endActualOutputFirstCharacter = lastWordPosition.getBegin();
+    Integer endActualOutputLastCharacter = lastWordPosition.getEnd();
 
-    assertEquals("111:23's output character offset did not match", endExpectedOutput, endActualOutput);
+    assertEquals("111:23's output character offset did not match", endExpectedOutputFirstCharacter, endActualOutputFirstCharacter);
+    assertEquals("111:23's output character offset did not match", endExpectedOutputLastCharacter, endActualOutputLastCharacter);
   }
 
 

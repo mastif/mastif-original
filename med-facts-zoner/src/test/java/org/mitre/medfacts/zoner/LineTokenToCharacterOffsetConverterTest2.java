@@ -26,7 +26,7 @@ public class LineTokenToCharacterOffsetConverterTest2
   private static final Logger logger = Logger.getLogger(LineTokenToCharacterOffsetConverterTest2.class.getName());
 
   @Test
-  @Ignore
+  //@Ignore
   public void testI2b2Doc1() throws IOException
   {
     URL documentUrl = getClass().getClassLoader().getResource("0001.txt");
@@ -35,13 +35,16 @@ public class LineTokenToCharacterOffsetConverterTest2
       readEntireContentsStream(inputStream);
     inputStream.close();
 
-    logger.info(String.format("inputDocument: ===%n%s%n===%n", inputDocument));
+    //logger.info(String.format("inputDocument: ===%n%s%n===%n", inputDocument));
 
     LineTokenToCharacterOffsetConverter c = new LineTokenToCharacterOffsetConverter(inputDocument);
 
-    Integer beginExpectedOutput = 5800;
-       // 5800 would be the beginning of the word;
-       // 5802 would be the end of the word
+    Integer beginExpectedOutput = 5896; //5800;
+       // 5896 would be the beginning of the word;
+       // 5898 would be the end of the word
+
+//       // 5800 would be the beginning of the word;
+//       // 5802 would be the end of the word
 
     LineAndTokenPosition beginPosition = new LineAndTokenPosition();
     beginPosition.setLine(111);
@@ -51,9 +54,11 @@ public class LineTokenToCharacterOffsetConverterTest2
     assertEquals("111:20's output character offset did not match", beginExpectedOutput, beginActualOutput);
 
 
-    Integer endExpectedOutput = 5813;
-       // 5813 would be the beginning of the word;
-       // 5817 would be the end of the word
+    Integer endExpectedOutput = 5909; //5813;
+       // 5909 would be the beginning of the word;
+       // 5913 would be the end of the word
+//       // 5813 would be the beginning of the word;
+//       // 5817 would be the end of the word
 
     LineAndTokenPosition endPosition = new LineAndTokenPosition();
     endPosition.setLine(111);

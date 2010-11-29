@@ -5,7 +5,9 @@
 
 package org.mitre.medfacts.zoner;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -25,35 +27,107 @@ public class LineTokenToCharacterOffsetConverter
 
   protected static final Pattern endOfLinePattern = Pattern.compile("\\r?\\n");
   protected static final Pattern eolOrSpacePattern = Pattern.compile("( +)|(\\r?\\n)");
+  protected static final Pattern spacePattern = Pattern.compile(" +");
   protected TreeSet<Integer> eolPositionSet = new TreeSet<Integer>();
   protected TreeMap<Integer,WhitespaceType> eolOrSpacePositionMap = new TreeMap<Integer,WhitespaceType>();
 
+  protected ArrayList<ArrayList<Integer>> offsets = null;
+
   public LineTokenToCharacterOffsetConverter(String inputString)
   {
+    ArrayList<ArrayList<Integer>> all = new ArrayList<ArrayList<Integer>>();
+
+//    ArrayList<Integer> currentLine = new ArrayList<Integer>();
+//    all.add(currentLine);
+
+    /////
+
     Matcher eolMatcher = endOfLinePattern.matcher(inputString);
+    //ArrayList<String> lineList = new ArrayList<String>();
+    //ArrayList<Integer> lineBeginOffsetList = new ArrayList<Integer>();
+
+    ArrayList<ArrayList<Integer>> offsets = new ArrayList<ArrayList<Integer>>();
+
+    int i = 0;
     while (eolMatcher.find())
     {
-      int begin = eolMatcher.start();
-      eolPositionSet.add(begin);
+      int eolStart = eolMatcher.start();
+      int eolEnd = eolMatcher.end();
+
+      ArrayList<Integer> lineOffsets = new ArrayList<Integer>();
+      offsets.add(lineOffsets);
+
+      String line = inputString.substring(i, eolStart);
+
+      logger.info(String.format("LINE [%d-%d] \"%s\"", i, eolStart - 1, line));
+      parseLine(line, lineOffsets, i);
+
+      //lineList.add(line);
+      //lineBeginOffsetList.add(i);
+      i = eolEnd;
+    }
+    if (i < inputString.length())
+    {
+      String line = inputString.substring(i);
+      ArrayList<Integer> lineOffsets = new ArrayList<Integer>();
+      logger.info(String.format("LINE (before eof) [%d-%d] \"%s\"", i, inputString.length() - 1, line));
+      offsets.add(lineOffsets);
+
+      parseLine(line, lineOffsets, i);
     }
 
-    Matcher eolOrSpaceMatcher = eolOrSpacePattern.matcher(inputString);
-    while (eolOrSpaceMatcher.find())
+    this.offsets = offsets;
+  }
+
+  private void parseLine(String line, ArrayList<Integer> lineOffsets, int startOfLineOffset)
+  {
+    Matcher spaceMatcher = spacePattern.matcher(line);
+    int j = 0;
+    while (spaceMatcher.find())
     {
-      int begin = eolOrSpaceMatcher.start();
-      WhitespaceType type=null;
-      if (" ".equals(eolOrSpaceMatcher.group(0)))
-      {
-        type = WhitespaceType.SPACE;
-      } else
-      {
-        type = WhitespaceType.EOL;
-      }
-      eolOrSpacePositionMap.put(begin, type);
+      int spaceBegin = spaceMatcher.start();
+      int spaceEnd = spaceMatcher.end();
+
+      int wordBegin = j;;
+      int wordEnd = spaceBegin - 1;
+
+      int wordBeginOverall = startOfLineOffset + wordBegin;
+      int wordEndOverall = startOfLineOffset + wordEnd;
+
+      String token = line.substring(j, spaceBegin);
+
+      logger.info(String.format("    TOKEN [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
+      lineOffsets.add(wordBeginOverall);
+      j = spaceEnd;
+    }
+    if (j < line.length())
+    {
+      int wordBegin = j;
+      int wordEnd = line.length() - 1;
+
+      int wordBeginOverall = startOfLineOffset + wordBegin;
+      int wordEndOverall = startOfLineOffset + wordEnd;
+
+      String token = line.substring(j);
+      logger.info(String.format("    TOKEN (before eol) [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
+
+      lineOffsets.add(j);
     }
   }
 
   public Integer convert(LineAndTokenPosition lineAndTokenPosition)
+  {
+    int line = lineAndTokenPosition.getLine();
+    int token = lineAndTokenPosition.getTokenOffset();
+
+    ArrayList<Integer> lineArray = offsets.get(line - 1);
+    if (lineArray == null) { return null; }
+    Integer offsetForToken = lineArray.get(token);
+    
+    return offsetForToken;
+  }
+
+  public Integer convertOld(LineAndTokenPosition lineAndTokenPosition)
   {
     int line = lineAndTokenPosition.getLine();
     int token = lineAndTokenPosition.getTokenOffset();
@@ -142,5 +216,31 @@ public class LineTokenToCharacterOffsetConverter
   {
     SPACE,
     EOL
+  }
+
+  public class CharacterOffsetAndWhitespaceType
+  {
+    protected int characterOffset;
+    protected WhitespaceType whitespaceType;
+
+    public int getCharacterOffset()
+    {
+      return characterOffset;
+    }
+
+    public void setCharacterOffset(int characterOffset)
+    {
+      this.characterOffset = characterOffset;
+    }
+
+    public WhitespaceType getWhitespaceType()
+    {
+      return whitespaceType;
+    }
+
+    public void setWhitespaceType(WhitespaceType whitespaceType)
+    {
+      this.whitespaceType = whitespaceType;
+    }
   }
 }

@@ -27,7 +27,6 @@ public class LineTokenToCharacterOffsetConverterTest2
   private static final Logger logger = Logger.getLogger(LineTokenToCharacterOffsetConverterTest2.class.getName());
 
   @Test
-  //@Ignore
   public void testI2b2Doc1() throws IOException
   {
     URL documentUrl = getClass().getClassLoader().getResource("0001.txt");
@@ -77,6 +76,80 @@ public class LineTokenToCharacterOffsetConverterTest2
     assertEquals("111:23's output character offset did not match", endExpectedOutputLastCharacter, endActualOutputLastCharacter);
   }
 
+  @Test
+  public void testI2b2Doc1Reverse() throws IOException
+  {
+    URL documentUrl = getClass().getClassLoader().getResource("0001.txt");
+    InputStream inputStream = documentUrl.openStream();
+    String inputDocument =
+      readEntireContentsStream(inputStream);
+    inputStream.close();
+
+    //logger.info(String.format("inputDocument: ===%n%s%n===%n", inputDocument));
+
+    LineTokenToCharacterOffsetConverter c = new LineTokenToCharacterOffsetConverter(inputDocument);
+
+    Integer inputFirstTokenFirstCharacter = 5896;
+    Integer inputFirstTokenLastCharacter = 5898;
+
+    // SCENARIO #1: input first character of first token
+    
+    LineAndTokenPosition expectedFirstWordPosition = new LineAndTokenPosition();
+    Integer expectedFirstWordPositionLine = 111;
+    Integer expectedFirstWordPositionToken = 20;
+    expectedFirstWordPosition.setLine(expectedFirstWordPositionLine);
+    expectedFirstWordPosition.setTokenOffset(expectedFirstWordPositionToken);
+    
+    LineAndTokenPosition actualFirstWordPosition = c.convertReverse(inputFirstTokenFirstCharacter);
+    Integer actualFirstWordPositionLine = actualFirstWordPosition.getLine();
+    Integer actualFirstWordPositionToken = actualFirstWordPosition.getTokenOffset();
+    
+    assertEquals("111:20's (offset 5896's -- first token first character) output line offset did not match", expectedFirstWordPositionLine, actualFirstWordPositionLine);
+    assertEquals("111:20's (offset 5896's -- first token first character) output token offset did not match", expectedFirstWordPositionToken, actualFirstWordPositionToken);
+
+
+    // SCENARIO #2: input last character of first token
+
+    LineAndTokenPosition actualFirstWordLastCharacterPosition = c.convertReverse(inputFirstTokenLastCharacter);
+    Integer actualFirstWordLastCharacterPositionLine = actualFirstWordLastCharacterPosition.getLine();
+    Integer actualFirstWordLastCharacterPositionToken = actualFirstWordLastCharacterPosition.getTokenOffset();
+
+    assertEquals("111:20's (offset 5898's -- first token last character) output line offset did not match", expectedFirstWordPositionLine, actualFirstWordLastCharacterPositionLine);
+    assertEquals("111:20's (offset 5898's -- first token last character) output token offset did not match", expectedFirstWordPositionToken, actualFirstWordLastCharacterPositionToken);
+
+    ////
+
+
+    Integer inputLastTokenFirstCharacter = 5909;
+    Integer inputLastTokenLastCharacter = 5913;
+
+    // SCENARIO #3: input first character of last token
+
+    LineAndTokenPosition expectedLastWordPosition = new LineAndTokenPosition();
+    Integer expectedLastWordPositionLine = 111;
+    Integer expectedLastWordPositionToken = 23;
+    expectedLastWordPosition.setLine(expectedLastWordPositionLine);
+    expectedLastWordPosition.setTokenOffset(expectedLastWordPositionToken);
+
+    LineAndTokenPosition actualLastWordFirstCharacterPosition = c.convertReverse(inputLastTokenFirstCharacter);
+    Integer actualLastWordFirstCharacterPositionLine = actualLastWordFirstCharacterPosition.getLine();
+    Integer actualLastWordFirstCharacterPositionToken = actualLastWordFirstCharacterPosition.getTokenOffset();
+
+    assertEquals("111:23's (offset 5909's -- last token first character) output line offset did not match", expectedLastWordPositionLine, actualLastWordFirstCharacterPositionLine);
+    assertEquals("111:23's (offset 5909's -- last token first character) output token offset did not match", expectedLastWordPositionToken, actualLastWordFirstCharacterPositionToken);
+
+
+    // SCENARIO #4: input last character of last token
+
+    LineAndTokenPosition actualLastWordLastCharacterPosition = c.convertReverse(inputLastTokenLastCharacter);
+    Integer actualLastWordLastCharacterPositionLine = actualLastWordLastCharacterPosition.getLine();
+    Integer actualLastWordLastCharacterPositionToken = actualLastWordLastCharacterPosition.getTokenOffset();
+
+    assertEquals("111:23's (offset 5913's -- last token last character) output line offset did not match", expectedLastWordPositionLine, actualLastWordLastCharacterPositionLine);
+    assertEquals("111:23's (offset 5913's -- last token last character) output token offset did not match", expectedLastWordPositionToken, actualLastWordLastCharacterPositionToken);
+
+  
+  }
 
   public static String readEntireContentsFile(File modelFile) throws IOException
   {

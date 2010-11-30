@@ -156,6 +156,13 @@ public class LineTokenToCharacterOffsetConverter
     return offsetsForToken;
   }
 
+  public LineAndTokenPosition convertReverse(Integer characterOffset)
+  {
+    LineAndTokenPosition lineAndTokenPosition =
+      characterOffsetToLineAndTokenMap.get(characterOffset);
+    return lineAndTokenPosition;
+  }
+
   public Integer convertOld(LineAndTokenPosition lineAndTokenPosition)
   {
     int line = lineAndTokenPosition.getLine();

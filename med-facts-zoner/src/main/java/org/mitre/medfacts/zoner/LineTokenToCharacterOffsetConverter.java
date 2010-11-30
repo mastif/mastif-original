@@ -60,7 +60,7 @@ public class LineTokenToCharacterOffsetConverter
 
       String line = inputString.substring(i, eolStart);
 
-      logger.info(String.format("LINE [%d-%d] \"%s\"", i, eolStart - 1, line));
+      logger.finest(String.format("LINE [%d-%d] \"%s\"", i, eolStart - 1, line));
       parseLine(line, lineOffsets, i);
 
       //lineList.add(line);
@@ -71,7 +71,7 @@ public class LineTokenToCharacterOffsetConverter
     {
       String line = inputString.substring(i);
       ArrayList<BeginAndEndCharacterOffsetPair> lineOffsets = new ArrayList<BeginAndEndCharacterOffsetPair>();
-      logger.info(String.format("LINE (before eof) [%d-%d] \"%s\"", i, inputString.length() - 1, line));
+      logger.finest(String.format("LINE (before eof) [%d-%d] \"%s\"", i, inputString.length() - 1, line));
       offsets.add(lineOffsets);
 
       parseLine(line, lineOffsets, i);
@@ -119,7 +119,7 @@ public class LineTokenToCharacterOffsetConverter
 
       String token = line.substring(j, spaceBegin);
 
-      logger.info(String.format("    TOKEN [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
+      logger.finest(String.format("    TOKEN [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
       BeginAndEndCharacterOffsetPair current = new BeginAndEndCharacterOffsetPair();
       current.setBegin(wordBeginOverall);
       current.setEnd(wordEndOverall);
@@ -135,7 +135,7 @@ public class LineTokenToCharacterOffsetConverter
       int wordEndOverall = startOfLineOffset + wordEnd;
 
       String token = line.substring(j);
-      logger.info(String.format("    TOKEN (before eol) [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
+      logger.finest(String.format("    TOKEN (before eol) [%d-%d] [%d-%d] \"%s\"", wordBegin, wordEnd, wordBeginOverall, wordEndOverall, token));
 
       BeginAndEndCharacterOffsetPair current = new BeginAndEndCharacterOffsetPair();
       current.setBegin(wordBeginOverall);

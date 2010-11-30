@@ -87,7 +87,7 @@ public class DecoderDirectoryLoader
     String conceptFileContents = StringHandling.readEntireContents(conceptFile);
     //List<Concept> parseConceptFileContents(conceptFileContents);
 
-    Collection<TrainingInstance> decodingInstanceCollection = parseConceptFile(conceptFile, contents);
+    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, contents);
 
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor();
@@ -106,7 +106,7 @@ public class DecoderDirectoryLoader
     return output;
   }
 
-  private Collection<TrainingInstance> parseConceptFile(File conceptFile, String contents)
+  private List<ApiConcept> parseConceptFile(File conceptFile, String contents)
   {
 
     LineTokenToCharacterOffsetConverter c =
@@ -114,6 +114,7 @@ public class DecoderDirectoryLoader
 
     try
     {
+      List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
       List<Annotation> conceptAnnotations = conceptFileProcessor.processAnnotationFile(conceptFile);
 
       logger.info("    BEGIN CONCEPTS");
@@ -128,9 +129,14 @@ public class DecoderDirectoryLoader
 
         logger.info(String.format("      - character offsets: %d-%d", beginCharacter, endCharacter));
 
+        String conceptType = currentAnnotation.getConceptText();
+
+        ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType);
+        apiConceptList.add(apiConcept);
+
       }
       logger.info("    END CONCEPTS");
-      return null;
+      return apiConceptList;
 
     } catch (IOException ex)
     {

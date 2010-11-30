@@ -53,6 +53,8 @@ import org.mitre.medfacts.i2b2.util.StringHandling;
  */
 public class BatchRunner
 {
+  static final Logger logger = Logger.getLogger(BatchRunner.class.getName());
+  
   public static final float TRAINING_RATIO = 0.8f;
   public static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile("\\.[a-zA-Z0-9]*$");
   //protected String baseDirectoryString;
@@ -385,6 +387,8 @@ public class BatchRunner
     String model = trainer.train();
     //For testing: print out the model as a string -Alex Yeh
 
+    writeModelToFile(model, trainingDirectory, "i2b2.model");
+
     // decoding
     JarafeMEDecoder decoder = new JarafeMEDecoder(model);
     int matchCount = 0;
@@ -681,6 +685,26 @@ public class BatchRunner
         throw new RuntimeException(message, ex);
       }
 
+    }
+  }
+
+  private void writeModelToFile(String model, String trainingDirectory, String filename)
+  {
+    try
+    {
+      File outputFile = new File(trainingDirectory, filename);
+      FileWriter fileWriter = new FileWriter(outputFile);
+      BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+
+      bufferedWriter.append(model);
+
+      bufferedWriter.close();
+      fileWriter.close();
+    } catch (IOException e)
+    {
+      String message = "IOException while trying to write model to file";
+      logger.log(Level.SEVERE, message, e);
+      throw new RuntimeException(message, e);
     }
   }
 

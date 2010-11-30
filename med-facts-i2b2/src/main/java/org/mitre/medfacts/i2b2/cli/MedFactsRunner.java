@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
@@ -331,13 +332,45 @@ public class MedFactsRunner
     this.annotationFilenameList.add(filename);
   }
 
+  public String[][] processTextString(String input)
+    throws FileNotFoundException, IOException
+  {
+    System.out.format("processing text string ...%n");
+
+    StringReader sr = new StringReader(input);
+    BufferedReader br = new BufferedReader(sr);
+
+    String[][] text2dArray = processTextBufferedReader(br);
+
+    br.close();
+    sr.close();
+
+    System.out.println("=====");
+
+    System.out.format("done processing text string.%n");
+    return text2dArray;
+  }
+
   private void processTextFile() throws FileNotFoundException, IOException
   {
     System.out.format("processing text file \"%s\"...%n", textFilename);
-    
+
     FileReader fr = new FileReader(getTextFilename());
     BufferedReader br = new BufferedReader(fr);
 
+    String[][] text2dArray = processTextBufferedReader(br);
+    this.textLookup = text2dArray;
+
+    br.close();
+    fr.close();
+
+    System.out.println("=====");
+
+    System.out.format("done processing text file \"%s\".%n", textFilename);
+  }
+
+  private String[][] processTextBufferedReader(BufferedReader br) throws FileNotFoundException, IOException
+  {
     StringWriter writer = new StringWriter();
     PrintWriter printer = new PrintWriter(writer);
 
@@ -367,28 +400,11 @@ public class MedFactsRunner
     printer.close();
     writer.close();
 
-    br.close();
-    fr.close();
-
-    System.out.println("=====");
-
     String twoDimensionalStringArray[][] = new String[1][];
     //String textLookup[][] = null;
-    textLookup = textLookupTemp.toArray(twoDimensionalStringArray);
+    String textLookup2dArray[][] = textLookupTemp.toArray(twoDimensionalStringArray);
 
-//    int lineNumber2 = 0;
-//    for (String[] currentTextLookupLine : textLookup)
-//    {
-//      int tokenNumber2 = 0;
-//      for (String currentToken : currentTextLookupLine)
-//      {
-//        System.out.format("    CURRENT token (post): [%d:%d] \"%s\"%n", lineNumber2, tokenNumber2, currentToken);
-//        tokenNumber2++;
-//      }
-//      lineNumber2++;
-//    }
-
-    System.out.format("done processing text file \"%s\".%n", textFilename);
+    return textLookup2dArray;
   }
 
   private void processAnnotationFiles() throws IOException
@@ -412,7 +428,7 @@ public class MedFactsRunner
       {
         case CONCEPT:
           //currentAnnotationList = processConceptAnnotationFile(currentFilename);
-          currentAnnotationList = getConceptFileProcessor().processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getConceptFileProcessor().processAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.CONCEPT, currentAnnotationList);
           if (mode == Mode.DECODE)
           {
@@ -430,16 +446,16 @@ public class MedFactsRunner
           if (mode == Mode.EVAL || mode == Mode.TRAIN)
           {
             System.out.println(">>>in eval mode, reading assertions file");
-            currentAnnotationList = getAssertionFileProcessor().processConceptAnnotationFile(currentFilename);
+            currentAnnotationList = getAssertionFileProcessor().processAnnotationFile(currentFilename);
             annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
           }
           break;
         case RELATION:
-          currentAnnotationList = getRelationFileProcessor().processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getRelationFileProcessor().processAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.RELATION, currentAnnotationList);
           break;
         case SCOPE:
-          currentAnnotationList = getScopeFileProcessor().processConceptAnnotationFile(currentFilename);
+          currentAnnotationList = getScopeFileProcessor().processAnnotationFile(currentFilename);
           annotationsByType.put(AnnotationType.SCOPE, currentAnnotationList);
 
           List<Annotation> scopeOrCueAnnotationList = annotationsByType.get(AnnotationType.SCOPE);

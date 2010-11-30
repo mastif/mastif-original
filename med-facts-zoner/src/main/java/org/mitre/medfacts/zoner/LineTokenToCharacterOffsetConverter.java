@@ -32,6 +32,7 @@ public class LineTokenToCharacterOffsetConverter
   protected TreeMap<Integer,WhitespaceType> eolOrSpacePositionMap = new TreeMap<Integer,WhitespaceType>();
 
   protected ArrayList<ArrayList<BeginAndEndCharacterOffsetPair>> offsets = null;
+  protected Map<Integer, LineAndTokenPosition> characterOffsetToLineAndTokenMap;
 
   public LineTokenToCharacterOffsetConverter(String inputString)
   {
@@ -76,7 +77,29 @@ public class LineTokenToCharacterOffsetConverter
       parseLine(line, lineOffsets, i);
     }
 
+    Map<Integer, LineAndTokenPosition> characterOffsetToLineAndTokenMap =
+        new TreeMap<Integer, LineAndTokenPosition>();
+    for (int line=0; line < offsets.size(); line++)
+    {
+      ArrayList<BeginAndEndCharacterOffsetPair> currentLine = offsets.get(line);
+
+      for (int token=0; token < currentLine.size(); token++)
+      {
+        BeginAndEndCharacterOffsetPair currentTokenOffsets = currentLine.get(token);
+        Integer begin = currentTokenOffsets.getBegin();
+        Integer end = currentTokenOffsets.getEnd();
+
+        LineAndTokenPosition position = new LineAndTokenPosition();
+        position.setLine(line + 1);
+        position.setTokenOffset(token);
+
+        characterOffsetToLineAndTokenMap.put(begin, position);
+        characterOffsetToLineAndTokenMap.put(end, position);
+      }
+    }
+    
     this.offsets = offsets;
+    this.characterOffsetToLineAndTokenMap = characterOffsetToLineAndTokenMap;
   }
 
   private void parseLine(String line, ArrayList<BeginAndEndCharacterOffsetPair> lineOffsets, int startOfLineOffset)

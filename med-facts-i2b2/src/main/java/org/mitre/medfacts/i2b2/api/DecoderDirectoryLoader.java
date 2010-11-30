@@ -92,8 +92,10 @@ public class DecoderDirectoryLoader
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor();
     p.setContents(contents);
-    // TODO add all concepts
-    // while () { p.addConcept(...) }
+    for (ApiConcept apiConcept : apiConceptList)
+    {
+      p.addConcept(apiConcept);
+    }
     p.processSingleFile();
     logger.info(String.format("    - done processing \"%s\".", currentTextFile.getName()));
   }

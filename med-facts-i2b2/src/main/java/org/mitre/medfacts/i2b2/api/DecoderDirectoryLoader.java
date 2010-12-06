@@ -1,19 +1,18 @@
 package org.mitre.medfacts.i2b2.api;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
-import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
@@ -31,6 +30,7 @@ public class DecoderDirectoryLoader
 
   protected File directory;
   protected String model;
+  JarafeMEDecoder namedEntityDecoder;
 
   public void processDirectory()
   {
@@ -74,6 +74,7 @@ public class DecoderDirectoryLoader
   public void setModel(String model)
   {
     this.model = model;
+    namedEntityDecoder = new JarafeMEDecoder(model);
   }
 
   private void processFile(File currentTextFile)
@@ -87,13 +88,18 @@ public class DecoderDirectoryLoader
     String conceptFileContents = StringHandling.readEntireContents(conceptFile);
     //List<Concept> parseConceptFileContents(conceptFileContents);
 
-    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, contents);
+    LineTokenToCharacterOffsetConverter converter =
+        new LineTokenToCharacterOffsetConverter(contents);
+
+    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, converter);
 
 
-    DecoderSingleFileProcessor p = new DecoderSingleFileProcessor();
+    DecoderSingleFileProcessor p = new DecoderSingleFileProcessor(converter);
     p.setContents(contents);
+    p.setNamedEntityDecoder(namedEntityDecoder);
     for (ApiConcept apiConcept : apiConceptList)
     {
+      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
       p.addConcept(apiConcept);
     }
     p.processSingleFile();
@@ -108,11 +114,8 @@ public class DecoderDirectoryLoader
     return output;
   }
 
-  private List<ApiConcept> parseConceptFile(File conceptFile, String contents)
+  private List<ApiConcept> parseConceptFile(File conceptFile, LineTokenToCharacterOffsetConverter converter)
   {
-
-    LineTokenToCharacterOffsetConverter c =
-        new LineTokenToCharacterOffsetConverter(contents);
 
     try
     {
@@ -126,12 +129,12 @@ public class DecoderDirectoryLoader
         Location beginLineToken = currentAnnotation.getBegin();
         Location endLineToken = currentAnnotation.getEnd();
 
-        Integer beginCharacter = c.convert(convertPositionToZonerLineAndTokenPosition(beginLineToken)).getBegin();
-        Integer endCharacter = c.convert(convertPositionToZonerLineAndTokenPosition(endLineToken)).getEnd();
+        Integer beginCharacter = converter.convert(convertPositionToZonerLineAndTokenPosition(beginLineToken)).getBegin();
+        Integer endCharacter = converter.convert(convertPositionToZonerLineAndTokenPosition(endLineToken)).getEnd();
 
         logger.info(String.format("      - character offsets: %d-%d", beginCharacter, endCharacter));
 
-        String conceptType = currentAnnotation.getConceptText();
+        String conceptType = ((ConceptAnnotation)currentAnnotation).getConceptType().toString();
 
         ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType);
         apiConceptList.add(apiConcept);

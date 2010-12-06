@@ -50,4 +50,9 @@ public class ApiConcept
   {
     this.type = type;
   }
+
+  public String toString()
+  {
+    return String.format("[%d-%d] %s", begin, end, type);
+  }
 }

@@ -25,9 +25,9 @@ public class LineTokenToCharacterOffsetConverter
 {
   public static final Logger logger = Logger.getLogger(LineTokenToCharacterOffsetConverter.class.getName());
 
-  protected static final Pattern endOfLinePattern = Pattern.compile("\\r?\\n");
-  protected static final Pattern eolOrSpacePattern = Pattern.compile("( +)|(\\r?\\n)");
-  protected static final Pattern spacePattern = Pattern.compile(" +");
+  public static final Pattern endOfLinePattern = Pattern.compile("\\r?\\n");
+  public static final Pattern eolOrSpacePattern = Pattern.compile("( +)|(\\r?\\n)");
+  public static final Pattern spacePattern = Pattern.compile(" +");
   protected TreeSet<Integer> eolPositionSet = new TreeSet<Integer>();
   protected TreeMap<Integer,WhitespaceType> eolOrSpacePositionMap = new TreeMap<Integer,WhitespaceType>();
 

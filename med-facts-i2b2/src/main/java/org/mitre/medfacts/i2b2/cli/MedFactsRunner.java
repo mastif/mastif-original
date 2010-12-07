@@ -127,7 +127,7 @@ public class MedFactsRunner
       {
         processTextFile();
         processAnnotationFiles();
-        postProcess();
+        MedFactsRunner.postProcessForCueWords(textLookup, allAnnotationList, annotationsByType);
         processZones();
         //validateAnnotations();
         indexAnnotations();
@@ -231,9 +231,17 @@ public class MedFactsRunner
     return currentAnnotationType;
   }
 
-  public void processCueList(String cueListFilename, CueWordType cueWordType) throws URISyntaxException
+  public static void processCueList
+    (
+      String cueListFilename,
+      CueWordType cueWordType,
+      String textLookup[][],
+      List<Annotation> allAnnotationList,
+      Map<AnnotationType,List<Annotation>> annotationsByType
+    )
+    throws URISyntaxException
   {
-    ClassLoader classLoader = getClass().getClassLoader();
+    ClassLoader classLoader = MedFactsRunner.class.getClassLoader();
 //    URL cueFileUrl = classLoader.getResource(cueListFilename);
 //    System.out.format("cue list url: %s%n", cueFileUrl);
 //    URI cueFileUri = cueFileUrl.toURI();
@@ -977,78 +985,45 @@ public class MedFactsRunner
     indexer.indexAnnotations(getAllAnnotationList());
   }
 
-  public void postProcess()
+  public static void postProcessForCueWords
+    (
+      String textLookup[][],
+      List<Annotation> allAnnotationList,
+      Map<AnnotationType,List<Annotation>> annotationsByType
+    )
   {
+    Object temp[][] =
+        {
+          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
+          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
+          { CueWordType.CONDITIONAL, "org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt" },
+          { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt" },
+          { CueWordType.NOT_PATIENT, "org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt" },
+          { CueWordType.NEGEX_PSEUDONEG, "org/mitre/medfacts/i2b2/cuefiles/NegEx_pseudoneg.txt" },
+          { CueWordType.NEGEX_SCOPEEND, "org/mitre/medfacts/i2b2/cuefiles/NegEx_scope_terminators.txt" },
+          { CueWordType.ACTIVITY, "org/mitre/medfacts/i2b2/cuefiles/activity_cue.txt" },
+          { CueWordType.CAUSE, "org/mitre/medfacts/i2b2/cuefiles/cause.txt" },
+          { CueWordType.CLAUSE_BOUNDARY, "org/mitre/medfacts/i2b2/cuefiles/clause_boundary_cue_list.txt" },
+          { CueWordType.COND_CONCEPT, "org/mitre/medfacts/i2b2/cuefiles/conditional_concept.txt" },
+          { CueWordType.NEG_CONCEPT, "org/mitre/medfacts/i2b2/cuefiles/negated_concept.txt" },
+        }
+        ;
+
     try
     {
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt", CueWordType.NEGATION);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt", CueWordType.SPECULATION);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt", CueWordType.CONDITIONAL);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt", CueWordType.HYPOTHETICAL);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt", CueWordType.NOT_PATIENT);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/NegEx_pseudoneg.txt", CueWordType.NEGEX_PSEUDONEG);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/NegEx_scope_terminators.txt", CueWordType.NEGEX_SCOPEEND);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/activity_cue.txt", CueWordType.ACTIVITY);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/cause.txt", CueWordType.CAUSE);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/clause_boundary_cue_list.txt", CueWordType.CLAUSE_BOUNDARY);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/conditional_concept.txt", CueWordType.COND_CONCEPT);
-      processCueList("org/mitre/medfacts/i2b2/cuefiles/negated_concept.txt", CueWordType.NEG_CONCEPT);
+      for (Object[] current : temp)
+      {
+        CueWordType cueWordType = (CueWordType)current[0];
+        String cueFilename = (String)current[1];
+        MedFactsRunner.processCueList(cueFilename, cueWordType, textLookup, allAnnotationList, annotationsByType);
+      }
     }
     catch (URISyntaxException e)
     {
       Logger.getLogger(MedFactsRunner.class.getName()).log(Level.SEVERE, "URISyntaxException when trying to load cue word", e);
       throw new RuntimeException("URISyntaxException when trying to load cue word", e);
     }
-    //  private List<Annotation> processConceptAnnotationFile(String currentFilename)
-    //          throws FileNotFoundException, IOException
-    //  {
-    //    FileReader fr = new FileReader(currentFilename);
-    //    BufferedReader br = new BufferedReader(fr);
-    //
-    //    List<Annotation> annotationList = new ArrayList<Annotation>();
-    //
-    //    Pattern conceptPattern = Pattern.compile("^c=\"(.*)\" (\\d+):(\\d+) (\\d+):(\\d+)\\|\\|t=\"(.*)\"$");
-    //
-    //    String currentLine = null;
-    //    //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
-    //    ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
-    //    int lineNumber = 0;
-    //    while ((currentLine = br.readLine()) != null)
-    //    {
-    //      ConceptAnnotation c = processConceptAnnotationLine(currentLine, conceptPattern);
-    //      annotationList.add(c);
-    //    }
-    //
-    //    br.close();
-    //    fr.close();
-    //
-    //    return annotationList;
-    //
-    //  }
-    //
-    //  public ConceptAnnotation processConceptAnnotationLine(String currentLine, Pattern conceptPattern)
-    //  {
-    //    System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
-    //    Matcher matcher = conceptPattern.matcher(currentLine);
-    //    System.out.format("    matches? %b%n", matcher.matches());
-    //    String conceptText = matcher.group(1);
-    //    String beginLine = matcher.group(2);
-    //    String beginCharacter = matcher.group(3);
-    //    String endLine = matcher.group(4);
-    //    String endCharacter = matcher.group(5);
-    //    String conceptTypeText = matcher.group(6);
-    //    System.out.format("    concept text: %s%n", conceptText);
-    //    System.out.format("    concept type text: %s%n", conceptTypeText);
-    //    ConceptAnnotation c = new ConceptAnnotation();
-    //    c.setConceptText(conceptText);
-    //    c.setBegin(new Location(beginLine, beginCharacter));
-    //    c.setEnd(new Location(endLine, endCharacter));
-    //    c.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
-    //    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", c);
-    //    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
-    //    return c;
-    //  }
-    
+
   }
 
   public String getEntireContents()

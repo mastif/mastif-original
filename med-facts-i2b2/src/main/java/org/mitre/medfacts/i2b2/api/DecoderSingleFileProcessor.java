@@ -1,6 +1,7 @@
 package org.mitre.medfacts.i2b2.api;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -9,7 +10,10 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
+import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
@@ -27,7 +31,10 @@ public class DecoderSingleFileProcessor
   protected LineTokenToCharacterOffsetConverter converter;
   protected JarafeMEDecoder namedEntityDecoder;
 
-  String arrayOfArrayOfTokens[][] = null;
+  protected String arrayOfArrayOfTokens[][] = null;
+  protected List<Annotation> allAnnotationList = new ArrayList<Annotation>();
+  protected Map<AnnotationType,List<Annotation>> annotationsByType =
+      new EnumMap<AnnotationType, List<Annotation>>(AnnotationType.class);
 
   public DecoderSingleFileProcessor(LineTokenToCharacterOffsetConverter converter)
   {
@@ -97,6 +104,7 @@ public class DecoderSingleFileProcessor
 
   private void generateAnnotations()
   {
+    MedFactsRunner.postProcessForCueWords(arrayOfArrayOfTokens, allAnnotationList, annotationsByType);
     //throw new UnsupportedOperationException("Not yet implemented");
   }
 

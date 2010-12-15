@@ -13,9 +13,11 @@ import java.util.regex.Pattern;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
+import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
 import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
+import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
@@ -38,6 +40,8 @@ public class DecoderSingleFileProcessor
   protected Map<AnnotationType,List<Annotation>> annotationsByType =
       new EnumMap<AnnotationType, List<Annotation>>(AnnotationType.class);
 
+  AnnotationIndexer indexer = new AnnotationIndexer();
+
   public DecoderSingleFileProcessor(LineTokenToCharacterOffsetConverter converter)
   {
     this.converter = converter;
@@ -47,6 +51,7 @@ public class DecoderSingleFileProcessor
   {
     preprocess();
     generateAnnotations();
+    indexer.indexAnnotations(allAnnotationList);
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
     Map<Integer, String> assertionTypeMap = decode(trainingInstanceMap);
   }
@@ -135,6 +140,10 @@ public class DecoderSingleFileProcessor
       LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
       LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
       int lineNumber = problemBegin.getLine();
+
+      int conceptBeginTokenOffset = problemBegin.getTokenOffset();
+      int conceptEndTokenOffset = problemEnd.getTokenOffset();
+
       String currentLine[] = arrayOfArrayOfTokens[lineNumber - 1];
 
       TrainingInstance trainingInstance = new TrainingInstance();
@@ -178,7 +187,48 @@ public class DecoderSingleFileProcessor
           trainingInstance.addFeature(MedFactsRunner.constructConceptHeadFeature(conceptHead));
       }
 
+      /////
+      String tokensOnCurrentLine[] = currentLine;
+      for (int currentTokenOffset=0; currentTokenOffset < tokensOnCurrentLine.length; currentTokenOffset++)
+      {
+        String currentToken = tokensOnCurrentLine[currentTokenOffset];
+        List<Annotation> annotationsAtCurrentPosition = indexer.findAnnotationsForPosition(lineNumber, currentTokenOffset);
 
+        int scopeCount = 0;
+        if (annotationsAtCurrentPosition != null)
+        for (Annotation a : annotationsAtCurrentPosition)
+        {
+          if (a instanceof CueWordAnnotation)
+          {
+            CueWordAnnotation cueWord = (CueWordAnnotation)a;
+            String cueWordType = cueWord.getCueWordType().toString();
+            if (checkForEnabledFeature("cueWord"))
+            {
+              int cueWordBegin = cueWord.getBegin().getTokenOffset();
+              int cueWordEnd = cueWord.getEnd().getTokenOffset();
+              if (cueWordBegin < conceptBeginTokenOffset) {
+                  trainingInstance.addFeature("cueWord_" + cueWordType + "_left");
+                  if ((conceptBeginTokenOffset - cueWordBegin) < 4) {
+                      trainingInstance.addFeature("cueWord_" + cueWordType + "_left_3");
+                  }
+              } else if (cueWordBegin > conceptEndTokenOffset) {
+                    trainingInstance.addFeature("cueWord_" + cueWordType + "_right");
+                    if ((cueWordEnd - conceptEndTokenOffset) < 4) {
+                        trainingInstance.addFeature("cueWord_" + cueWordType + "_right_3");
+                    }
+              } else {
+                  trainingInstance.addFeature("cueWord_" + cueWordType + "_within");
+              }
+            }
+            if (checkForEnabledFeature("cueWordValue"))
+            {
+              trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+            }
+          }
+
+        }
+      }
+      /////
 
       logger.info(String.format("TRAINING INSTANCE: %s", trainingInstance.toString()));
     }

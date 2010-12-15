@@ -220,7 +220,7 @@ public class BatchRunner
     batchRunner.setMode(mode);
     if (featuresFileName != null)
     {
-      batchRunner.processFeaturesFile(featuresFile);
+      batchRunner.processEnabledFeaturesFile(featuresFile);
     }
     batchRunner.execute();
 
@@ -572,14 +572,14 @@ public class BatchRunner
     this.decodeDirectory = decodeDirectory;
   }
 
-  private void processFeaturesFile(File featuresFile)
+  public static Set<String> loadEnabledFeaturesFromFile(File enabledFeaturesFile)
   {
     FileReader fileReader = null;
     Set<String> featureIdSet = new HashSet<String>();
     try
     {
-      System.out.format("opening enabled features file: %s%n", featuresFile);
-      fileReader = new FileReader(featuresFile);
+      System.out.format("opening enabled features file: %s%n", enabledFeaturesFile);
+      fileReader = new FileReader(enabledFeaturesFile);
       BufferedReader br = new BufferedReader(fileReader);
 
       System.out.println("=== FEATURE IDS BEGIN ===");
@@ -594,7 +594,7 @@ public class BatchRunner
         featureIdSet.add(currentLine);
       }
       System.out.println("=== FEATURE IDS END ===");
-      setEnabledFeatureIdSet(featureIdSet);
+      return featureIdSet;
     } catch (IOException ex)
     {
       String message = "problem loading features file (IOException)";
@@ -615,6 +615,13 @@ public class BatchRunner
         throw new RuntimeException(message, ex);
       }
     }
+  }
+
+  private void processEnabledFeaturesFile(File enabledFeaturesFile)
+  {
+    Set<String> featureIdSet = null;
+    featureIdSet = BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);
+    setEnabledFeatureIdSet(enabledFeatureIdSet);
   }
 
   public Set<String> getEnabledFeatureIdSet()

@@ -1,6 +1,7 @@
 package org.mitre.medfacts.i2b2.api.example;
 
 import java.io.File;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
@@ -21,6 +22,7 @@ public class ApiDecoderExample
 
   protected String model;
   protected File baseDirectory;
+  protected Set<String> enabledFeatureIdSet;
 
   public void execute()
   {
@@ -38,6 +40,7 @@ public class ApiDecoderExample
     Options options = new Options();
     options.addOption("b", "base-dir", true, "base directory from which train and decode directories are located");
     options.addOption("m", "model", true, "mode should either be \"eval\" or \"decode\".  eval is used if you have assertion files with expected assertion values.  decode is used if you have no assertion files and thus no known assertion values.");
+    options.addOption("f", "features-file", true, "run the system and read in the 'features file' which lists featureids of features that should be used");
 
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -62,6 +65,20 @@ public class ApiDecoderExample
     {
       modelFilename = cmd.getOptionValue("model");
       logger.info(String.format("using model: \"%s\"", modelFilename));
+    }
+
+    boolean hasFeaturesFile = false;
+    String featuresFileName = null;
+    if (cmd.hasOption("features-file"))
+    {
+      hasFeaturesFile = true;
+      featuresFileName = cmd.getOptionValue("features-file");
+    }
+
+    File featuresFile = null;
+    if (hasFeaturesFile)
+    {
+      featuresFile = new File(baseDir, featuresFileName);
     }
 
     File modelFile = new File(baseDir, modelFilename);
@@ -97,4 +114,15 @@ public class ApiDecoderExample
   {
     this.baseDirectory = baseDirectory;
   }
+
+  public Set<String> getEnabledFeatureIdSet()
+  {
+    return enabledFeatureIdSet;
+  }
+
+  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
+  {
+    this.enabledFeatureIdSet = enabledFeatureIdSet;
+  }
+
 }

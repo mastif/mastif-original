@@ -1,6 +1,7 @@
 package org.mitre.medfacts.i2b2.api;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class DecoderSingleFileProcessor
   protected String contents;
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
   protected LineTokenToCharacterOffsetConverter converter;
+  protected Set<String> enabledFeatureIdSet;
   protected JarafeMEDecoder namedEntityDecoder;
 
   protected String arrayOfArrayOfTokens[][] = null;
@@ -59,9 +61,9 @@ public class DecoderSingleFileProcessor
     this.contents = contents;
   }
 
-  public void addConcept(int begin, int end, String conceptType)
+  public void addConcept(int begin, int end, String conceptType, String text)
   {
-    ApiConcept apiConcept = new ApiConcept(begin, end, conceptType);
+    ApiConcept apiConcept = new ApiConcept(begin, end, conceptType, text);
     apiConceptList.add(apiConcept);
   }
 
@@ -133,7 +135,7 @@ public class DecoderSingleFileProcessor
       LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
       LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
       int lineNumber = problemBegin.getLine();
-      String currentLine[] = arrayOfArrayOfTokens[lineNumber];
+      String currentLine[] = arrayOfArrayOfTokens[lineNumber - 1];
 
       TrainingInstance trainingInstance = new TrainingInstance();
 
@@ -160,6 +162,23 @@ public class DecoderSingleFileProcessor
       {
         trainingInstanceMap.put(index, trainingInstance);
       }
+
+      String conceptText = problem.getText();
+      if (checkForEnabledFeature("conceptTextFeature"))
+      {
+        String conceptTextFeature = MedFactsRunner.constructConceptPhraseFeature(conceptText);
+        trainingInstance.addFeature(conceptTextFeature);
+      }
+
+      if (checkForEnabledFeature("conceptPseudoHeadFeature"))
+      {
+          int tokenOffset = problemEnd.getTokenOffset();
+          logger.info(String.format("before creating pseudo head; token offset: %d; # tokens on line: %d, tokens: %s", tokenOffset, currentLine.length, Arrays.toString(currentLine)));
+          String conceptHead = currentLine[tokenOffset];
+          trainingInstance.addFeature(MedFactsRunner.constructConceptHeadFeature(conceptHead));
+      }
+
+
 
       logger.info(String.format("TRAINING INSTANCE: %s", trainingInstance.toString()));
     }
@@ -188,9 +207,9 @@ public class DecoderSingleFileProcessor
     return assertionMap;
   }
 
-  private boolean checkForEnabledFeature(String string)
+  private boolean checkForEnabledFeature(String featureId)
   {
-    return true;
+    return (enabledFeatureIdSet == null) || enabledFeatureIdSet.contains(featureId);
   }
 
   /**
@@ -207,6 +226,16 @@ public class DecoderSingleFileProcessor
   public void setNamedEntityDecoder(JarafeMEDecoder namedEntityDecoder)
   {
     this.namedEntityDecoder = namedEntityDecoder;
+  }
+
+  public Set<String> getEnabledFeatureIdSet()
+  {
+    return enabledFeatureIdSet;
+  }
+
+  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
+  {
+    this.enabledFeatureIdSet = enabledFeatureIdSet;
   }
 
 }

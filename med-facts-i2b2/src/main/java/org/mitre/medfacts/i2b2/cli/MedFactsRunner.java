@@ -605,7 +605,7 @@ public class MedFactsRunner
       String conceptText = currentAssertionAnnotation.getConceptText();
       if (checkForEnabledFeature("conceptTextFeature"))
       {
-        String conceptTextFeature = constructConceptPhraseFeature(conceptText);
+        String conceptTextFeature = MedFactsRunner.constructConceptPhraseFeature(conceptText);
         trainingInstance.addFeature(conceptTextFeature);
       }
 
@@ -869,12 +869,12 @@ public class MedFactsRunner
     featuresFileWriter.close();
   }
   
-  public String constructConceptPhraseFeature(String input)
+  public static String constructConceptPhraseFeature(String input)
   {
     return "concept_phrase_is_" + StringHandling.escapeStringForFeatureName(input);
   }
   
-  public String constructConceptHeadFeature(String input)
+  public static String constructConceptHeadFeature(String input)
   {
     return "concept_head_is_" + StringHandling.escapeStringForFeatureName(input);
   }

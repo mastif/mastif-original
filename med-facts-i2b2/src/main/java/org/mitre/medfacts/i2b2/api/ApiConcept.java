@@ -9,16 +9,18 @@ public class ApiConcept
   protected int begin;
   protected int end;
   protected String type;
+  protected String text;
 
   public ApiConcept()
   {
   }
 
-  public ApiConcept(int begin, int end, String type)
+  public ApiConcept(int begin, int end, String type, String text)
   {
     this.begin = begin;
     this.end = end;
     this.type = type;
+    this.text = text;
   }
 
   public int getBegin()
@@ -53,6 +55,16 @@ public class ApiConcept
 
   public String toString()
   {
-    return String.format("[%d-%d] %s", begin, end, type);
+    return String.format("[%d-%d] %s \"%s\"", begin, end, type, text.replace("\"", "\\\""));
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public void setText(String text)
+  {
+    this.text = text;
   }
 }

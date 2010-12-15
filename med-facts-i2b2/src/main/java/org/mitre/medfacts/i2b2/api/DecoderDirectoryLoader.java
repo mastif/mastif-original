@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
@@ -30,6 +31,7 @@ public class DecoderDirectoryLoader
 
   protected File directory;
   protected String model;
+  protected Set<String> enabledFeatureIdSet;
   JarafeMEDecoder namedEntityDecoder;
 
   public void processDirectory()
@@ -91,12 +93,13 @@ public class DecoderDirectoryLoader
     LineTokenToCharacterOffsetConverter converter =
         new LineTokenToCharacterOffsetConverter(contents);
 
-    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, converter);
+    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, contents, converter);
 
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor(converter);
     p.setContents(contents);
     p.setNamedEntityDecoder(namedEntityDecoder);
+    p.setEnabledFeatureIdSet(enabledFeatureIdSet);
     for (ApiConcept apiConcept : apiConceptList)
     {
       logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
@@ -114,7 +117,7 @@ public class DecoderDirectoryLoader
     return output;
   }
 
-  private List<ApiConcept> parseConceptFile(File conceptFile, LineTokenToCharacterOffsetConverter converter)
+  private List<ApiConcept> parseConceptFile(File conceptFile, String contents, LineTokenToCharacterOffsetConverter converter)
   {
 
     try
@@ -132,11 +135,13 @@ public class DecoderDirectoryLoader
         Integer beginCharacter = converter.convert(convertPositionToZonerLineAndTokenPosition(beginLineToken)).getBegin();
         Integer endCharacter = converter.convert(convertPositionToZonerLineAndTokenPosition(endLineToken)).getEnd();
 
+        String text =  contents.substring(beginCharacter, endCharacter + 1);
+
         logger.info(String.format("      - character offsets: %d-%d", beginCharacter, endCharacter));
 
         String conceptType = ((ConceptAnnotation)currentAnnotation).getConceptType().toString();
 
-        ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType);
+        ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType, text);
         apiConceptList.add(apiConcept);
 
       }
@@ -149,6 +154,16 @@ public class DecoderDirectoryLoader
       Logger.getLogger(DecoderDirectoryLoader.class.getName()).log(Level.SEVERE, message, ex);
       throw new RuntimeException(message, ex);
     }
+  }
+
+  public Set<String> getEnabledFeatureIdSet()
+  {
+    return enabledFeatureIdSet;
+  }
+
+  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
+  {
+    this.enabledFeatureIdSet = enabledFeatureIdSet;
   }
 
 }

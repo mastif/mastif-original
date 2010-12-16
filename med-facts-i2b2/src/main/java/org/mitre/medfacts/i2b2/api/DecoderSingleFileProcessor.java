@@ -14,6 +14,7 @@ import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
 import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
@@ -112,7 +113,8 @@ public class DecoderSingleFileProcessor
   private void generateAnnotations()
   {
     MedFactsRunner.postProcessForCueWords(arrayOfArrayOfTokens, allAnnotationList, annotationsByType);
-    //throw new UnsupportedOperationException("Not yet implemented");
+
+    processZones();
   }
 
   private Map<Integer, TrainingInstance> generateFeatures()
@@ -226,7 +228,16 @@ public class DecoderSingleFileProcessor
             }
           }
 
-        }
+          if (checkForEnabledFeature("zone"))
+          {
+            if (a instanceof ZoneAnnotation)
+            {
+              ZoneAnnotation zone = (ZoneAnnotation)a;
+              trainingInstance.addFeature("zone_" + MedFactsRunner.escapeFeatureName(zone.getZoneName()));
+            }
+          }
+
+        } // end of for loop over a : annotationsAtCurrentPosition
       }
       /////
 
@@ -256,6 +267,25 @@ public class DecoderSingleFileProcessor
 
     return assertionMap;
   }
+
+  public void processZones()
+  {
+    List<ZoneAnnotation> zoneList = MedFactsRunner.findZones(contents, arrayOfArrayOfTokens);
+
+    allAnnotationList.addAll(zoneList);
+
+    List<Annotation> z = annotationsByType.get(AnnotationType.ZONE);
+    if (z == null)
+    {
+      z = new ArrayList<Annotation>();
+      annotationsByType.put(AnnotationType.ZONE, z);
+    } else
+    {
+      z.addAll(zoneList);
+    }
+
+  }
+
 
   private boolean checkForEnabledFeature(String featureId)
   {

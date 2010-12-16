@@ -146,10 +146,31 @@ public class MedFactsRunner
 
   public void processZones()
   {
+    List<ZoneAnnotation> zoneList = findZones(getEntireContents(), textLookup);
+
+    allAnnotationList.addAll(zoneList);
+
+    List<Annotation> z = annotationsByType.get(AnnotationType.ZONE);
+    if (z == null)
+    {
+      z = new ArrayList<Annotation>();
+      annotationsByType.put(AnnotationType.ZONE, z);
+    } else
+    {
+      z.addAll(zoneList);
+    }
+
+  }
+
+  public static List<ZoneAnnotation> findZones(String entireContents, String textLookup[][])
+  {
     ZonerCli zoner = new ZonerCli();
-    zoner.setEntireContents(getEntireContents());
+    zoner.setEntireContents(entireContents);
     zoner.findHeadings();
     List<Range> zonerRangeList = zoner.getRangeList();
+
+    ArrayList<ZoneAnnotation> tempZoneAnnotationList =
+        new ArrayList<ZoneAnnotation>();
 
     for (Range currentRange : zonerRangeList)
     {
@@ -199,17 +220,18 @@ public class MedFactsRunner
         end.setTokenOffset(endToken);
         zone.setEnd(end);
 
-        allAnnotationList.add(zone);
-        List<Annotation> zoneAnnotationList = annotationsByType.get(AnnotationType.ZONE);
-        if (zoneAnnotationList == null)
-        {
-          zoneAnnotationList = new ArrayList<Annotation>();
-          annotationsByType.put(AnnotationType.ZONE, zoneAnnotationList);
-        }
-        zoneAnnotationList.add(zone);
+//        allAnnotationList.add(zone);
+//        List<Annotation> zoneAnnotationList = annotationsByType.get(AnnotationType.ZONE);
+//        if (zoneAnnotationList == null)
+//        {
+//          zoneAnnotationList = new ArrayList<Annotation>();
+//          annotationsByType.put(AnnotationType.ZONE, zoneAnnotationList);
+//        }
+        tempZoneAnnotationList.add(zone);
       }
     }
 
+    return tempZoneAnnotationList;
   }
 
   public AnnotationType getAnnotationTypeFromFilename(String currentFilename)
@@ -1090,7 +1112,7 @@ public class MedFactsRunner
 //  }
 
   protected static final Pattern SPACE_PATTERN = Pattern.compile(" ");
-  public String escapeFeatureName(String originalFeatureName)
+  public static String escapeFeatureName(String originalFeatureName)
   {
     Matcher m = SPACE_PATTERN.matcher(originalFeatureName);
     String cleanFeatureName = m.replaceAll("_");

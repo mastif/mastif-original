@@ -9,6 +9,15 @@ public class FeatureUtility
   public final static int MAX_WINDOW_LEFT = 12;
   public final static int MAX_WINDOW_RIGHT = 12;
 
+  public static String constructFeatureOfAnnot(int conceptBeginToken, int conceptEndToken, String[] currentLine) {
+      StringBuilder sb = new StringBuilder();
+      int count = 0;
+      for (int i=conceptBeginToken - 1; i >= 0 && i < currentLine.length && ++count <= MAX_WINDOW_LEFT; i--) {
+          sb.append(StringHandling.escapeStringForFeatureName(currentLine[i]));
+      }
+      return sb.toString();
+  }
+
   public static List<String> constructWordLeftFeatureList(int conceptBeginCharacter, int conceptEndCharacter, String[] currentLine)
   {
     List<String> featureList = new ArrayList<String>();

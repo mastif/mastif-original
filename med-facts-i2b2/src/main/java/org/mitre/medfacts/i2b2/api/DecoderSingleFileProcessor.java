@@ -14,6 +14,9 @@ import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
+import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
 import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
@@ -225,6 +228,74 @@ public class DecoderSingleFileProcessor
             if (checkForEnabledFeature("cueWordValue"))
             {
               trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+            }
+          }
+          if (checkForEnabledFeature("concepts")) {
+            if (a instanceof ConceptAnnotation) {
+                ConceptAnnotation concept = (ConceptAnnotation) a;
+
+                String conceptType = concept.getConceptType().toString();
+                int thisConceptBegin = concept.getBegin().getTokenOffset();
+                int thisConceptEnd = concept.getEnd().getTokenOffset();
+                if (concept.getBegin().getTokenOffset() < conceptBeginTokenOffset) {
+                    trainingInstance.addFeature("concept_" + conceptType + "_left");
+                    if ((conceptBeginTokenOffset - thisConceptEnd) < 4) {
+                        trainingInstance.addFeature("concept_" + conceptType + "_left_3");
+                    }
+                } else {
+                    if ((thisConceptBegin - conceptEndTokenOffset) < 4) {
+                        trainingInstance.addFeature("concept_" + conceptType + "_right_3");
+                    }
+                    trainingInstance.addFeature("concept_" + conceptType + "_right");
+                }
+            }
+            }
+
+          if (a instanceof ScopeAnnotation)
+          {
+            ScopeAnnotation scope = (ScopeAnnotation)a;
+            scopeCount++;
+            if (checkForEnabledFeature("scope"))
+            {
+              trainingInstance.addFeature("scope");
+            }
+            if (checkForEnabledFeature("inScope"))
+            {
+              trainingInstance.addFeature("in_scope_" + currentToken);
+            }
+            if (checkForEnabledFeature("inScopeId"))
+            {
+              trainingInstance.addFeature("in_scope_id_" + scope.getScopeId() + "_" + currentToken);
+            }
+          }
+
+          if (a instanceof CueAnnotation)
+          {
+            CueAnnotation cue = (CueAnnotation)a;
+            if (checkForEnabledFeature("cue"))
+            {
+              String cueType = cue.getCueSubType().toString();
+              int cueBegin = cue.getBegin().getTokenOffset();
+              if (cueBegin < conceptBeginTokenOffset) {
+                  trainingInstance.addFeature("cue_" + cueType + "_left");
+                  if ((conceptBeginTokenOffset - cueBegin) < 4) {
+                      trainingInstance.addFeature("cue_" + cueType + "_left_3");
+                  }
+              } else {
+                  int cueEnd = cue.getEnd().getTokenOffset();
+                  trainingInstance.addFeature("cue_" + cueType + "_right");
+                  if ((cueEnd - conceptEndTokenOffset) < 4) {
+                      trainingInstance.addFeature("cue_" + cueType + "_right_3");
+                  }
+              }
+            }
+            if (checkForEnabledFeature("inCue"))
+            {
+              trainingInstance.addFeature("in_cue_" + currentToken);
+            }
+            if (checkForEnabledFeature("inCueForScopeId"))
+            {
+              trainingInstance.addFeature("in_cue_for_scope_id_" + cue.getScopeIdReference() + "_" + currentToken);
             }
           }
 

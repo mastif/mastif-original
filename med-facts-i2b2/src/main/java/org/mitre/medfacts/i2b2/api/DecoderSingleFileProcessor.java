@@ -336,7 +336,7 @@ public class DecoderSingleFileProcessor
       List<String> featureList = new ArrayList<String>(featureSet);
 
       String assertionType = assertionDecoder.classifyInstance(featureList);
-      logger.info(String.format("ASSERTION OUTPUT: %d/%s", index, assertionType));
+      logger.info(String.format("ASSERTION OUTPUT: %d/%s [%s]", index, assertionType, apiConceptList.get(index)));
 
       assertionMap.put(index, assertionType);
     }

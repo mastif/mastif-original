@@ -304,7 +304,7 @@ public class MedFactsRunner
     cueWordAnnotationList.addAll(annotationList);
   }
 
-  public void processScopeInProcess(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList) throws RuntimeException
+  public static void processScopeInProcess(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList, String textLookup[][], ScopeParser scopeParser) throws RuntimeException
   {
     List<ScopeOrCueAnnotation> scopeOrCueAnnotationList = scopeParser.decodeDocument(textLookup);
     //    Map<AnnotationType,List<Annotation>> map2 = new TreeMap<AnnotationType,List<Annotation>>();
@@ -506,7 +506,7 @@ public class MedFactsRunner
 
       System.out.format("done processing annotation file \"%s\".%n", currentFilename);
     }
-    processScopeInProcess(annotationsByType, allAnnotationList);
+    MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, textLookup, scopeParser);
 
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);

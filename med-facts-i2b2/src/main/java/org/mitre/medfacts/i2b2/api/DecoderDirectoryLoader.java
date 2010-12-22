@@ -100,7 +100,7 @@ public class DecoderDirectoryLoader
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor(converter);
     p.setContents(contents);
-    p.setNamedEntityDecoder(namedEntityDecoder);
+    p.setAssertionDecoder(namedEntityDecoder);
     p.setEnabledFeatureIdSet(enabledFeatureIdSet);
     p.setScopeParser(scopeParser);
     for (ApiConcept apiConcept : apiConceptList)

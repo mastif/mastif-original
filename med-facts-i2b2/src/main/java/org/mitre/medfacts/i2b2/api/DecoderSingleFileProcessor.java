@@ -38,7 +38,7 @@ public class DecoderSingleFileProcessor
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
   protected LineTokenToCharacterOffsetConverter converter;
   protected Set<String> enabledFeatureIdSet;
-  protected JarafeMEDecoder namedEntityDecoder;
+  protected JarafeMEDecoder assertionDecoder;
 
   protected String arrayOfArrayOfTokens[][] = null;
   protected List<Annotation> allAnnotationList = new ArrayList<Annotation>();
@@ -335,7 +335,7 @@ public class DecoderSingleFileProcessor
       Set<String> featureSet = trainingInstance.getFeatureSet();
       List<String> featureList = new ArrayList<String>(featureSet);
 
-      String assertionType = namedEntityDecoder.classifyInstance(featureList);
+      String assertionType = assertionDecoder.classifyInstance(featureList);
       logger.info(String.format("ASSERTION OUTPUT: %d/%s", index, assertionType));
 
       assertionMap.put(index, assertionType);
@@ -371,17 +371,17 @@ public class DecoderSingleFileProcessor
   /**
    * @return the namedEntityDecoder
    */
-  public JarafeMEDecoder getNamedEntityDecoder()
+  public JarafeMEDecoder getAssertionDecoder()
   {
-    return namedEntityDecoder;
+    return assertionDecoder;
   }
 
   /**
-   * @param namedEntityDecoder the namedEntityDecoder to set
+   * @param assertionDecoder the namedEntityDecoder to set
    */
-  public void setNamedEntityDecoder(JarafeMEDecoder namedEntityDecoder)
+  public void setAssertionDecoder(JarafeMEDecoder assertionDecoder)
   {
-    this.namedEntityDecoder = namedEntityDecoder;
+    this.assertionDecoder = assertionDecoder;
   }
 
   public Set<String> getEnabledFeatureIdSet()

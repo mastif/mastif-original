@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
 import org.mitre.medfacts.i2b2.util.Location;
@@ -33,6 +34,7 @@ public class DecoderDirectoryLoader
   protected String model;
   protected Set<String> enabledFeatureIdSet;
   JarafeMEDecoder namedEntityDecoder;
+  protected static ScopeParser scopeParser = null;
 
   public void processDirectory()
   {
@@ -100,6 +102,7 @@ public class DecoderDirectoryLoader
     p.setContents(contents);
     p.setNamedEntityDecoder(namedEntityDecoder);
     p.setEnabledFeatureIdSet(enabledFeatureIdSet);
+    p.setScopeParser(scopeParser);
     for (ApiConcept apiConcept : apiConceptList)
     {
       logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
@@ -164,6 +167,16 @@ public class DecoderDirectoryLoader
   public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
   {
     this.enabledFeatureIdSet = enabledFeatureIdSet;
+  }
+
+  public static ScopeParser getScopeParser()
+  {
+    return scopeParser;
+  }
+
+  public static void setScopeParser(ScopeParser aScopeParser)
+  {
+    scopeParser = aScopeParser;
   }
 
 }

@@ -17,6 +17,7 @@ import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
 import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
@@ -45,6 +46,8 @@ public class DecoderSingleFileProcessor
       new EnumMap<AnnotationType, List<Annotation>>(AnnotationType.class);
 
   AnnotationIndexer indexer = new AnnotationIndexer();
+
+  protected ScopeParser scopeParser;
 
   public DecoderSingleFileProcessor(LineTokenToCharacterOffsetConverter converter)
   {
@@ -118,6 +121,8 @@ public class DecoderSingleFileProcessor
     MedFactsRunner.postProcessForCueWords(arrayOfArrayOfTokens, allAnnotationList, annotationsByType);
 
     processZones();
+
+    MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, arrayOfArrayOfTokens, getScopeParser());
   }
 
   private Map<Integer, TrainingInstance> generateFeatures()
@@ -387,6 +392,16 @@ public class DecoderSingleFileProcessor
   public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
   {
     this.enabledFeatureIdSet = enabledFeatureIdSet;
+  }
+
+  public ScopeParser getScopeParser()
+  {
+    return scopeParser;
+  }
+
+  public void setScopeParser(ScopeParser scopeParser)
+  {
+    this.scopeParser = scopeParser;
   }
 
 }

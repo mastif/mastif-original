@@ -59,6 +59,7 @@ public class DecoderSingleFileProcessor
     preprocess();
     generateAnnotations();
     indexer.indexAnnotations(allAnnotationList);
+    //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
     Map<Integer, String> assertionTypeMap = decode(trainingInstanceMap);
   }

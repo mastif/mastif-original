@@ -131,7 +131,7 @@ public class MedFactsRunner
         processZones();
         //validateAnnotations();
         indexAnnotations();
-        linkAnnotations();
+        MedFactsRunner.linkAnnotations(annotationsByType, annotationsByType.get(AnnotationType.ASSERTION), indexer);
         printOutFeatures();
       } catch (FileNotFoundException ex)
       {
@@ -1120,7 +1120,7 @@ public class MedFactsRunner
   }
 
   //Create links between annotations needed by some status rules
-  private void linkAnnotations()
+  public static void linkAnnotations(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> assertionList, AnnotationIndexer indexer)
   {
     //Linking scopes to their cues
     List<Annotation> scopeFileAnnotationList = annotationsByType.get(AnnotationType.SCOPE);
@@ -1164,7 +1164,8 @@ public class MedFactsRunner
 //    }
 
     //Find enclosing scopes for each assertion annotation
-    List<Annotation> assertionFileAnnotationList = annotationsByType.get(AnnotationType.ASSERTION);
+    //List<Annotation> assertionFileAnnotationList = annotationsByType.get(AnnotationType.ASSERTION);
+    List<Annotation> assertionFileAnnotationList = assertionList;
 
 //    System.out.format("ASSERTIONS for FILE %s%n", textFilename); //For testing
     for (Annotation current : assertionFileAnnotationList)

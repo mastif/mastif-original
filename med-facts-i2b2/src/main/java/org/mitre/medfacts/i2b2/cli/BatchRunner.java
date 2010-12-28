@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -585,6 +587,7 @@ public class BatchRunner
       System.out.println("=== FEATURE IDS BEGIN ===");
       for (String currentLine = null; (currentLine = br.readLine()) != null; )
       {
+        currentLine = currentLine.trim();
         // skip the current line if it's empty or if it's commented out
         if (currentLine.isEmpty() || currentLine.startsWith("#"))
         {
@@ -615,6 +618,7 @@ public class BatchRunner
         throw new RuntimeException(message, ex);
       }
     }
+
   }
 
   private void processEnabledFeaturesFile(File enabledFeaturesFile)

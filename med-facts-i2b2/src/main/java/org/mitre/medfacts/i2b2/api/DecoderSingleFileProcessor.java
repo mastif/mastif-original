@@ -17,12 +17,14 @@ import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
+import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.cli.FeatureUtility;
 import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
+import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
@@ -124,6 +126,8 @@ public class DecoderSingleFileProcessor
     processZones();
 
     MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, arrayOfArrayOfTokens, getScopeParser());
+
+    generateConceptAnnotations(apiConceptList, annotationsByType, allAnnotationList);
   }
 
   private Map<Integer, TrainingInstance> generateFeatures()
@@ -403,6 +407,45 @@ public class DecoderSingleFileProcessor
   public void setScopeParser(ScopeParser scopeParser)
   {
     this.scopeParser = scopeParser;
+  }
+
+  public void generateConceptAnnotations(List<ApiConcept> apiConceptList, Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList)
+  {
+    List<Annotation> i2b2ConceptList = annotationsByType.get(AnnotationType.CONCEPT);
+    if (i2b2ConceptList == null)
+    {
+      i2b2ConceptList = new ArrayList<Annotation>();
+      annotationsByType.put(AnnotationType.CONCEPT, i2b2ConceptList);
+    }
+
+    for (ApiConcept currentApiConcept : apiConceptList)
+    {
+      ConceptAnnotation c = new ConceptAnnotation();
+
+      int beginCharacter = currentApiConcept.getBegin();
+      int endCharacter = currentApiConcept.getEnd();
+
+      LineAndTokenPosition beginPosition = converter.convertReverse(beginCharacter);
+      LineAndTokenPosition endPosition = converter.convertReverse(endCharacter);
+
+      Location beginLocation = new Location();
+      beginLocation.setLine(beginPosition.getLine());
+      beginLocation.setTokenOffset(beginPosition.getTokenOffset());
+
+      Location endLocation = new Location();
+      endLocation.setLine(endPosition.getLine());
+      endLocation.setTokenOffset(endPosition.getTokenOffset());
+
+      c.setAnnotationFileLineNumber(beginPosition.getLine());
+      c.setBegin(beginLocation);
+      c.setEnd(endLocation);
+      c.setConceptText(currentApiConcept.getText());
+      c.setConceptType(ConceptType.valueOf(currentApiConcept.getType()));
+      c.setEnclosingScopes(null);
+
+      allAnnotationList.add(c);
+      annotationsByType.get(AnnotationType.CONCEPT).add(c);
+    }
   }
 
 }

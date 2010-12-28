@@ -25,6 +25,7 @@ import org.mitre.medfacts.i2b2.cli.MedFactsRunner;
 import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.Location;
+import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
@@ -162,6 +163,12 @@ public class DecoderSingleFileProcessor
       String currentLine[] = arrayOfArrayOfTokens[lineNumber - 1];
 
       TrainingInstance trainingInstance = new TrainingInstance();
+
+      if (checkForEnabledFeature("conceptUnigrams")) {
+          for (int k = conceptBeginTokenOffset; k <= conceptEndTokenOffset; k++) {
+              trainingInstance.addFeature("concept_unigram_" + StringHandling.escapeStringForFeatureName(currentLine[k]));
+          }
+      }
 
       if (checkForEnabledFeature("wordLeftFeature"))
       {

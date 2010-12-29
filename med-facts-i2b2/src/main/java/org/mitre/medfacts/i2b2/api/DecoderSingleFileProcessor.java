@@ -40,8 +40,8 @@ public class DecoderSingleFileProcessor
   protected String contents;
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
   protected LineTokenToCharacterOffsetConverter converter;
-  protected Set<String> enabledFeatureIdSet;
-  protected JarafeMEDecoder assertionDecoder;
+  //protected Set<String> enabledFeatureIdSet;
+  //protected JarafeMEDecoder assertionDecoder;
 
   protected String arrayOfArrayOfTokens[][] = null;
   protected List<Annotation> allAnnotationList = new ArrayList<Annotation>();
@@ -50,7 +50,8 @@ public class DecoderSingleFileProcessor
 
   AnnotationIndexer indexer = new AnnotationIndexer();
 
-  protected ScopeParser scopeParser;
+  //protected ScopeParser scopeParser;
+  protected AssertionDecoderConfiguration assertionDecoderConfiguration;
 
   public DecoderSingleFileProcessor(LineTokenToCharacterOffsetConverter converter)
   {
@@ -126,7 +127,7 @@ public class DecoderSingleFileProcessor
 
     processZones();
 
-    MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, arrayOfArrayOfTokens, getScopeParser());
+    MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, arrayOfArrayOfTokens, assertionDecoderConfiguration.getScopeParser());
 
     generateConceptAnnotations(apiConceptList, annotationsByType, allAnnotationList);
   }
@@ -347,6 +348,7 @@ public class DecoderSingleFileProcessor
       Set<String> featureSet = trainingInstance.getFeatureSet();
       List<String> featureList = new ArrayList<String>(featureSet);
 
+      JarafeMEDecoder assertionDecoder = assertionDecoderConfiguration.getAssertionDecoder();
       String assertionType = assertionDecoder.classifyInstance(featureList);
       logger.info(String.format("ASSERTION OUTPUT: %d/%s [%s]", index, assertionType, apiConceptList.get(index)));
 
@@ -377,43 +379,8 @@ public class DecoderSingleFileProcessor
 
   private boolean checkForEnabledFeature(String featureId)
   {
+    Set<String> enabledFeatureIdSet = assertionDecoderConfiguration.getEnabledFeatureIdSet();
     return (enabledFeatureIdSet == null) || enabledFeatureIdSet.contains(featureId);
-  }
-
-  /**
-   * @return the namedEntityDecoder
-   */
-  public JarafeMEDecoder getAssertionDecoder()
-  {
-    return assertionDecoder;
-  }
-
-  /**
-   * @param assertionDecoder the namedEntityDecoder to set
-   */
-  public void setAssertionDecoder(JarafeMEDecoder assertionDecoder)
-  {
-    this.assertionDecoder = assertionDecoder;
-  }
-
-  public Set<String> getEnabledFeatureIdSet()
-  {
-    return enabledFeatureIdSet;
-  }
-
-  public void setEnabledFeatureIdSet(Set<String> enabledFeatureIdSet)
-  {
-    this.enabledFeatureIdSet = enabledFeatureIdSet;
-  }
-
-  public ScopeParser getScopeParser()
-  {
-    return scopeParser;
-  }
-
-  public void setScopeParser(ScopeParser scopeParser)
-  {
-    this.scopeParser = scopeParser;
   }
 
   public void generateConceptAnnotations(List<ApiConcept> apiConceptList, Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList)
@@ -453,6 +420,16 @@ public class DecoderSingleFileProcessor
       allAnnotationList.add(c);
       annotationsByType.get(AnnotationType.CONCEPT).add(c);
     }
+  }
+
+  public AssertionDecoderConfiguration getAssertionDecoderConfiguration()
+  {
+    return assertionDecoderConfiguration;
+  }
+
+  public void setAssertionDecoderConfiguration(AssertionDecoderConfiguration assertionDecoderConfiguration)
+  {
+    this.assertionDecoderConfiguration = assertionDecoderConfiguration;
   }
 
 }

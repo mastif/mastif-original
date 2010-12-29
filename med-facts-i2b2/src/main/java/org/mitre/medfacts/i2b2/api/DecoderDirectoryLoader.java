@@ -52,9 +52,15 @@ public class DecoderDirectoryLoader
     List<File> textFileList = new ArrayList<File>();
     Collections.addAll(textFileList, textFiles);
 
+    AssertionDecoderConfiguration assertionDecoderConfiguration =
+        new AssertionDecoderConfiguration();
+    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
+    assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
+    assertionDecoderConfiguration.setScopeParser(scopeParser);
+
     for (File currentTextFile : textFileList)
     {
-      processFile(currentTextFile);
+      processFile(currentTextFile, assertionDecoderConfiguration);
     }
 
     logger.info(String.format("  - done processing directory \"%s\".", directory.getAbsolutePath()));
@@ -81,7 +87,7 @@ public class DecoderDirectoryLoader
     assertionDecoder = new JarafeMEDecoder(model);
   }
 
-  private void processFile(File currentTextFile)
+  private void processFile(File currentTextFile, AssertionDecoderConfiguration assertionDecoderConfiguration)
   {
     logger.info(String.format("    - processing \"%s\"...", currentTextFile.getName()));
     String contents = StringHandling.readEntireContents(currentTextFile);
@@ -99,10 +105,8 @@ public class DecoderDirectoryLoader
 
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor(converter);
+    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
     p.setContents(contents);
-    p.setAssertionDecoder(assertionDecoder);
-    p.setEnabledFeatureIdSet(enabledFeatureIdSet);
-    p.setScopeParser(scopeParser);
     for (ApiConcept apiConcept : apiConceptList)
     {
       logger.info(String.format("dir loader concept: %s", apiConcept.toString()));

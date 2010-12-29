@@ -597,6 +597,15 @@ public class BatchRunner
         featureIdSet.add(currentLine);
       }
       System.out.println("=== FEATURE IDS END ===");
+
+      System.out.println("+++ FEATURE ID SET BEGIN +++");
+      System.out.format("feature id set size: %d%n", featureIdSet.size());
+      for (String currentFeatureId : featureIdSet)
+      {
+        System.out.format(" feature id: \"%s\"%n", currentFeatureId);
+      }
+      System.out.println("+++ FEATURE ID SET END +++");
+
       return featureIdSet;
     } catch (IOException ex)
     {
@@ -625,7 +634,7 @@ public class BatchRunner
   {
     Set<String> featureIdSet = null;
     featureIdSet = BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);
-    setEnabledFeatureIdSet(enabledFeatureIdSet);
+    setEnabledFeatureIdSet(featureIdSet);
   }
 
   public Set<String> getEnabledFeatureIdSet()

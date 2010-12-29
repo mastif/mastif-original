@@ -33,7 +33,7 @@ public class DecoderDirectoryLoader
   protected File directory;
   protected String model;
   protected Set<String> enabledFeatureIdSet;
-  JarafeMEDecoder namedEntityDecoder;
+  JarafeMEDecoder assertionDecoder;
   protected static ScopeParser scopeParser = null;
 
   public void processDirectory()
@@ -78,7 +78,7 @@ public class DecoderDirectoryLoader
   public void setModel(String model)
   {
     this.model = model;
-    namedEntityDecoder = new JarafeMEDecoder(model);
+    assertionDecoder = new JarafeMEDecoder(model);
   }
 
   private void processFile(File currentTextFile)
@@ -100,7 +100,7 @@ public class DecoderDirectoryLoader
 
     DecoderSingleFileProcessor p = new DecoderSingleFileProcessor(converter);
     p.setContents(contents);
-    p.setAssertionDecoder(namedEntityDecoder);
+    p.setAssertionDecoder(assertionDecoder);
     p.setEnabledFeatureIdSet(enabledFeatureIdSet);
     p.setScopeParser(scopeParser);
     for (ApiConcept apiConcept : apiConceptList)

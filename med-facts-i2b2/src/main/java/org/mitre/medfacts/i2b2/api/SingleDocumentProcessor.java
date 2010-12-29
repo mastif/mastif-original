@@ -53,13 +53,27 @@ public class SingleDocumentProcessor
   //protected ScopeParser scopeParser;
   protected AssertionDecoderConfiguration assertionDecoderConfiguration;
 
+  public SingleDocumentProcessor()
+  {
+  }
+
   public SingleDocumentProcessor(LineTokenToCharacterOffsetConverter converter)
   {
     this.converter = converter;
   }
+
+  protected void preExecutionTest()
+  {
+    if (converter == null)
+    {
+      converter =
+          new LineTokenToCharacterOffsetConverter(contents);
+    }
+  }
   
   public void processSingleDocument()
   {
+    preExecutionTest();
     preprocess();
     generateAnnotations();
     indexer.indexAnnotations(allAnnotationList);

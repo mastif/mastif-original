@@ -112,7 +112,7 @@ public class DirectoryLoader
       logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
       p.addConcept(apiConcept);
     }
-    p.processSingleFile();
+    p.processSingleDocument();
     logger.info(String.format("    - done processing \"%s\".", currentTextFile.getName()));
   }
 

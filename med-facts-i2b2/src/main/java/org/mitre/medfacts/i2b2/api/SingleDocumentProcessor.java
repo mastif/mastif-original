@@ -58,7 +58,7 @@ public class SingleDocumentProcessor
     this.converter = converter;
   }
   
-  public void processSingleFile()
+  public void processSingleDocument()
   {
     preprocess();
     generateAnnotations();

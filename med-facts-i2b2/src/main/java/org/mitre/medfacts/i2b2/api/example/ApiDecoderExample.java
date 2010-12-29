@@ -10,7 +10,7 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
-import org.mitre.medfacts.i2b2.api.DecoderDirectoryLoader;
+import org.mitre.medfacts.i2b2.api.DirectoryLoader;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
@@ -30,7 +30,7 @@ public class ApiDecoderExample
   {
     logger.info("inside execute()");
 
-    DecoderDirectoryLoader l = new DecoderDirectoryLoader();
+    DirectoryLoader l = new DirectoryLoader();
     l.setDirectory(baseDirectory);
     l.setModel(model);
     l.setScopeParser(scopeParser);

@@ -344,7 +344,7 @@ public class SingleDocumentProcessor
       }
       /////
 
-      logger.info(String.format("TRAINING INSTANCE: %s", trainingInstance.toString()));
+      logger.info(String.format("TRAINING INSTANCE (%d): %s", index, trainingInstance.toString()));
     }
 
     return trainingInstanceMap;

@@ -28,6 +28,7 @@ import org.mitre.medfacts.i2b2.util.Location;
  */
 public class CueListScanner
 {
+  private static final Logger logger = Logger.getLogger(CueListScanner.class.getName());
   public static Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
   protected CueWordType cueWordType;
@@ -61,7 +62,7 @@ public class CueListScanner
           boolean matched = compareForCueMatch(cueItem, currentLine, tokenOffset);
           if (matched)
           {
-            System.out.format("MATCHES!!!%n  BEGIN MATCH%n  cue: %s%n  inputLine: %s%n  position: %d%n  END MATCH%n%n", cueItem.toString(), convertLineToString(currentLine), tokenOffset);
+            logger.finest(String.format("MATCHES!!!%n  BEGIN MATCH%n  cue: %s%n  inputLine: %s%n  position: %d%n  END MATCH%n%n", cueItem.toString(), convertLineToString(currentLine), tokenOffset));
             CueWordAnnotation a = new CueWordAnnotation();
             int beginOffset = tokenOffset;
             int endOffset = tokenOffset + size - 1;

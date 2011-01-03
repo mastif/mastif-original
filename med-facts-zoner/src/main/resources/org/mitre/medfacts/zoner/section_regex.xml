@@ -1,0 +1,525 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sections>
+  <!-- ADDENDUM --> 
+  <section>
+    <regex>((addendum)\s*\:)</regex>
+    <label>addendum</label>
+  </section>
+  <!-- ADMISSION DATE --> 
+  <section>
+    <regex>(?:(?:(?:admission\s+date)|(date\s+of\s+admission))\s*\:)</regex>
+    <label>admission date</label>
+  </section>
+  <!-- AGE --> 
+  <section>
+    <regex>age\s*\:</regex>
+    <label>age</label>
+  </section>
+  <!-- ALLERGY --> 
+  <section>
+    <regex>(?:(?:(?:allergies|allergy|adverse\s+drug\s+reactions?)|(allergy(\s*\/\s*reaction)?\s+profile))\s*\:)</regex>
+    <label>allergy</label>
+  </section>
+  <!-- APPOINTMENTS --> 
+  <section>
+    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+')|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?(appointments?(?:\(?:\s+s\s+\))?)\s*(?:\(\s+s\s+\))?\s*\:)</regex>
+    <label>appointments</label>
+  </section>
+  <!-- ASSESSMENT --> 
+  <section>
+    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?(assessment)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>assessment</label>
+  </section>
+   <!-- ASSESSMENT/PLAN --> 
+  <section>
+    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)|(\s+(?:(?:by\s+(?:problems?|(?:organ\s+)?systems?|issues?|report))|(?:\s+of\s+note))))?((?:assessment\s*(?:and|\&amp;|\/)\s*plan)|(?:a\s*(?:\&amp;|\/)\s*p))(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>assessment/plan</label>
+  </section>
+  <!-- ATTENDING MD --> 
+  <section>
+    <regex>(?:attend(?:ing)?(?:\s+physician)?\s*\:)</regex>
+    <label>attending md</label>
+  </section>
+  <section>
+    <regex ignore-case="false">([A-Z]{2,2}\d{3,3}\/\d{4,4}\s+[A-Z]+\s+([A-Z]\.\s+)?[A-Z]+\s+\,(?:\s+(?:jr|iii)\s*\,\s*)?\s+M\.D\.)\s*\:</regex>
+    <label>attending md</label>
+  </section>
+  <!-- CHIEF COMPLAINT --> 
+  <section>
+    <regex find-all="false">(?:(?:chief\s+complaint)|(?:patient\s+states\s+complaint)\s*\:)</regex>
+    <label>chief complaint</label>
+  </section>
+  <!-- CLINICAL FINDINGS --> 
+  <section>
+    <regex>((clinical\s+findings?)\s*\:)</regex>
+    <label>clinical findings</label>
+  </section>
+  <!-- CODE STATUS --> 
+  <section>
+    <regex find-all="false">(?:((code(?:\s+status)?)\s*\:))</regex>
+    <label>code status</label>
+  </section>
+  <!-- COMMENTS --> 
+  <section>
+    <regex>(((?:additional\s+)comments)\s*\:)</regex>
+    <label>comments</label>
+  </section>
+  <!-- COMPLICATIONS --> 
+  <section>
+    <regex find-all="false">(?:((complications?)\s*\:))</regex>
+    <label>complications</label>
+  </section>
+  <!--CONDITION  --> 
+  <section>
+    <regex>(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(condition)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>condition</label>
+  </section>
+  <!-- CONSULTANTS --> 
+  <section>
+    <regex>((consultants?)\s*\:)</regex>
+    <label>consultants</label>
+  </section>
+  <!-- CONSULTATION SUMMARY --> 
+  <section>
+    <regex>((consults)\s*\:)</regex>
+    <label>consultation summary</label>
+  </section>
+  <!--DATE OF BIRTH  --> 
+  <section>
+    <regex>date\s+of\s+birth\s*\:</regex>
+    <label>date of birth</label>
+  </section>
+  <!--DATE OF EXPIRATION  --> 
+  <section>
+    <regex>date\s+of\s+expiration\s*\:</regex>
+    <label>date of expiration</label>
+  </section>
+  <!-- DIAGNOSES --> 
+  <section>
+    <regex>(((?:principal\s+discharge\s+diagnosis\s*;\s*responsible\s+after\s+study\s+for\s+causing\s+admission\s*\)\s?))\s?)</regex>
+    <label>diagnoses</label>
+  </section>
+  <section>
+    <regex>((?:other\s+diagnosis\s*;\s*conditions\s*\,\s*infections\s*,\s*complications\s*,\s*affecting\s+treatment\s*\/?\s*stay)\s?)</regex>
+    <label>diagnoses</label>
+  </section>
+  <section>
+    <regex>(((?:cause\s+of\s+death\s+and\s+)?((?:final|principal|principle|primary|associated|secondary|additional|other)\s+)?(((?:pre-)?admission|admit(?:ting)?|discharge|(?:pre)?operative)\s+)?(?:problems\s+and\s+)?diagnos[ei]s(?:\s*\(\s*es\s*\))?)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>diagnoses</label>
+  </section>
+   <!-- DICTATION\/AUTHOR DETAILS --> 
+  <section>
+    <regex>((?:(?:(?:entered|dictated)\s+by\b)|dictator)\s*\:)</regex>
+    <label>dictation/author details</label>
+  </section>
+  <section>
+    <regex ignore-case="false">((?:(?:[A-Z]+\.?)\s+)*[A-Z]+\s*\,\s+M\.D\.\s+DICTATING\s+FOR\s*\:)</regex>
+    <label>dictation/author details</label>
+  </section>
+  <section>
+    <regex ignore-case="false">(This\s+report\s+was\s+created\s+by\s+[A-Z])</regex>
+    <label>dictation/author details</label>
+  </section>
+  <!-- DIET --> 
+  <section>
+    <regex>(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(diet)\s*\:)</regex>
+    <label>diet</label>
+  </section>
+  <!-- DISCHARGE ACTIVITY --> 
+  <section>
+    <regex>(((?:discharge\s+)?activity)\s*\:)</regex>
+    <label>discharge activity</label>
+  </section>
+  <section>
+    <regex>(^((?:discharge\s+)?activity)\s*)(\n)</regex>
+    <label>discharge activity</label>
+  </section>
+  <!-- DISCHARGE DATE --> 
+  <section>
+    <regex>((discharge\s+date)|(date\s+of\s+discharge))\s*\:</regex>
+    <label>discharge date</label>
+  </section>
+  <!-- DISCHARGE DETAILS --> 
+  <section>
+    <regex>((discharge\s+patient\s+on)\s*\:)</regex>
+    <label>discharge details</label>
+  </section>
+   <!-- DISCHARGE ORDERS --> 
+  <section>
+    <regex>(((?:doctor\'?s\s+)?discharge\s+orders)\s*\:)</regex>
+    <label>discharge orders</label>
+  </section>
+  <!-- DISCHARGE NOTIFICATION SUMMARY --> 
+  <section>
+    <regex>(ed\s+discharge\s+notification\s*\/\s*summary)(\s+)</regex>
+    <label>discharge notification summary</label>
+  </section>
+  <!-- DISPOSITION --> 
+  <section>
+    <regex>(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(disposition)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>disposition</label>
+  </section>
+  <!-- EMERGENCY DEPARTMENT COURSE --> 
+  <section>
+    <regex>(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?((?:ed\s+course)|(?:emergency\s+department\s+course)|(?:in\s+(?:the\s+)?ed|\bed))(\s+(?:(?:by\s+(?:problems?|(?:organ\s+)?systems?|issues?|report))|(?:\s+of\s+note)))?(\s*\:|\*+))</regex>
+    <label>emergency department course</label>
+  </section>
+  <!-- EVALUATION DATE --> 
+  <section>
+    <regex>evaluation\s+date\s*\:</regex>
+    <label>evaluation date</label>
+  </section>
+   <!-- EVENTS --> 
+  <section>
+    <regex>((events)\s*\:)</regex>
+    <label>events</label>
+  </section>
+  <!-- FAMILY HISTORY --> 
+  <section>
+    <regex find-all="false">(?:(family\s+((medical|social)\s+)?history|fhx?|fam\s+hx)\s*\:)</regex>
+    <label>family history</label>
+  </section>
+  <section>
+    <regex ignore-case="false" find-all="false">(?:(?:FAMILY\s+HISTORY\s+[a-z]+))</regex>
+    <label>family history</label>
+  </section>
+  <!-- FOLLOW-UP --> 
+  <section>
+    <regex>((discharged?\s+wound\s+care)\s*\:)</regex>
+    <label>discharge wound care</label>
+  </section>
+  <section>
+    <regex>(((?:discharged?\s+follow[\s\-]?up(?:\s+care)?)|((?:standardized\s+)?discharge\s+orders\s+\(\s+medications\s+instructions\s+to\s+patient\s+\,\s+follow-up\s+care\s+\))|(disposition\s*\,\s+follow[\s+\-]up\s+and\s+instructions\s+to\s+patient)|(?:follow[\s\-]?up))\s*\:)</regex>
+    <label>follow-up</label>
+  </section>
+  <section>
+    <regex>((((?:discharged?\s+follow[\s\-]?up(?:\s+care)?))|((?:standardized\s+)?discharge\s+orders\s+\(\s+medications\s+instructions\s+to\s+patient\s+\,\s+follow-up\s+care\s+\))|(disposition\s*\,\s+follow[\s+\-]up\s+and\s+instructions\s+to\s+patient)|(?:follow[\s\-]?up))\s*)(\n)</regex>
+    <label>follow-up</label>
+  </section>
+  <!-- GENDER --> 
+  <section>
+    <regex>sex\s*\:</regex>
+    <label>gender</label>
+  </section>
+  <!-- HEALTH STATUS --> 
+  <section>
+    <regex>^(health\s+status)\s*(\n)</regex>
+    <label>health status</label>
+  </section>
+  <!-- HISTORY OF PRESENT ILLNESS/REASON FOR HOSPITALIZATION --> 
+  <section>
+    <regex>(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?(?:history\s+(?:of\s+(?:the\s+)?)?(?:present|physical)\s+illness|hpi)\s+and\s+(?:(?:history\s+and\s+)?reasons?\s+(?:for\s+)?(?:hospitalization|admission|admit))\s*\:)</regex>
+    <label>history of present illness/reason for hospitalization</label>
+  </section>
+  <section>
+    <regex find-all="false">((?:(?:history\s+and\s+)?reasons?\s+(?:for\s+)?(?:hospitalization|admission|admit))\s*\:)</regex>
+    <label>reason for hospitalization</label>
+  </section>
+  <section>
+    <regex>(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?(((history\s+(of\s+(the\s+)?)?)?(present|physical)\s+illness)|hpi)\s*\:)</regex>
+    <label>history of present illness</label>
+  </section>
+  <section>
+    <regex>(((?:history\s+(?:of\s+(?:the\s+)?)?(?:present|physical)\s+illness)|hpi)\s*)\n</regex>
+    <label>history of present illness</label>
+  </section>
+  <section>
+    <regex>(^((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?((?:clinical\s+)?history)\s*\:)</regex>
+    <label>history of present illness</label>
+  </section>
+  <!-- HOSPITAL COURSE --> 
+  <section>
+    <regex>(((brief(\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?(?:hosp(?:ital)?\s+course(?:\s+and\s+treatment)?)|(?:summary\s+of\s+hospitalization)(\s+(?:(?:by\s+(?:problems?|(?:organ\s+)?systems?|issues?|report))|(?:\s+of\s+note)))?(\s*\:|\*+|\-+))</regex>
+    <label>hospital course</label>
+  </section>
+  <section>
+    <regex>(((brief(\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?(?:hosp(?:ital)?\s+course(?:\s+and\s+treatment)?)|(?:summary\s+of\s+hospitalization)(\s+(?:(?:by\s+(?:problems?|(?:organ\s+)?systems?|issues?|report))|(?:\s+of\s+note)))?)(\s*\n)</regex>
+    <label>hospital course</label>
+  </section>
+  <section>
+    <regex>(\*+(hosp(?:ital)?\s+course(?:\s+and\s+treatment)?)|(?:summary\s+of\s+hospitalization))</regex>
+    <label>hospital course</label>
+  </section>
+  <section>
+    <regex>((hosp(?:ital)?\s+course(\s+and\s+treatment)?)|(summary\s+of\s+hospitalization)(\s+((by\s+(?:problems?|(organ\s+)?systems?|issues?|report))|(\s+of\s+note)))\s+([a-z]+|\())</regex>
+    <label>hospital course</label>
+  </section>
+  <!-- IMPRESSION --> 
+  <section>
+    <regex find-all="false">((impressions?|imp)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>impression</label>
+  </section>
+ <!-- IMPRESSION\/PLAN --> 
+  <section>
+    <regex>((?:impression\s+and\s+plan)\s*\:)</regex>
+    <label>impression/plan</label>
+  </section>
+  <!-- IMPRESSION\/PLAN --> 
+  <section>
+    <regex>((?:impression\s+and\s+plan)\s*)(\n)</regex>
+    <label>impression/plan</label>
+   </section>
+  <!-- INSTRUCTIONS --> 
+  <section>
+    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))+(instructions?)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>instructions</label>
+  </section>
+   <section>
+    <regex>(^(instructions?)(?:\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*)(\n)</regex>
+    <label>instructions</label>
+  </section>
+  <!--LABORATORY/STUDIES  --> 
+  <section>
+    <regex>((?:((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?((?:summary\s+of\s+)?(?:(?:diagnostic\s+)?(?:laboratory|labs?|laboratories|diagnostic|radiologic)(?:(?:\s+and\s+)|(?:\/))?\s*(?:radiologic\s+)?(?:studies|data|results|exams?(?:inations?)?|evaluation|values|findings|tests?|x\-rays?)?)|(?:tests\/procedures|(?:studies\/(?:procedures|tests))|(?:proc(?:edures)?\/tests)|tests))(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>laboratory</label>
+  </section>
+  <section>
+    <regex>(((?:new|discrete|(?:today\s+\'s))\s+results(?:\s+only)?)\s*\:)</regex>
+    <label>laboratory</label>
+  </section>
+  <section>
+    <regex>(((?:new|discrete|(?:today\s+\'s))\s+results(?:\s+only)?)\s*)\n</regex>
+    <label>laboratory</label>
+  </section>
+  <section>
+    <regex>(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)\s*data(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>laboratory</label>
+  </section>
+  <section>
+    <regex>((?:\-+|\*+|\_+)\s*)(data(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>laboratory</label>
+  </section>
+  <!-- MEDICATION --> 
+  <section>
+    <regex>(((pre-)?(admit(ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(pre|post)op(erative)?|transfer)\s+)?(medications?|medication\s*\(\s*s\s*\)|regimen|treatment\s+cycle)(\s+(((UP)?ON|AS|AT|\@|OF|FOR|(PRIOR\s+TO)|(DURING))\s+((?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?((\s+(am|is|are|was\were))|(\s+(include[ds]?)))?\s*\:</regex>
+    <label>medication</label>
+  </section>
+  <section>
+    <regex>^(((pre-)?(admit(ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(pre|post)op(erative)?|transfer)\s+)?(medications?|medication\s*\(\s*s\s*\)|regimen|treatment\s+cycle)(\s+(((UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?((\s+(am|is|are|was\were))|(\s+(include[ds]?)))?\s*\n</regex>
+    <label>medication</label>
+  </section>
+  <section>
+     <regex>(((pre-)?(admit(ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(pre|post)op(erative)?|transfer)\s+)(meds?)(\s+(((UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(DURING))\s+(((THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?(\s+(am|is|are|was\were)|\s+(include[ds]?)?\s*\:)</regex>
+    <label>medication</label>
+  </section>
+  <section>
+     <regex>^(meds?)(\s+(((UP)?ON|AS|AT|\@|OF|FOR|(PRIOR\s+TO)|(DURING))\s+(((THE|THAT|THIS)\s+)?(TIME|DAY)\s+OF\s+)?(ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?(\s+(am|is|are|was\were)|\s+(include[ds]?)?\s*\:)</regex>
+    <label>medication</label>
+  </section>
+  <section>
+    <regex>(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(medications?|medication\s*\(\s*s\s*\)|regimen|treatment\s+cycle)\s+on\s+transfer\s+from(\s+[A-Z]+)+(\s+(?:am|is|are|was\were)|\s+(?:include[ds]?))?\s*\:)</regex>
+    <label>medication</label>
+  </section>
+  <section>
+    <regex ignore-case="false" >(MEDICATIONS(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?)(\s+[a-z]+)</regex>
+    <label>medication</label>
+  </section>
+  <!--OB-GYN HISTORY  --> 
+  <section>
+    <regex>(((?:(?:past\s+)?ob\-gyn\s+history))\s*\:)</regex>
+    <label>ob-gyn history</label>
+  </section>
+  <section>
+    <regex>(((?:past\s+obstetric\s+history))\s*\:)</regex>
+    <label>obstetric history</label>
+  </section>
+  <section>
+    <regex>^(((?:past\s+gyn(?:ocologic(?:al)?)?\s+history))\s*\:)</regex>
+    <label>gynocologic history</label>
+  </section>
+  <!-- OBJECTIVE --> 
+  <section>
+    <regex find-all="false">(?:objective\s*\:?\n)</regex>
+    <label>objective</label>
+  </section>
+  <section>
+    <regex find-all="false">(?:^o\s*\:\n)</regex>
+    <label>objective</label>
+  </section>
+  <!--OPERATIONS/PROCEDURES  --> 
+  <section>
+    <regex>(((?:((?:principal|principle|primary|special)\s+)?(?:operations?\s+(?:and|or)\s+)?procedures?(\s+(?:and|or)\s+operations?)?(?:\s+performed)?)|(operations\s*\/\s*procedures)|(?:operations?))\s*\:)</regex>
+    <label>operations/procedures</label>
+  </section>
+  <section>
+    <regex>((((?:associated|secondary|additional|other)\s+)(?:operations?\s+(?:and|or)\s+)?procedures?(\s+(?:and|or)\s+operations?)?)\s*\:)</regex>
+    <label>operations/procedures</label>
+  </section>
+  <section>
+    <regex>((procedure\s+note)\s*\:)</regex>
+    <label>procedure description</label>
+  </section>
+  <section>
+    <regex>((postpartum\s+diagnostic\s+procedures)\s*\:)</regex>
+    <label>postpartum diagnostic procedures</label>
+  </section>
+  <section>
+    <regex>((postpartum\s+therapeutic\s+procedures)\s*\:)</regex>
+    <label>postpartum therapeutic procedures</label>
+  </section>
+  <section>
+    <regex>((other\s+postpartum\s+therapies)\s*\:)</regex>
+    <label>other poastpartum treatment</label>
+  </section>
+  <!-- PAST CARDIAC HISTORY --> 
+  <section>
+    <regex>((past\s+cardiac\s+history)\s*\:)</regex>
+    <label>past cardiac history</label>
+  </section>
+  <!-- PAST MEDICAL HISTORY --> 
+  <section>
+    <regex>(past\s+(medical\s+)?history|medical\s+history|pmhx?|pmedhx)\s*\:</regex>
+    <label>past medical history</label>
+  </section>
+  <section>
+    <regex>((past\s+(?:medical\s+)?history|medical\s+history|pmhx?|pmedhx)\/(social\s+history|social\s+hx|\bshx?|soc\s*hx|habits)\s*\:)</regex>
+    <label>past medical history</label>
+  </section>
+  <!-- PAST SURGICAL HISTORY --> 
+  <section>
+    <regex>(past\s+surgical\s+history)\s*\:</regex>
+    <label>past surgical history</label>
+  </section>
+  <!-- PATIENT INFO --> 
+  <section>
+    <regex ignore-case="false">(\*+\s+(FINAL\s+)?DISCHARGE\s+ORDERS\s+\*+)</regex>
+    <label>patient info</label>
+  </section>
+  <!-- PHYSICAL EXAMINATION --> 
+  <section>
+    <regex>(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(((physical|surgical)(\s+exam(ination)?|\s+findings)?|\bpe|\*pe|on\s+exam(ination)?|examination\s+data)|((daily|patient)\s+status))(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?((\s+in\s+the\s+emergency\s+department))?(?:\s*\:|\-[^a-z]))</regex>
+    <label>physical examination</label>
+  </section>
+  <section>
+    <regex>(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(((physical|surgical)(\s+exam(ination)?|\s+findings)?|\bpe|\*pe|on\s+exam(ination)?|examination\s+data)|((daily|patient)\s+status))(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?((\s+in\s+the\s+emergency\s+department))?)((\s+vss?)(?:\s*\:|\-[^a-z]))</regex>
+    <label>physical examination</label>
+ </section>
+  <section>
+    <regex>((?:\-+|\*+|\_+|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))\s*(?:exam(?:ination)?(?:\s+data)?(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))\s*\:))</regex>
+    <label>physical examination</label>
+  </section>
+  <section>
+    <regex>^(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)(?:exam(?:ination)?)(?:\s*\:))</regex>
+    <label>physical examination</label>
+  </section>
+  <section>
+    <regex>^(((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)?((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?((?:(?:physical|surgical)(?:\s+exam(?:ination)?|\s+findings)?|\bpe|\*pe|on\s+exam(?:ination)?|examination\s+data)|(?:(?:daily|patient)\s+status)))(\n)</regex>
+    <label>physical examination</label>
+  </section>
+  <!-- PLAN  --> 
+  <section>
+    <regex ignore-case="false">(?:^(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(\bplans?)(\s*\:[^\d]|\s*\*)))</regex>
+    <label>plan</label>
+  </section>
+  <section>
+    <regex ignore-case="false">(?:^(((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)?(\bplans?))(\s*\n))</regex>
+    <label>plan</label>
+  </section>
+  <!-- PLAN: DISPOSITION/PLAN  --> 
+  <section>
+    <regex>(((?:disposition\s*(?:and|\&amp;|\/)\s*plan)|(?:disposition\s*(?:\&amp;|\/)plan))(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <label>plan</label>
+  </section>
+  <!-- PLAN: TO DO\/PLAN --> 
+  <section>
+    <regex>(((?:to\s+do\s*\/\s*plans?))\s*\:)</regex>
+    <label>plan</label>
+  </section>
+  <!-- PRELIMINARY REPORT CONTENT --> 
+  <section>
+    <regex>(($pch)\s*\:)(\s+)</regex>
+    <label>preliminary report content</label>
+  </section>
+  <!-- PREOPERATIVE STATUS --> 
+  <section>
+    <regex>((preoperative\s+(?:cardiac\s+)?status)\s*\:)</regex>
+    <label>preoperative stastus</label>
+  </section>
+  <!-- PREVIOUS CARDIOVASCULAR INTERVENTIONS --> 
+  <section>
+    <regex>((previous\s+cardiovascular\s+interventions?)\s*\:)</regex>
+    <label>previous cardiovascular interventions</label>
+  </section>
+  <!-- PRIMARY CARE PHYSICIAN --> 
+  <section>
+    <regex find-all="false">(?:pcp\s+name\s*\:)</regex>
+    <label>primary care physician</label>
+  </section>
+  <!-- PROBLEMS --> 
+  <section>
+    <regex>(((?:(?:patient\s+)?problem\s+list)|(?:significant\s+problems)|(?:(?:(?:his|her)\s+)?problems\s+and\s+management\s+are\s+as\s+follows) )(\s+(?:(?:by\s+(?:problems?|(?:organ\s+)?systems?|issues?|report))|(?:\s+of\s+note)))?\s*[\:;\*+])</regex>
+    <label>problems</label>
+  </section>
+  <!-- RADIOLOGY --> 
+  <section>
+    <regex find-all="false">(?:(?:radiology(?:\s+(?:studies|data|results))?)\s*\:)</regex>
+    <label>radiology</label>
+  </section>
+  <!-- REASON FOR CONSULTATION  --> 
+  <section>
+    <regex find-all="false">(?:reason\s+(?:for\s+)?consultation\s*\:)</regex>
+    <label>reason for consultation</label>
+  </section>
+  <!-- REPORT STATUS --> 
+  <section>
+    <regex>((report\s+status)\s*\:)</regex>
+    <label>report status</label>
+  </section>
+  <!--REVIEW OF SYSTEMS  --> 
+  <section>
+    <regex find-all="false">(?:(review\s+(?:of\s+)?systems|ros)\s*\:)</regex>
+    <label>review of systems</label>
+  </section>
+  <section>
+    <regex ignore-case="false" find-all="false">(?:(REVIEW\s+OF\s+SYSTEMS)(\s+[a-z]+))</regex>
+    <label>review of systems</label>
+  </section>
+  <!-- SERVICE SPRECIALTY --> 
+  <section>
+    <regex find-all="false">(?:service\s*\:)</regex>
+    <label>service specialty</label>
+  </section>
+  <!-- SOCIAL HISTORY --> 
+  <section>
+    <regex>(?:^(social\s+history|social\s+hx|\bshx?|soc\s*hx|habits)\s*\:)</regex>
+    <label>social history</label>
+  </section>
+  <section>
+    <regex ignore-case="false" find-all="false">(?:((SOCIAL\s+HISTORY|HABITS))(\s+[a-z]+))</regex>
+    <label>social history</label>
+  </section>
+  <!-- SUBJECTIVE --> 
+  <section>
+    <regex find-all="false">(?:subjective\s*\:?\n)</regex>
+    <label>subjective</label>
+  </section>
+  <section>
+    <regex find-all="false">(?:^s\s*\:\n)</regex>
+    <label>subjective</label>
+  </section>
+  <!-- TRANSCRIPTION DETAILS --> 
+  <section>
+    <regex>(((?:escription\s+document)|batch)\s*\:)</regex>
+    <label>transcription details</label>
+  </section>
+  <!-- TREATMENT --> 
+  <section>
+    <regex>(((?:treatment\s+rendered))\s*\:?)</regex>
+    <label>treatment</label>
+  </section>
+  <section>
+    <regex>((((?:other\s+treatments?\s*\/\s*procedures\s+\(\s+not\s+in\s+o\.r\.\s+\)))|(other\s+treatments?\s+and\s+procedures))\s*\:?)</regex>
+    <label>other treatments/procedures</label>
+  </section>
+  <!-- UNIT NUMBER --> 
+  <section>
+    <regex find-all="false">(?:unit\s+number\s*\:)</regex>
+    <label>unit number</label>
+  </section>
+    <!-- WORK RETURN --> 
+  <section>
+    <regex>((return\s+to\s+work)\s*\:)</regex>
+    <label>work return</label>
+  </section>
+</sections>
+

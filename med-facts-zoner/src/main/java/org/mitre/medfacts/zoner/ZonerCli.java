@@ -36,6 +36,8 @@ import org.w3c.dom.ls.LSParser;
  */
 public class ZonerCli
 {
+    private static final Logger logger = Logger.getLogger(ZonerCli.class.getName());
+
     public static final String EOL = System.getProperty("line.separator");
     public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\w+");
     protected String inputFilename;
@@ -68,7 +70,7 @@ public class ZonerCli
         for (int i=0; i < sectionNodeList.getLength(); i++)
         {
           Element sectionElement = (Element)sectionNodeList.item(i);
-          System.out.println("found section element");
+          logger.finest("found section element");
 
           String regexString = regexExpression.evaluate(sectionElement);
           String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
@@ -84,8 +86,8 @@ public class ZonerCli
           }
           boolean regexFindAll = regexFindAllString.equalsIgnoreCase("true");
           String labelString = labelExpression.evaluate(sectionElement);
-          System.out.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"%n",
-                  labelString, regexString, regexIgnoreCaseString, regexFindAllString);
+          logger.finest(String.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"",
+                  labelString, regexString, regexIgnoreCaseString, regexFindAllString));
 
           int flags = 0;
           if (regexIgnoreCase)
@@ -155,7 +157,7 @@ public class ZonerCli
     {
         if (args.length != 1)
         {
-          System.out.println("Usage:  " + ZonerCli.class.getName() + " <input file name>");
+          logger.severe("Usage:  " + ZonerCli.class.getName() + " <input file name>");
           return;
         }
 
@@ -191,7 +193,7 @@ public class ZonerCli
 
   public void readFile(String inputFilename) throws IOException, FileNotFoundException
   {
-    System.out.format("input: %s%n", inputFilename);
+    logger.finest(String.format("input: %s", inputFilename));
     File inputFile = new File(inputFilename);
     FileReader inputFileReader = new FileReader(inputFile);
     BufferedReader inputBufferedReader = new BufferedReader(inputFileReader);
@@ -261,10 +263,10 @@ public class ZonerCli
         int i = 0;
         while (currentMatcher.find())
         {
-          System.out.format(" trying %s ...%n", currentDefinition.getLabel());
+          logger.finest(String.format(" trying %s ...", currentDefinition.getLabel()));
           int start = currentMatcher.start();
           int end = currentMatcher.end();
-          System.out.format(" ** " + currentDefinition.getLabel() + " match found: %d-%d%n", start, end);
+          logger.finest(String.format(" ** " + currentDefinition.getLabel() + " match found: %d-%d", start, end));
 
           Range currentRange = new Range();
           currentRange.setLabel(currentDefinition.getLabel());
@@ -280,9 +282,9 @@ public class ZonerCli
 
       for (Range currentRange : getRangeList())
       {
-        System.out.format(" - %s%n", currentRange);
+        logger.finest(String.format(" - %s", currentRange));
       }
-      System.out.println("===");
+      logger.finest("===");
 
       int rangeListSize = getRangeList().size();
       for (int i=0; i < rangeListSize; i++)
@@ -313,8 +315,8 @@ public class ZonerCli
         LineAndTokenPosition beginLineAndTokenPosition = c.convert(begin);
         LineAndTokenPosition endLineAndTokenPosition = c.convert(realSectionEnd);
 
-        System.out.format(" - %s (%d) %s to %s %n", currentRange, realSectionEnd,
-                beginLineAndTokenPosition.toString(), endLineAndTokenPosition.toString());
+        logger.finest(String.format(" - %s (%d) %s to %s ", currentRange, realSectionEnd,
+                beginLineAndTokenPosition.toString(), endLineAndTokenPosition.toString()));
 
         currentRange.setEnd(oneBeforeNextRange);
         currentRange.setBeginLineAndToken(beginLineAndTokenPosition);

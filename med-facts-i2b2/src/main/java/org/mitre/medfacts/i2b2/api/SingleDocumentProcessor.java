@@ -39,6 +39,7 @@ public class SingleDocumentProcessor
   
   protected String contents;
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
+  protected Map<Integer, String> assertionTypeMap;
   protected LineTokenToCharacterOffsetConverter converter;
   //protected Set<String> enabledFeatureIdSet;
   //protected JarafeMEDecoder assertionDecoder;
@@ -79,7 +80,7 @@ public class SingleDocumentProcessor
     indexer.indexAnnotations(allAnnotationList);
     //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
-    Map<Integer, String> assertionTypeMap = decode(trainingInstanceMap);
+    assertionTypeMap = decode(trainingInstanceMap);
   }
 
   public String getContents()
@@ -452,6 +453,16 @@ public class SingleDocumentProcessor
   public void setAssertionDecoderConfiguration(AssertionDecoderConfiguration assertionDecoderConfiguration)
   {
     this.assertionDecoderConfiguration = assertionDecoderConfiguration;
+  }
+
+  public Map<Integer, String> getAssertionTypeMap()
+  {
+    return assertionTypeMap;
+  }
+
+  public void setAssertionTypeMap(Map<Integer, String> assertionTypeMap)
+  {
+    this.assertionTypeMap = assertionTypeMap;
   }
 
 }

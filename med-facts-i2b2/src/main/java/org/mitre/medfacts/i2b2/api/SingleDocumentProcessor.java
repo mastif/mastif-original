@@ -177,6 +177,14 @@ public class SingleDocumentProcessor
 
       String currentLine[] = arrayOfArrayOfTokens[lineNumber - 1];
 
+      if (assertionDecoderConfiguration.getEnabledFeatureIdSet() == null)
+      {
+        logger.severe("enabled feature id set is null!!!  using all features");
+      } else
+      {
+        logger.info("enabled feature id set is set; using selected feature set");
+      }
+
       TrainingInstance trainingInstance = new TrainingInstance();
 
       if (checkForEnabledFeature("conceptUnigrams")) {

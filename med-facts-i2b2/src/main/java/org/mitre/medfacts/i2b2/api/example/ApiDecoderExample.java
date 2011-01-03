@@ -11,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.DirectoryLoader;
+import org.mitre.medfacts.i2b2.cli.BatchRunner;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 
 /**
@@ -34,6 +35,7 @@ public class ApiDecoderExample
     l.setDirectory(baseDirectory);
     l.setModel(model);
     l.setScopeParser(scopeParser);
+    l.setEnabledFeatureIdSet(enabledFeatureIdSet);
 
     l.processDirectory();
   }
@@ -81,9 +83,12 @@ public class ApiDecoderExample
     }
 
     File featuresFile = null;
+    Set<String> featureIdSet = null;
     if (hasFeaturesFile)
     {
       featuresFile = new File(baseDir, featuresFileName);
+
+      featureIdSet = BatchRunner.loadEnabledFeaturesFromFile(featuresFile);
     }
 
     File modelFile = new File(baseDir, modelFilename);
@@ -121,6 +126,7 @@ public class ApiDecoderExample
     example.setModel(modelValue);
     example.setBaseDirectory(baseDirectory);
     example.setScopeParser(scopeParser);
+    example.setEnabledFeatureIdSet(featureIdSet);
 
     example.execute();
   }

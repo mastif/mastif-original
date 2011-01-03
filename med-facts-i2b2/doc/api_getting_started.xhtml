@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>MITRE i2b2 Assertion Classifier: Getting Started With the API</title>
+    <style type="text/css">
+      .code { white-space: pre; font-family: monospace; }
+    </style>
+  </head>
+  <body>
+    <h1>MITRE i2b2 Assertion Classifier: Getting Started With the API</h1>
+
+    <p>You will need the following to get started:</p>
+
+    <ul>
+      <li>med-facts-i2b2 jar file (the main system)</li>
+      <li>med-facts-zoner jar file (file to label the section of a document
+          in which a token is found)</li>
+      <li>i2b2.model file (this is the main model file for the assertion
+          classification task)</li>
+      <li>scope.model and cue.model (these are the model files used by the
+        scope parser to identify the negation scope and the negation cue</li>
+    </ul>
+
+    <p>
+      For each candidate assertion that you would like to classify, you will
+      need three things:
+    </p>
+
+    <ul>
+      <li>a string that is the entire contents of the document from which the
+          assertion comes.</li>
+      <li>
+        <div>a list of ApiConcept objects.  each concept has four properties:
+        </div>
+        <ol>
+          <li>begin character offset</li>
+          <li>end character offset</li>
+          <li>the concept type (string) -- present, absent, possible,
+              conditional, hypothetical, or associated_with_someone_else
+          </li>
+          <li>and the text of the concept</li>
+        </ol>
+      </li>
+    </ul>
+
+    <p>Once you have your data and the needed MITRE libraries, you can get
+       started with coding for the api integration...</p>
+
+    <p>The first step is to create a AssertionDecoderConfiguration object</p>
+
+    <div class="code"><![CDATA[
+    String modelValue;
+    Set<String> enabledFeatureIdSet;
+    ScopeParser scopeParser;
+    JarafeMEDecoder assertionDecoder;
+
+    modelValue = StringHandling.readEntireContents(modelFile);
+    featureIdSet = BatchRunner.loadEnabledFeaturesFromFile(featuresFile);
+    scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(),
+                                  cueModelFile.getAbsolutePath());
+    assertionDecoder = new JarafeMEDecoder(modelValue);
+
+    AssertionDecoderConfiguration assertionDecoderConfiguration =
+        new AssertionDecoderConfiguration();
+    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
+    assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
+    assertionDecoderConfiguration.setScopeParser(scopeParser);]]>
+    </div>
+
+    <p>The next step is to construct and SingleDocumentProcessor object and
+       load the data:
+    </p>
+
+    <div class="code"><![CDATA[
+    List<ApiConcept> apiConceptList = ...;
+
+    SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
+    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
+    p.setContents(contents);
+    for (ApiConcept apiConcept : apiConceptList)
+    {
+      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
+      p.addConcept(apiConcept);
+    }
+    p.processSingleDocument();
+    ]]></div>
+
+    <p>
+      Finally, get the results of the assertion classification.  The results
+      are returned as a map with a key of integers and a value of the string
+      assertion type.  The integer index is the 0-based index into the ordered
+      list of the concepts passed in.
+    </p>
+
+    <div class="code"><![CDATA[
+    Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
+    ]]></div>
+
+  </body>
+</html>

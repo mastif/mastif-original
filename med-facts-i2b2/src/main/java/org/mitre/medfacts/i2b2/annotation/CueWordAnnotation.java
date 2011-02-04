@@ -15,6 +15,7 @@ public class CueWordAnnotation extends Annotation
 {
 
   protected CueWordType cueWordType;
+  protected String cueWordClass;
   protected String cueWordText;
 
   /**
@@ -89,6 +90,16 @@ public class CueWordAnnotation extends Annotation
     w.append(getCueWordType().toString().toLowerCase());
     w.append("\"");
     return w.toString();
+  }
+
+  public String getCueWordClass()
+  {
+    return cueWordClass;
+  }
+
+  public void setCueWordClass(String cueWordClass)
+  {
+    this.cueWordClass = cueWordClass;
   }
 
 }

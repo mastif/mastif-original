@@ -12,6 +12,7 @@ package org.mitre.medfacts.i2b2.annotation;
 public enum CueWordType
 {
   NEGATION,
+  NEGATION_CLASS,
   SPECULATION,
   CONDITIONAL,
   HYPOTHETICAL,

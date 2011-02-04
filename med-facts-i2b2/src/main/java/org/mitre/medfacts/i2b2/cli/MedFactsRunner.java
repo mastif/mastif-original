@@ -800,6 +800,10 @@ public class MedFactsRunner
             {
               trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
             }
+            if (checkForEnabledFeature("cueWordClass") && cueWord.getCueWordClass() != null && !cueWord.getCueWordClass().isEmpty())
+            {
+              trainingInstance.addFeature("cuewordclass_" + cueWord.getCueWordClass());
+            }
           }
 
           if (checkForEnabledFeature("zone"))
@@ -1017,6 +1021,7 @@ public class MedFactsRunner
     Object temp[][] =
         {
           { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
+          { CueWordType.NEGATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
           { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
           { CueWordType.CONDITIONAL, "org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt" },
           { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt" },

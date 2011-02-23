@@ -65,6 +65,7 @@ import org.mitre.medfacts.zoner.ZonerCli.Range;
  */
 public class MedFactsRunner
 {
+  public static final Logger logger = Logger.getLogger(MedFactsRunner.class.getName());
   public final static int MAX_WINDOW_LEFT = 12;
   public final static int MAX_WINDOW_RIGHT = 12;
 
@@ -275,6 +276,7 @@ public class MedFactsRunner
 
     try
     {
+      logger.info(String.format("inside processCueList working with cue file: %s", cueListFilename));
       InputStream cueFileInputStream = classLoader.getResourceAsStream(cueListFilename);
       InputStreamReader inputStreamReader = new InputStreamReader(cueFileInputStream);
       BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -778,31 +780,81 @@ public class MedFactsRunner
           {
             CueWordAnnotation cueWord = (CueWordAnnotation)a;
             String cueWordType = cueWord.getCueWordType().toString();
-            if (checkForEnabledFeature("cueWord"))
+            String cueWordText = cueWord.getCueWordText();
+            String escapedCueWordText = escapeFeatureName(cueWordText);
+            String escapedCueWordClass = null;
+            String cueWordClass = cueWord.getCueWordClass();
+            boolean cueWordClassIsNotEmpty = (cueWordClass != null) && (!cueWordClass.isEmpty());
+            if (checkForEnabledFeature("cueWordClassValue") && cueWordClassIsNotEmpty)
+            {
+              escapedCueWordClass = escapeFeatureName(cueWordClass);
+            }
+
+            if (checkForEnabledFeature("cueWordTextPositional"))
             {
               int cueWordBegin = cueWord.getBegin().getTokenOffset();
               int cueWordEnd = cueWord.getEnd().getTokenOffset();
               if (cueWordBegin < conceptBeginTokenOffset) {
-                  trainingInstance.addFeature("cueWord_" + cueWordType + "_left");
+                  trainingInstance.addFeature("cueWordTextPositional_" + escapedCueWordText + "_left");
                   if ((conceptBeginTokenOffset - cueWordBegin) < 4) {
-                      trainingInstance.addFeature("cueWord_" + cueWordType + "_left_3");
+                      trainingInstance.addFeature("cueWordTextPositional_" + escapedCueWordText + "_left_3");
                   }
               } else if (cueWordBegin > conceptEndTokenOffset) {
-                    trainingInstance.addFeature("cueWord_" + cueWordType + "_right");
+                    trainingInstance.addFeature("cueWordTextPositional_" + escapedCueWordText + "_right");
                     if ((cueWordEnd - conceptEndTokenOffset) < 4) {
-                        trainingInstance.addFeature("cueWord_" + cueWordType + "_right_3");
+                        trainingInstance.addFeature("cueWordTextPositional_" + escapedCueWordText + "_right_3");
                     }
               } else {
-                  trainingInstance.addFeature("cueWord_" + cueWordType + "_within");
+                  trainingInstance.addFeature("cueWordTextPositional_" + escapedCueWordText + "_within");
               }
             }
-            if (checkForEnabledFeature("cueWordValue"))
+            if (checkForEnabledFeature("cueWordTypePositional"))
             {
-              trainingInstance.addFeature("cueword_" + cueWord.getCueWordText());
+              int cueWordBegin = cueWord.getBegin().getTokenOffset();
+              int cueWordEnd = cueWord.getEnd().getTokenOffset();
+              if (cueWordBegin < conceptBeginTokenOffset) {
+                  trainingInstance.addFeature("cueWordTypePositional_" + cueWordType + "_left");
+                  if ((conceptBeginTokenOffset - cueWordBegin) < 4) {
+                      trainingInstance.addFeature("cueWordTypePositional_" + cueWordType + "_left_3");
+                  }
+              } else if (cueWordBegin > conceptEndTokenOffset) {
+                    trainingInstance.addFeature("cueWordTypePositional_" + cueWordType + "_right");
+                    if ((cueWordEnd - conceptEndTokenOffset) < 4) {
+                        trainingInstance.addFeature("cueWordTypePositional_" + cueWordType + "_right_3");
+                    }
+              } else {
+                  trainingInstance.addFeature("cueWordTypePositional_" + cueWordType + "_within");
+              }
             }
-            if (checkForEnabledFeature("cueWordClass") && cueWord.getCueWordClass() != null && !cueWord.getCueWordClass().isEmpty())
+            if (checkForEnabledFeature("cueWordClassPositional") && cueWordClassIsNotEmpty)
             {
-              trainingInstance.addFeature("cuewordclass_" + cueWord.getCueWordClass());
+              int cueWordBegin = cueWord.getBegin().getTokenOffset();
+              int cueWordEnd = cueWord.getEnd().getTokenOffset();
+              if (cueWordBegin < conceptBeginTokenOffset) {
+                  trainingInstance.addFeature("cueWordClassPositional_" + escapedCueWordClass + "_left");
+                  if ((conceptBeginTokenOffset - cueWordBegin) < 4) {
+                      trainingInstance.addFeature("cueWordClassPositional_" + escapedCueWordClass + "_left_3");
+                  }
+              } else if (cueWordBegin > conceptEndTokenOffset) {
+                    trainingInstance.addFeature("cueWordClassPositional_" + escapedCueWordClass + "_right");
+                    if ((cueWordEnd - conceptEndTokenOffset) < 4) {
+                        trainingInstance.addFeature("cueWordClassPositional_" + escapedCueWordClass + "_right_3");
+                    }
+              } else {
+                  trainingInstance.addFeature("cueWordClassPositional_" + escapedCueWordClass + "_within");
+              }
+            }
+            if (checkForEnabledFeature("cueWordTextValue"))
+            {
+              trainingInstance.addFeature("cueWordTextValue_" + escapedCueWordText);
+            }
+            if (checkForEnabledFeature("cueWordTypeValue") && cueWord.getCueWordType() != null)
+            {
+              trainingInstance.addFeature("cueWordTypeValue_" + cueWord.getCueWordType().toString());
+            }
+            if (checkForEnabledFeature("cueWordClassValue") && cueWord.getCueWordClass() != null && !cueWord.getCueWordClass().isEmpty())
+            {
+              trainingInstance.addFeature("cueWordClassValue_" + escapedCueWordClass);
             }
           }
 
@@ -1020,9 +1072,14 @@ public class MedFactsRunner
   {
     Object temp[][] =
         {
-          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
-          { CueWordType.NEGATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
-          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
+          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
+//          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
+          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/speculation_cue_class.txt" },
+
+//          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
+//          { CueWordType.NEGATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
+//          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
+//          { CueWordType.SPECULATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/speculation_cue_class.txt" },
           { CueWordType.CONDITIONAL, "org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt" },
           { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt" },
           { CueWordType.NOT_PATIENT, "org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt" },
@@ -1119,6 +1176,7 @@ public class MedFactsRunner
   protected static final Pattern SPACE_PATTERN = Pattern.compile(" ");
   public static String escapeFeatureName(String originalFeatureName)
   {
+    originalFeatureName = originalFeatureName.trim();
     Matcher m = SPACE_PATTERN.matcher(originalFeatureName);
     String cleanFeatureName = m.replaceAll("_");
     return cleanFeatureName;

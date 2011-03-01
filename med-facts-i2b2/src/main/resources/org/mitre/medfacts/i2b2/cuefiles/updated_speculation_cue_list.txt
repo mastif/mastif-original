@@ -12,16 +12,17 @@ believed
 believes
 believing
 can
-ceoncerned for
 check for
 checked for
 checking for
 checks for
 compatible with
 concern for
+concerned for
 concerning for
 concerns for
 consider
+consideration
 considered
 considering
 considers
@@ -37,15 +38,12 @@ estimated
 estimates
 estimating
 eval for
-eval for
 evaluate for
 evaluated for
 evaluates for
 evaluating for
 evaluation for
 evidence for
-evidence for
-evidence of
 evidence of
 feel that
 feeling that
@@ -73,8 +71,8 @@ indicates
 indicating
 indication of
 indications of
-inpression of
-likely
+indicative of
+impression of
 likely
 may
 maybe
@@ -94,13 +92,10 @@ postulate
 postulated
 postulates
 postulating
-potential
-potentially
 preliminary
 presumably
 presumed
 presumptive
-prevent
 probabilities
 probability
 probable
@@ -118,12 +113,9 @@ questions
 r / o
 r/o
 reportedly
-risk for
-risk of
-risk from
-risk stratification for
 ro
 rule - out
+ruling - out
 rule out
 ruling out
 seem
@@ -133,7 +125,6 @@ seemingly
 seems
 seriologies for
 seriology for
-should
 sign of
 signs of
 speculate
@@ -180,13 +171,12 @@ unlikely
 unsure
 v.s.
 versus
+vs.
 vs
 whether
 whether or not
 work up for
 workup for
 worrisome for
-worrisome for
 would
-to avoid
 t/c

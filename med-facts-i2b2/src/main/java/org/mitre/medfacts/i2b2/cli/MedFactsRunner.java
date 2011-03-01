@@ -1074,14 +1074,14 @@ public class MedFactsRunner
         {
           { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
 //          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
-          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/speculation_cue_class.txt" },
+          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_class.txt" },
 
 //          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
 //          { CueWordType.NEGATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
 //          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
 //          { CueWordType.SPECULATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/speculation_cue_class.txt" },
           { CueWordType.CONDITIONAL, "org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt" },
-          { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt" },
+          { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/updated_hypothetical_cue_list.txt" },
           { CueWordType.NOT_PATIENT, "org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt" },
           { CueWordType.NEGEX_PSEUDONEG, "org/mitre/medfacts/i2b2/cuefiles/NegEx_pseudoneg.txt" },
           { CueWordType.NEGEX_SCOPEEND, "org/mitre/medfacts/i2b2/cuefiles/NegEx_scope_terminators.txt" },

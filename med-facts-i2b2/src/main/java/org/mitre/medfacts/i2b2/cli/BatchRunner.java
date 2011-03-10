@@ -80,7 +80,7 @@ public class BatchRunner
 
   protected static double gaussianPrior = 10.0;
 
-  protected static ScopeParser scopeParser = null;
+  protected ScopeParser scopeParser = null;
 
   public static void main(String args[])
   {
@@ -209,7 +209,7 @@ public class BatchRunner
     }
     System.out.format("cue model file: %s%n", cueModelFile.getAbsolutePath());
     //initialize scope/cue parser
-    scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(), cueModelFile.getAbsolutePath());
+    ScopeParser scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(), cueModelFile.getAbsolutePath());
 
 
 //    String baseDirectory = args[0];
@@ -220,6 +220,7 @@ public class BatchRunner
     batchRunner.setTrainingDirectory(trainDir);
     batchRunner.setDecodeDirectory(decodeDir);
     batchRunner.setMode(mode);
+    batchRunner.setScopeParser(scopeParser);
     if (featuresFileName != null)
     {
       batchRunner.processEnabledFeaturesFile(featuresFile);
@@ -270,7 +271,7 @@ public class BatchRunner
     runner.setRelationFileProcessor(relationFileProcessor);
     runner.setScopeFileProcessor(scopeFileProcessor);
     runner.setEnabledFeatureIdSet(enabledFeatureIdSet);
-    runner.setScopeParser(scopeParser);
+    runner.setScopeParser(getScopeParser());
     runner.setMode(mode);
 
     runner.setTextFilename(currentTextFile.getAbsolutePath());
@@ -323,7 +324,7 @@ public class BatchRunner
 //    this.baseDirectoryString = baseDirectoryString;
 //  }
 
-  private void execute()
+  public void execute()
   {
     //File baseDirectory = new File(baseDirectoryString);
     if (trainingDirectory != null)
@@ -630,7 +631,7 @@ public class BatchRunner
 
   }
 
-  private void processEnabledFeaturesFile(File enabledFeaturesFile)
+  public void processEnabledFeaturesFile(File enabledFeaturesFile)
   {
     Set<String> featureIdSet = null;
     featureIdSet = BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);
@@ -726,6 +727,16 @@ public class BatchRunner
       logger.log(Level.SEVERE, message, e);
       throw new RuntimeException(message, e);
     }
+  }
+
+  public ScopeParser getScopeParser()
+  {
+    return scopeParser;
+  }
+
+  public void setScopeParser(ScopeParser scopeParser)
+  {
+    this.scopeParser = scopeParser;
   }
 
 

@@ -68,6 +68,8 @@ public class BatchRunner
   protected FileProcessor relationFileProcessor = new RelationFileProcessor();
   protected FileProcessor scopeFileProcessor = new ScopeFileProcessor();
 
+  protected RunConfiguration runConfiguration;
+
 
   protected List<TrainingInstance> masterTrainingInstanceListTraining = new ArrayList<TrainingInstance>();
   protected List<TrainingInstance> masterTrainingInstanceListEvaluation = new ArrayList<TrainingInstance>();
@@ -297,7 +299,7 @@ public class BatchRunner
     return trainingInstanceList;
   }
 
-  public void processFileSet(File baseDirectory, List<TrainingInstance> masterList, Mode mode)
+  public void processFileSet(File baseDirectory, List<TrainingInstance> masterList, Mode mode, RunConfiguration runConfiguration)
   {
     File[] textFiles = baseDirectory.listFiles(new FilenameFilter()
     {
@@ -311,8 +313,14 @@ public class BatchRunner
     System.out.println("=== TEXT FILE LIST BEGIN ===");
     for (File currentTextFile : textFiles)
     {
-      List<TrainingInstance> trainingInstanceList = processFile(currentTextFile, mode);
-      masterList.addAll(trainingInstanceList);
+      if (runConfiguration == null || runConfiguration.containsFile(currentTextFile))
+      {
+        List<TrainingInstance> trainingInstanceList = processFile(currentTextFile, mode);
+        masterList.addAll(trainingInstanceList);
+      } else
+      {
+        // skip file if not in the current run configuration
+      }
     }
   }
 
@@ -330,13 +338,13 @@ public class BatchRunner
     if (trainingDirectory != null)
     {
       File trainingDirectoryFile = new File(trainingDirectory);
-      processFileSet(trainingDirectoryFile, masterTrainingInstanceListTraining, Mode.TRAIN);
+      processFileSet(trainingDirectoryFile, masterTrainingInstanceListTraining, Mode.TRAIN, runConfiguration);
     }
 
     if (decodeDirectory != null)
     {
       File decodeDirectoryFile = new File(decodeDirectory);
-      processFileSet(decodeDirectoryFile, masterTrainingInstanceListEvaluation, mode);
+      processFileSet(decodeDirectoryFile, masterTrainingInstanceListEvaluation, mode, null);
     }
 
     // train and evaluate the classifier
@@ -737,6 +745,16 @@ public class BatchRunner
   public void setScopeParser(ScopeParser scopeParser)
   {
     this.scopeParser = scopeParser;
+  }
+
+  public RunConfiguration getRunConfiguration()
+  {
+    return runConfiguration;
+  }
+
+  public void setRunConfiguration(RunConfiguration runConfiguration)
+  {
+    this.runConfiguration = runConfiguration;
   }
 
 

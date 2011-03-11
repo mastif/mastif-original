@@ -1,5 +1,6 @@
 package org.mitre.medfact.learningcurve;
 
+import org.mitre.medfacts.i2b2.cli.RunConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -93,7 +94,7 @@ public class RunExecutor
 
       b.processEnabledFeaturesFile(featuresFile);
 
-      //b.setRunConfiguration(currentRunConfiguration);
+      b.setRunConfiguration(currentRunConfiguration);
 
       b.execute();
 
@@ -172,44 +173,6 @@ public class RunExecutor
       String message = "ParserConfigurationException during loading xml runs configuration file";
       Logger.getLogger(RunExecutor.class.getName()).log(Level.SEVERE, message, ex);
       throw new RuntimeException(message, ex);
-    }
-  }
-
-  public class RunConfiguration
-  {
-    protected int runNumber;
-    protected List<File> fileList = new ArrayList<File>();
-    protected Set<File> fileSet = new HashSet<File>();
-
-    public int getRunNumber()
-    {
-      return runNumber;
-    }
-
-    public void setRunNumber(int runNumber)
-    {
-      this.runNumber = runNumber;
-    }
-
-    public List<File> getFileList()
-    {
-      return fileList;
-    }
-
-    public void setFileList(List<File> fileList)
-    {
-      this.fileList = fileList;
-    }
-
-    public void addFile(File f)
-    {
-      fileList.add(f);
-      fileSet.add(f);
-    }
-
-    public boolean containsFile(File f)
-    {
-      return fileSet.contains(f);
     }
   }
 }

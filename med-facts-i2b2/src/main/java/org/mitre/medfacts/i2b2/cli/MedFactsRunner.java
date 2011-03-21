@@ -56,6 +56,7 @@ import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
+import org.mitre.medfacts.zoner.ParsedTextFile;
 import org.mitre.medfacts.zoner.ZonerCli;
 import org.mitre.medfacts.zoner.ZonerCli.Range;
 
@@ -364,24 +365,27 @@ public class MedFactsRunner
     this.annotationFilenameList.add(filename);
   }
 
-  public String[][] processTextString(String input)
-    throws FileNotFoundException, IOException
-  {
-    System.out.format("processing text string ...%n");
-
-    StringReader sr = new StringReader(input);
-    BufferedReader br = new BufferedReader(sr);
-
-    String[][] text2dArray = processTextBufferedReader(br);
-
-    br.close();
-    sr.close();
-
-    System.out.println("=====");
-
-    System.out.format("done processing text string.%n");
-    return text2dArray;
-  }
+//  public String[][] processTextString(String input)
+//    throws FileNotFoundException, IOException
+//  {
+//    System.out.format("processing text string ...%n");
+//
+//    StringReader sr = new StringReader(input);
+//    BufferedReader br = new BufferedReader(sr);
+//
+//    //String[][] text2dArray = processTextBufferedReader(br);
+//    ParsedTextFile parsedTextFile = ZonerCli.processTextBufferedReader(br);
+//    this.textLookup = parsedTextFile.getTokens();
+//    this.entireContents = parsedTextFile.getEverything();
+//
+//    br.close();
+//    sr.close();
+//
+//    System.out.println("=====");
+//
+//    System.out.format("done processing text string.%n");
+//    return text2dArray;
+//  }
 
   private void processTextFile() throws FileNotFoundException, IOException
   {
@@ -390,8 +394,9 @@ public class MedFactsRunner
     FileReader fr = new FileReader(getTextFilename());
     BufferedReader br = new BufferedReader(fr);
 
-    String[][] text2dArray = processTextBufferedReader(br);
-    this.textLookup = text2dArray;
+    ParsedTextFile parsedTextFile = ZonerCli.processTextBufferedReader(br);
+    this.textLookup = parsedTextFile.getTokens();
+    this.entireContents = parsedTextFile.getEverything();
 
     br.close();
     fr.close();
@@ -399,44 +404,6 @@ public class MedFactsRunner
     System.out.println("=====");
 
     System.out.format("done processing text file \"%s\".%n", textFilename);
-  }
-
-  private String[][] processTextBufferedReader(BufferedReader br) throws FileNotFoundException, IOException
-  {
-    StringWriter writer = new StringWriter();
-    PrintWriter printer = new PrintWriter(writer);
-
-    String currentLine = null;
-    //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
-    ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
-    int lineNumber = 0;
-    while ((currentLine = br.readLine()) != null)
-    {
-      printer.println(currentLine);
-//      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
-      //ArrayList<String> currentTextLookupLine = new ArrayList<String>();
-      //textLookup.add(currentTextLookupLine);
-      
-      String tokenArray[] = WHITESPACE_PATTERN.split(currentLine);
-//      for (String currentToken : tokenArray)
-//      {
-//        System.out.format("    CURRENT token (pre): %s%n", currentToken);
-//      }
-      textLookupTemp.add(tokenArray);
-
-      lineNumber++;
-    }
-
-    setEntireContents(writer.toString());
-
-    printer.close();
-    writer.close();
-
-    String twoDimensionalStringArray[][] = new String[1][];
-    //String textLookup[][] = null;
-    String textLookup2dArray[][] = textLookupTemp.toArray(twoDimensionalStringArray);
-
-    return textLookup2dArray;
   }
 
   private void processAnnotationFiles() throws IOException

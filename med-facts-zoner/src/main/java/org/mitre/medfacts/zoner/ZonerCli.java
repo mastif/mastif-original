@@ -510,4 +510,68 @@ public class ZonerCli
 
     }
 
+  public static ParsedTextFile processTextFile(File inputFile) throws FileNotFoundException, IOException
+  {
+    System.out.format("processing text file \"%s\"...%n", inputFile.getAbsolutePath());
+
+    FileReader fr = new FileReader(inputFile);
+    BufferedReader br = new BufferedReader(fr);
+
+    ParsedTextFile parsedTextFile = ZonerCli.processTextBufferedReader(br);
+    String[][] text2dArray = parsedTextFile.getTokens();
+    //this.textLookup = text2dArray;
+
+    br.close();
+    fr.close();
+
+    System.out.println("=====");
+
+    System.out.format("done processing text file \"%s\".%n", inputFile.getAbsolutePath());
+
+    return parsedTextFile;
+  }
+
+
+  public static ParsedTextFile processTextBufferedReader(BufferedReader br) throws FileNotFoundException, IOException
+  {
+    StringWriter writer = new StringWriter();
+    PrintWriter printer = new PrintWriter(writer);
+
+    String currentLine = null;
+    //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
+    ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
+    int lineNumber = 0;
+    while ((currentLine = br.readLine()) != null)
+    {
+      printer.println(currentLine);
+//      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
+      //ArrayList<String> currentTextLookupLine = new ArrayList<String>();
+      //textLookup.add(currentTextLookupLine);
+
+      String tokenArray[] = WHITESPACE_PATTERN.split(currentLine);
+//      for (String currentToken : tokenArray)
+//      {
+//        System.out.format("    CURRENT token (pre): %s%n", currentToken);
+//      }
+      textLookupTemp.add(tokenArray);
+
+      lineNumber++;
+    }
+
+    ParsedTextFile parsedTextFile = new ParsedTextFile();
+    parsedTextFile.setEverything(writer.toString());
+
+    printer.close();
+    writer.close();
+
+    String twoDimensionalStringArray[][] = new String[1][];
+    //String textLookup[][] = null;
+    String textLookup2dArray[][] = textLookupTemp.toArray(twoDimensionalStringArray);
+
+    parsedTextFile.setTokens(textLookup2dArray);
+
+    return parsedTextFile;
+  }
+
+
 }

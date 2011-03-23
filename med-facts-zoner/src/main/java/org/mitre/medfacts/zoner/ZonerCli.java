@@ -39,7 +39,7 @@ public class ZonerCli
     private static final Logger logger = Logger.getLogger(ZonerCli.class.getName());
 
     public static final String EOL = System.getProperty("line.separator");
-    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\w+");
+    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
     protected String inputFilename;
     protected List<SectionRegexDefinition> sectionRegexDefinitionList;
     protected List<Range> rangeList = new ArrayList<Range>();
@@ -549,10 +549,15 @@ public class ZonerCli
       //textLookup.add(currentTextLookupLine);
 
       String tokenArray[] = WHITESPACE_PATTERN.split(currentLine);
-//      for (String currentToken : tokenArray)
-//      {
-//        System.out.format("    CURRENT token (pre): %s%n", currentToken);
-//      }
+
+//      Pattern pattern = Pattern.compile("\\s+");
+//      String tokenArray[] = pattern.split(currentLine);
+
+      logger.info(String.format("before split: %s; %nafter split: %s", currentLine, printOutLineOfTokens(tokenArray)));
+      for (String currentToken : tokenArray)
+      {
+        System.out.format("    CURRENT token (pre): %s%n", currentToken);
+      }
       textLookupTemp.add(tokenArray);
 
       lineNumber++;
@@ -573,5 +578,47 @@ public class ZonerCli
     return parsedTextFile;
   }
 
+
+  public static String printOutLineOfTokens(String[] string)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    for (int i = 0; i < string.length; i++)
+    {
+      boolean isLast = (i == (string.length - 1));
+      sb.append(i);
+      sb.append(":");
+      sb.append('"');
+      //String text = string[i].replace("\\", "\\\\").replace("\"", "\\\"");
+      String text = string[i];
+      sb.append(text);
+      sb.append('"');
+      if (!isLast) { sb.append(", "); }
+    }
+    sb.append("]");
+
+    return sb.toString();
+  }
+
+  public static String printOutFileOfLinesOfTokens(String[][] arrayOfLines)
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    for (int i = 0; i < arrayOfLines.length; i++)
+    {
+      boolean isLast = (i == (arrayOfLines.length - 1));
+      sb.append("line_");
+      sb.append(i);
+      sb.append(":::");
+      //String text = string[i].replace("\\", "\\\\").replace("\"", "\\\"");
+      String text = printOutLineOfTokens(arrayOfLines[i]);
+      sb.append(text);
+      if (!isLast) { sb.append(", "); }
+      sb.append("\n");
+    }
+    sb.append("]");
+
+    return sb.toString();
+  }
 
 }

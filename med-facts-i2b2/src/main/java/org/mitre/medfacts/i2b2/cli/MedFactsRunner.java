@@ -398,6 +398,8 @@ public class MedFactsRunner
     this.textLookup = parsedTextFile.getTokens();
     this.entireContents = parsedTextFile.getEverything();
 
+    logger.info(String.format("just parsed line of tokens:: %s", ZonerCli.printOutFileOfLinesOfTokens(this.textLookup)));
+
     br.close();
     fr.close();
 
@@ -604,6 +606,11 @@ public class MedFactsRunner
       {
           int ln = currentAssertionAnnotation.getEnd().getLine();
           int pos = currentAssertionAnnotation.getEnd().getTokenOffset();
+          logger.info(String.format("conceptPseudoHeadFeature:: ln == %d; pos == %d", ln, pos));
+          logger.info(String.format("textLookup's size: %d", textLookup.length));
+          logger.info(String.format("textLookup[ln-1]'s size: %d", textLookup[ln-1].length));
+          logger.info(ZonerCli.printOutLineOfTokens(textLookup[ln-1]));
+
           String conceptHead = textLookup[ln-1][pos];
           trainingInstance.addFeature(constructConceptHeadFeature(conceptHead));
         //Matcher conceptHeadMatcher = conceptHeadPattern.matcher(conceptText);

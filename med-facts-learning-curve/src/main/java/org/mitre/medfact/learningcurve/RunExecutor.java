@@ -56,6 +56,7 @@ public class RunExecutor
     BatchRunner.main(arguments);
     */
 
+    //String baseDirectoryString = "C:/DO_NOT_BACKUP/_for_i2b2_paper/data.release.2011-02-22";
     String baseDirectoryString = "C:/DO_NOT_BACKUP/_for_i2b2_paper/data.release.2011-02-22";
     File baseDirectory = new File(baseDirectoryString);
 
@@ -85,9 +86,11 @@ public class RunExecutor
       ScopeParser scopeParser = new ScopeParser(scopeFile.getAbsolutePath(), cueFile.getAbsolutePath());
       b.setScopeParser(scopeParser);
 
-
+      b.setBaseDirectoryString(baseDirectoryString);
       b.setTrainingDirectory(trainDirectory.getAbsolutePath());
       b.setDecodeDirectory(evalDirectory.getAbsolutePath());
+
+      b.setFileNameSuffix(String.format("%03d", currentRunConfiguration.getFileList().size()));
 
       String featuresFileString = "featureFile11d_no_class";
       File featuresFile = new File(baseDirectory, featuresFileString);

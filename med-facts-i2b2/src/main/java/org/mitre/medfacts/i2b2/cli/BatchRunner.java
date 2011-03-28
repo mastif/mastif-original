@@ -84,6 +84,8 @@ public class BatchRunner
 
   protected ScopeParser scopeParser = null;
 
+  protected String fileNameSuffix;
+
   public static void main(String args[])
   {
 
@@ -311,9 +313,19 @@ public class BatchRunner
       }
     });
     System.out.println("=== TEXT FILE LIST BEGIN ===");
+    System.out.format("outside before \"for (File currentExtFile : textFiles)\"%n");
     for (File currentTextFile : textFiles)
     {
-      if (runConfiguration == null || runConfiguration.containsFile(currentTextFile))
+      System.out.format("inside \"for (File currentExtFile : textFiles)\" BEGIN for file \"%s\"%n", currentTextFile.getAbsolutePath());
+      System.out.format("runConfiguration is null? %b%n", (runConfiguration == null));
+
+      boolean runConfigurationContainsFile = runConfiguration == null || runConfiguration.containsFile(currentTextFile);
+
+      if (runConfiguration != null)
+      {
+        System.out.format("$$$ INCLUDE OR NOT [\"%s\"]: %b%n", currentTextFile.getAbsolutePath(), runConfigurationContainsFile);
+      }
+      if (runConfigurationContainsFile)
       {
         List<TrainingInstance> trainingInstanceList = processFile(currentTextFile, mode);
         masterList.addAll(trainingInstanceList);
@@ -321,7 +333,9 @@ public class BatchRunner
       {
         // skip file if not in the current run configuration
       }
+      System.out.format("inside \"for (File currentExtFile : textFiles)\" END for file \"%s\"%n", currentTextFile.getAbsolutePath());
     }
+    System.out.format("outside after \"for (File currentExtFile : textFiles)\"%n");
   }
 
   /**
@@ -403,6 +417,8 @@ public class BatchRunner
     // decoding
 
     AssertionXmlOutputLogger xmlOutputLogger = new AssertionXmlOutputLogger();
+
+    xmlOutputLogger.setFileNameSuffix(fileNameSuffix);
 
     xmlOutputLogger.setBaseDirectory(baseDirectoryString);
     xmlOutputLogger.init();
@@ -765,6 +781,16 @@ public class BatchRunner
   public void setRunConfiguration(RunConfiguration runConfiguration)
   {
     this.runConfiguration = runConfiguration;
+  }
+
+  public String getFileNameSuffix()
+  {
+    return fileNameSuffix;
+  }
+
+  public void setFileNameSuffix(String fileNameSuffix)
+  {
+    this.fileNameSuffix = fileNameSuffix;
   }
 
 

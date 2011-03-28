@@ -12,6 +12,7 @@ public class RunConfiguration
   protected int runNumber;
   protected List<File> fileList = new ArrayList<File>();
   protected Set<File> fileSet = new HashSet<File>();
+  protected Set<String> fileStringSet = new HashSet<String>();
 
   public int getRunNumber()
   {
@@ -37,10 +38,11 @@ public class RunConfiguration
   {
     fileList.add(f);
     fileSet.add(f);
+    fileStringSet.add(f.getName());
   }
 
   public boolean containsFile(File f)
   {
-    return fileSet.contains(f);
+    return fileStringSet.contains(f.getName());
   }
 }

@@ -553,11 +553,11 @@ public class ZonerCli
 //      Pattern pattern = Pattern.compile("\\s+");
 //      String tokenArray[] = pattern.split(currentLine);
 
-      logger.info(String.format("before split: %s; %nafter split: %s", currentLine, printOutLineOfTokens(tokenArray)));
-      for (String currentToken : tokenArray)
-      {
-        System.out.format("    CURRENT token (pre): %s%n", currentToken);
-      }
+      //logger.finest(String.format("before split: %s; %nafter split: %s", currentLine, printOutLineOfTokens(tokenArray)));
+//      for (String currentToken : tokenArray)
+//      {
+//        System.out.format("    CURRENT token (pre): %s%n", currentToken);
+//      }
       textLookupTemp.add(tokenArray);
 
       lineNumber++;

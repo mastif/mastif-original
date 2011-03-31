@@ -57,14 +57,16 @@ public class RunExecutor
     */
 
     //String baseDirectoryString = "C:/DO_NOT_BACKUP/_for_i2b2_paper/data.release.2011-02-22";
-    String baseDirectoryString = "C:/DO_NOT_BACKUP/_for_i2b2_paper/data.release.2011-02-22";
+    String baseDirectoryString = "/afs/rcf/project/medfact/dev/mcoarr/learning_curve";
     File baseDirectory = new File(baseDirectoryString);
 
     String runsConfigurationString = "runs.xml";
     File runsConfigurationFile = new File(baseDirectory, runsConfigurationString);
 
-    File trainDirectory = new File(baseDirectory, "train");
-    File evalDirectory = new File(baseDirectory, "eval");
+    File dataDirectory = new File(baseDirectory, "data");
+
+    File trainDirectory = new File(dataDirectory, "train");
+    File evalDirectory = new File(dataDirectory, "eval");
 
     String scopeFileString = "scope.model";
     File scopeFile = new File(baseDirectory, scopeFileString);
@@ -92,7 +94,7 @@ public class RunExecutor
 
       b.setFileNameSuffix(String.format("%03d", currentRunConfiguration.getFileList().size()));
 
-      String featuresFileString = "featureFile11d_no_class";
+      String featuresFileString = "featureFile11d_with_class";
       File featuresFile = new File(baseDirectory, featuresFileString);
 
       b.processEnabledFeaturesFile(featuresFile);

@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -34,173 +35,159 @@ import org.w3c.dom.ls.LSParser;
  * Hello world!
  *
  */
-public class ZonerCli
-{
-    private static final Logger logger = Logger.getLogger(ZonerCli.class.getName());
+public class ZonerCli {
 
-    public static final String EOL = System.getProperty("line.separator");
-    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
-    protected String inputFilename;
-    protected List<SectionRegexDefinition> sectionRegexDefinitionList;
-    protected List<Range> rangeList = new ArrayList<Range>();
-    protected String entireContents;
+  private static final Logger logger = Logger.getLogger(ZonerCli.class.getName());
+  public static final String EOL = System.getProperty("line.separator");
+  public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
+  protected String inputFilename;
+  protected List<SectionRegexDefinition> sectionRegexDefinitionList;
+  // This will include all the Ranges, including those we will eventuall mark
+  // isIgnore because of overlaps
+  protected List<Range> fullRangeList = new ArrayList<Range>();
+  // This will be the trimmed down list of Ranges, excluding all the
+  // overlapping isIgnore Ranges
+  protected List<Range> rangeList = new ArrayList<Range>();
+  protected List<HeadingRange> headings = new ArrayList<HeadingRange>();
+  protected String entireContents;
 
-    public ZonerCli()
-    {
-      try
-      {
-        String regexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
-        URI regexFileUri = this.getClass().getClassLoader().getResource(regexFilename).toURI();
+  public ZonerCli() {
+    try {
+      String regexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
+      URI regexFileUri = this.getClass().getClassLoader().getResource(regexFilename).toURI();
 
-        Document input = parseDocument(regexFileUri.toString());
+      Document input = parseDocument(regexFileUri.toString());
 
-        XPathFactory factory = XPathFactory.newInstance();
-        XPath xpath = factory.newXPath();
-        XPathExpression sectionExpression = xpath.compile("/sections/section");
-        XPathExpression regexExpression = xpath.compile("./regex/text()");
-        XPathExpression regexIgnoreCaseExpression = xpath.compile("./regex/@ignore-case");
-        XPathExpression regexFindAllExpression = xpath.compile("./regex/@find-all");
-        XPathExpression labelExpression = xpath.compile("./label/text()");
+      XPathFactory factory = XPathFactory.newInstance();
+      XPath xpath = factory.newXPath();
+      XPathExpression sectionExpression = xpath.compile("/sections/section");
+      XPathExpression regexExpression = xpath.compile("./regex/text()");
+      XPathExpression regexIgnoreCaseExpression = xpath.compile("./regex/@ignore-case");
+      XPathExpression regexFindAllExpression = xpath.compile("./regex/@find-all");
+      XPathExpression labelExpression = xpath.compile("./label/text()");
 
-        sectionRegexDefinitionList = new ArrayList<SectionRegexDefinition>();
+      sectionRegexDefinitionList = new ArrayList<SectionRegexDefinition>();
 
-        NodeList sectionNodeList =
-          (NodeList)
-          sectionExpression.evaluate(input, XPathConstants.NODESET);
-        for (int i=0; i < sectionNodeList.getLength(); i++)
-        {
-          Element sectionElement = (Element)sectionNodeList.item(i);
-          logger.finest("found section element");
+      NodeList sectionNodeList =
+              (NodeList) sectionExpression.evaluate(input, XPathConstants.NODESET);
+      for (int i = 0; i < sectionNodeList.getLength(); i++) {
+        Element sectionElement = (Element) sectionNodeList.item(i);
+        // logger.finest("found section element");
 
-          String regexString = regexExpression.evaluate(sectionElement);
-          String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
-          if (regexIgnoreCaseString == null || regexIgnoreCaseString.isEmpty())
-          {
-            regexIgnoreCaseString = "true";
-          }
-          boolean regexIgnoreCase = regexIgnoreCaseString.equalsIgnoreCase("true");
-          String regexFindAllString = regexFindAllExpression.evaluate(sectionElement);
-          if (regexFindAllString == null || regexFindAllString.isEmpty())
-          {
-            regexFindAllString = "true";
-          }
-          boolean regexFindAll = regexFindAllString.equalsIgnoreCase("true");
-          String labelString = labelExpression.evaluate(sectionElement);
-          logger.finest(String.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"",
-                  labelString, regexString, regexIgnoreCaseString, regexFindAllString));
-
-          int flags = 0;
-          if (regexIgnoreCase)
-          {
-            flags += Pattern.CASE_INSENSITIVE;
-          }
-          flags += Pattern.MULTILINE;
-
-          Pattern currentRegex = Pattern.compile(regexString, flags);
-
-          SectionRegexDefinition definition = new SectionRegexDefinition();
-          definition.setLabel(labelString);
-          definition.setRegex(currentRegex);
-          definition.setFindAll(regexFindAll);
-          sectionRegexDefinitionList.add(definition);
+        String regexString = regexExpression.evaluate(sectionElement);
+        String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
+        if (regexIgnoreCaseString == null || regexIgnoreCaseString.isEmpty()) {
+          regexIgnoreCaseString = "true";
         }
+        boolean regexIgnoreCase = regexIgnoreCaseString.equalsIgnoreCase("true");
+        String regexFindAllString = regexFindAllExpression.evaluate(sectionElement);
+        if (regexFindAllString == null || regexFindAllString.isEmpty()) {
+          regexFindAllString = "true";
+        }
+        boolean regexFindAll = regexFindAllString.equalsIgnoreCase("true");
+        String labelString = labelExpression.evaluate(sectionElement);
+        logger.finest(String.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"",
+                labelString, regexString, regexIgnoreCaseString, regexFindAllString));
 
-    } catch (URISyntaxException ex)
-    {
+        int flags = 0;
+        if (regexIgnoreCase) {
+          flags += Pattern.CASE_INSENSITIVE;
+        }
+        flags += Pattern.MULTILINE;
+
+        Pattern currentRegex = Pattern.compile(regexString, flags);
+
+        SectionRegexDefinition definition = new SectionRegexDefinition();
+        definition.setLabel(labelString);
+        definition.setRegex(currentRegex);
+        definition.setFindAll(regexFindAll);
+        sectionRegexDefinitionList.add(definition);
+      }
+
+    } catch (URISyntaxException ex) {
       String message = "problem (URISyntaxException) reading regex from xml file";
       Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, message, ex);
       throw new RuntimeException(message, ex);
-    } catch (XPathExpressionException ex)
-    {
+    } catch (XPathExpressionException ex) {
       String message = "problem (XPathExpressionException) reading regex from xml file";
       Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, message, ex);
       throw new RuntimeException(message, ex);
     }
   }
 
-    public static Document parseDocument(String inputUri)
-    {
-      DOMImplementationRegistry registry;
-      try
-      {
-        registry = DOMImplementationRegistry.newInstance();
-      } catch (ClassNotFoundException ex)
-      {
-        Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
-        throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
-      } catch (InstantiationException ex)
-      {
-        Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
-        throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
-      } catch (IllegalAccessException ex)
-      {
-        Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
-        throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
-      } catch (ClassCastException ex)
-      {
-        Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
-        throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
-      }
-      DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
+  public static Document parseDocument(String inputUri) {
+    DOMImplementationRegistry registry;
+    try {
+      registry = DOMImplementationRegistry.newInstance();
+    } catch (ClassNotFoundException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
+      throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
+    } catch (InstantiationException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
+      throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
+    } catch (IllegalAccessException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
+      throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
+    } catch (ClassCastException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, "problem before attempting to parse xml (registry problem)", ex);
+      throw new RuntimeException("problem before attempting to parse xml (registry problem)", ex);
+    }
+    DOMImplementationLS impl = (DOMImplementationLS) registry.getDOMImplementation("LS");
 
-      LSParser parser = impl.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
-      DOMConfiguration domConfig = parser.getDomConfig();
+    LSParser parser = impl.createLSParser(DOMImplementationLS.MODE_SYNCHRONOUS, null);
+    DOMConfiguration domConfig = parser.getDomConfig();
 
-      LSInput lsInput = impl.createLSInput();
-      lsInput.setSystemId(inputUri);
+    LSInput lsInput = impl.createLSInput();
+    lsInput.setSystemId(inputUri);
 
-      Document document = parser.parse(lsInput);
-      return document;
+    Document document = parser.parse(lsInput);
+    return document;
+  }
+
+  public static void main(String[] args) throws IOException {
+    if (args.length != 1) {
+      logger.severe("Usage:  " + ZonerCli.class.getName() + " <input file name>");
+      return;
     }
 
-    public static void main( String[] args ) throws IOException
-    {
-        if (args.length != 1)
-        {
-          logger.severe("Usage:  " + ZonerCli.class.getName() + " <input file name>");
-          return;
-        }
+    String inputFile = args[0];
 
-        String inputFile = args[0];
+    //Pattern filenamePattern = Pattern.compile("(([a-z,A-Z]:\\)?[");
 
-        //Pattern filenamePattern = Pattern.compile("(([a-z,A-Z]:\\)?[");
+    ZonerCli zonerCli = new ZonerCli();
+    zonerCli.setInputFilename(inputFile);
+    zonerCli.readFile(inputFile);
+    zonerCli.execute();
+    zonerCli.logRangesAndHeadings();
+  }
 
-        ZonerCli zonerCli = new ZonerCli();
-        zonerCli.setInputFilename(inputFile);
-        zonerCli.readFile(inputFile);
-        zonerCli.execute();
-    }
-
-    public void execute() throws IOException
-    {
-        // First pass through the input: formatting adjustments
+  public void execute() throws IOException {
+    // First pass through the input: formatting adjustments
 //        String outputFile = inputFilename + ".out1";
 //        String outputFile2 = inputFilename + ".out2";
 
 //        passZero(inputFilename, outputFile);
 //        passOneB(outputFile, outputFile2);
-        findHeadings();
-    }
-
+    clearRangeLists();
+    findHeadings();
+    pruneRanges();
+  }
 
   /**
    * @return the inputFilename
    */
-  public String getInputFilename()
-  {
+  public String getInputFilename() {
     return inputFilename;
   }
 
-  public void readFile(String inputFilename) throws IOException, FileNotFoundException
-  {
+  public void readFile(String inputFilename) throws IOException, FileNotFoundException {
     logger.finest(String.format("input: %s", inputFilename));
     File inputFile = new File(inputFilename);
     FileReader inputFileReader = new FileReader(inputFile);
     BufferedReader inputBufferedReader = new BufferedReader(inputFileReader);
     StringWriter stringWriter = new StringWriter();
     PrintWriter stringPrinter = new PrintWriter(stringWriter);
-    for (String currentInputLine = inputBufferedReader.readLine(); currentInputLine != null; currentInputLine = inputBufferedReader.readLine())
-    {
+    for (String currentInputLine = inputBufferedReader.readLine(); currentInputLine != null; currentInputLine = inputBufferedReader.readLine()) {
       stringPrinter.println(currentInputLine);
       //System.out.format("  ONE LINE: %s%n", currentInputLine);
     }
@@ -214,33 +201,29 @@ public class ZonerCli
   /**
    * @param inputFilename the inputFilename to set
    */
-  public void setInputFilename(String inputFilename)
-  {
+  public void setInputFilename(String inputFilename) {
     this.inputFilename = inputFilename;
   }
 
-  public String buildString(String[] allLines)
-  {
+  public String buildString(String[] allLines) {
     StringBuilder sb = new StringBuilder();
-    for (int i=0; i < allLines.length; i++)
-    {
+    for (int i = 0; i < allLines.length; i++) {
       boolean isLast = (i == allLines.length - 1);
       String current = allLines[i];
       sb.append(current);
-      if (!isLast)
-      {
+      if (!isLast) {
         sb.append(EOL);
       }
     }
     String returnValue = sb.toString();
     return returnValue;
   }
-  
-    public void findHeadings()
-    {
+
+  @SuppressWarnings("LoggerStringConcat")
+  public void findHeadings() {
 
 
-      //System.out.format("### THE WHOLE THING - BEGIN ###%n%s%n### THE WHOLE THING - END ###%n%n", wholeThing);
+    //System.out.format("### THE WHOLE THING - BEGIN ###%n%s%n### THE WHOLE THING - END ###%n%n", wholeThing);
 
 //      Pattern headerUpmcDeidProgressNotePattern =
 //          Pattern.compile("^(?:PROGRESS\\s*)?\\*+INSTITUTION(\\s+(?:GENERAL|CRITICAL\\s+CARE)\\s+MEDICINE\\s+ATTENDING\\s+PHYSICIAN\\s+PROGRESS\\s+NOTE)?", Pattern.MULTILINE);
@@ -255,75 +238,149 @@ public class ZonerCli
 //
 //      Matcher admissionDateMatcher = admissionDatePattern.matcher(wholeThing);
 
-      for (SectionRegexDefinition currentDefinition: sectionRegexDefinitionList)
-      {
-        Matcher currentMatcher = currentDefinition.regex.matcher(getEntireContents());
-        boolean findAll = currentDefinition.isFindAll();
-        boolean findFirstOnly = !findAll;
-        int i = 0;
-        while (currentMatcher.find())
-        {
-          logger.finest(String.format(" trying %s ...", currentDefinition.getLabel()));
-          int start = currentMatcher.start();
-          int end = currentMatcher.end();
-          logger.finest(String.format(" ** " + currentDefinition.getLabel() + " match found: %d-%d", start, end));
+//    Check each section regex for matches and create a new Range object for each
+    for (SectionRegexDefinition currentDefinition : sectionRegexDefinitionList) {
+      Matcher currentMatcher = currentDefinition.regex.matcher(getEntireContents());
+      boolean findAll = currentDefinition.isFindAll();
+      boolean findFirstOnly = !findAll;
+      int i = 0;
+      logger.finest(String.format(" trying %s ...", currentDefinition.getLabel()));
+      while (currentMatcher.find()) {
+        int start = currentMatcher.start();
+        int end = currentMatcher.end();
+        logger.finest(String.format(" ** " + currentDefinition.getLabel() + " match found: %d-%d", start, end));
 
-          Range currentRange = new Range();
-          currentRange.setLabel(currentDefinition.getLabel());
-          currentRange.setBegin(start);
-          currentRange.setEnd(end);
-          getRangeList().add(currentRange);
+        Range currentRange = new Range();
+        currentRange.setLabel(currentDefinition.getLabel());
+        currentRange.setBegin(start);
+        currentRange.setEnd(end);
+        currentRange.setIgnore(false); //the default, may be changed later if overlap found
+        getFullRangeList().add(currentRange);
 
-          if (findFirstOnly) { break; }
+        if (findFirstOnly) {
+          break;
         }
       }
+    }
 
-      Collections.sort(getRangeList());
+//    Sort the list of Ranges
+    Collections.sort(getFullRangeList());
 
-      for (Range currentRange : getRangeList())
-      {
-        logger.finest(String.format(" - %s", currentRange));
+//    For each heading found, compute range end as token before next range begins
+    for (Range currentRange : getFullRangeList()) {
+      logger.finest(String.format(" - %s", currentRange));
+    }
+    logger.finest("===");
+
+    int rangeListSize = getFullRangeList().size();
+    for (int i = 0; i < rangeListSize; i++) {
+      boolean isLast = (i == rangeListSize - 1);
+      Range currentRange = getFullRangeList().get(i);
+      if (currentRange.isIgnore()) {
+        continue;
       }
-      logger.finest("===");
+      int begin = currentRange.getBegin();
+      int end = currentRange.getEnd();
+      int oneBeforeNextRange = 0;
+      HeadingRange currentHeading = new HeadingRange();
+      headings.add(currentHeading);
+      currentHeading.setHeadingEnd(end);
+      currentHeading.setHeadingBegin(begin);
+      currentHeading.setLabel(currentRange.getLabel());
+      currentHeading.setHeadingText(entireContents.substring(begin, end));
+      if (!isLast) {
+        int j = i + 1; // index of next range, may increase if there are overlaps
+        Range nextRange = getFullRangeList().get(j);
+        int nextRangeBegin = nextRange.getBegin();
+        //oneBeforeNextRange = nextRangeBegin - 1;
 
-      int rangeListSize = getRangeList().size();
-      for (int i=0; i < rangeListSize; i++)
-      {
-        boolean isLast = (i == rangeListSize - 1);
-        Range currentRange = getRangeList().get(i);
-        int begin = currentRange.getBegin();
-        int end = currentRange.getEnd();
-        int oneBeforeNextRange = 0;
-        if (!isLast)
-        {
-          Range nextRange = getRangeList().get(i+1);
-          int nextRangeBegin = nextRange.getBegin();
-          //oneBeforeNextRange = nextRangeBegin - 1;
 
-          // todo is (nextRangeBegin - 2) the right place to start searching for the previous token?
-          // it makes sense, because if the previous char is whitespace (which
-          // it would have to be), you'd want to go back atleast two chars
+//        check for overlapping headings
+        if (nextRangeBegin < end) {
+          logger.finest("*** overlap found: \"" + currentHeading.getHeadingText() + "\" "
+                  + currentRange + " *** \""
+                  + entireContents.substring(nextRangeBegin, nextRange.getEnd()) + "\" " + nextRange);
+          // Since there is an overlap, mark to ignore the Range corresponding to the
+          // shorter of the two headings -- it will eventually be removed but cannot be
+          // removed in the middle of this loop.  If NextRange is the shorter one,
+          // grab a new NextRange to use to compute the real extent of this heading's range.
+          // if no more next headings, use isLast logic
+          int curRangeLen = end - begin;
+          int nextRangeEnd = nextRange.getEnd();
+          int nextRangeLen = nextRangeEnd - nextRangeBegin;
+          if (curRangeLen < nextRangeLen) {
+            logger.finest("\ttruncating current: " + currentRange);
+            currentRange.setTruncated(true);
+            currentRange.setEnd(nextRangeBegin-2);
+          } else {
+            while (++j < rangeListSize && nextRangeBegin < end) {
+              logger.finest("\tignoring next: " + nextRange);
+              nextRange.setIgnore(true);
+              nextRange = getFullRangeList().get(j);
+              nextRangeBegin = nextRange.getBegin();
+            }
+
+            if (j == rangeListSize && nextRangeBegin < end) {
+              // nextRange is the last range and it still overlaps
+              nextRange.setIgnore(true);
+              oneBeforeNextRange = getEntireContents().length() - 1;
+              isLast = true;
+            }
+          }
+        }
+        /************ This doesn't seem to be useful, so removing it
+        //          else {
+        //        check for headings separated only by non-alpha characters
+        //              Pattern alphanum = Pattern.compile("[a-zA-Z1-9]");
+        logger.finest("checking for alphanum in intervening range: " + end + " - " + nextRangeBegin);
+        boolean noGap = false;
+        String betweenHeaders = "";
+        Matcher m = null;
+        if (end == nextRangeBegin) {
+        noGap = true;
+        } else {
+        betweenHeaders = entireContents.substring((end + 1), nextRangeBegin);
+        m = alphanum.matcher(betweenHeaders);
+        }
+        if (noGap || !m.find()) {
+        logger.finest("~~~ consecutive headings found: " + currentRange + " ~~~ " + nextRange);
+        }
+        }
+         ******/
+        // todo is (nextRangeBegin - 2) the right place to start searching for the previous token?
+        // it makes sense, because if the previous char is whitespace (which
+        // it would have to be), you'd want to go back atleast two chars
+        if (!currentRange.isIgnore() && !isLast) {
           oneBeforeNextRange = findLastCharOffsetOfPreviousWord(entireContents, nextRangeBegin - 2);
-        } else
-        {
-          oneBeforeNextRange = getEntireContents().length() - 1;
         }
+      } else { // isLast
+        oneBeforeNextRange = getEntireContents().length() - 1;
+      }
+
+      if (!currentRange.isIgnore()) {
+
         int realSectionEnd = oneBeforeNextRange;
 
+//        update range to reflect section end
         CharacterOffsetToLineTokenConverter c =
-          new CharacterOffsetToLineTokenConverter(getEntireContents());
+                new CharacterOffsetToLineTokenConverter(getEntireContents());
         LineAndTokenPosition beginLineAndTokenPosition = c.convert(begin);
         LineAndTokenPosition endLineAndTokenPosition = c.convert(realSectionEnd);
 
-        logger.finest(String.format(" - %s (%d) %s to %s ", currentRange, realSectionEnd,
+        logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) %s to %s ",
+                currentRange, getEntireContents().substring(begin, end),
+                begin, end, realSectionEnd,
                 beginLineAndTokenPosition.toString(), endLineAndTokenPosition.toString()));
+
 
         currentRange.setEnd(oneBeforeNextRange);
         currentRange.setBeginLineAndToken(beginLineAndTokenPosition);
         currentRange.setEndLineAndToken(endLineAndTokenPosition);
-        //SectionAnnotation a = new SectionAnnotation();
 
+        //SectionAnnotation a = new SectionAnnotation();
       }
+
+    }
 
 //      while (admissionDateMatcher.find())
 //      {
@@ -332,186 +389,258 @@ public class ZonerCli
 //        System.out.format("admission date match found: %d-%d%n", start, end);
 //      }
 //
+  }
+
+  public String getEntireContents() {
+    return entireContents;
+  }
+
+  public void setEntireContents(String entireContents) {
+    this.entireContents = entireContents;
+  }
+
+  public void pruneRanges() {
+    for (Iterator<Range> i = getFullRangeList().iterator(); i.hasNext(); ) {
+      Range checkRange = i.next();
+      if (!checkRange.isIgnore()) {
+        getRangeList().add(checkRange);
+      }
+    }
+  }
+
+  public void clearRangeLists() {
+    getRangeList().clear();
+    getFullRangeList().clear();
+  }
+  
+  /**
+   * @return the rangeList
+   */
+  public List<Range> getFullRangeList() {
+    return fullRangeList;
+  }
+
+ public List<Range> getRangeList() {
+    return rangeList;
+  }
+
+  /**
+   * @param rangeList the rangeList to set
+   */
+  public void setRangeList(List<Range> rangeList) {
+    this.fullRangeList = rangeList;
+  }
+
+  public List<HeadingRange> getHeadings() {
+    return headings;
+  }
+
+  public void setHeadings(List<HeadingRange> headings) {
+    this.headings = headings;
+  }
+
+  public void logRangesAndHeadings() {
+    logger.finest("================== RangeList ======================");
+    for (Iterator i = getRangeList().iterator(); i.hasNext(); ) {
+      logger.finest(i.next().toString());
+    }
+    logger.finest("================== FullRangeList ======================");
+    for (Iterator i = getFullRangeList().iterator(); i.hasNext(); ) {
+      logger.finest(i.next().toString());
+    }
+    logger.finest("================== Headings ======================");
+    for (Iterator i = getHeadings().iterator(); i.hasNext(); ) {
+      logger.finest(i.next().toString());
+    }
+  }
+
+  private int findLastCharOffsetOfPreviousWord(String entireContents, int initialPosition) {
+    boolean found = false;
+    int i = initialPosition;
+    while (!found && i >= 0) {
+      char currentChar = entireContents.charAt(i);
+      if (i != ' ' && i != '\r' && i != '\n') {
+        found = true;
+      }
+    }
+    if (i < 0) {
+      i = 0;
+    }
+    return i;
+  }
+
+  public class Range implements Comparable<Range> {
+
+    public Range() {
+    }
+    protected int begin;
+    protected int end;
+    protected LineAndTokenPosition beginLineAndToken;
+    protected LineAndTokenPosition endLineAndToken;
+    protected String label;
+    protected boolean ignore;
+    protected boolean truncated;
+
+    public String toString() {
+      return String.format("RANGE \"%s\" [%d-%d]", label, begin, end);
     }
 
-    public String getEntireContents()
-    {
-      return entireContents;
+    public int getBegin() {
+      return begin;
     }
 
-    public void setEntireContents(String entireContents)
-    {
-      this.entireContents = entireContents;
+    public void setBegin(int begin) {
+      this.begin = begin;
+    }
+
+    public int getEnd() {
+      return end;
+    }
+
+    public void setEnd(int end) {
+      this.end = end;
+    }
+
+    public boolean isIgnore() {
+      return ignore;
+    }
+
+    public void setIgnore(boolean ignore) {
+      this.ignore = ignore;
+    }
+
+    public boolean isTruncated() {
+      return truncated;
+    }
+
+    public void setTruncated(boolean truncated) {
+      this.truncated = truncated;
+    }
+
+
+    @Override
+    public int compareTo(Range other) {
+      if (this.begin < other.begin) {
+        return -1;
+      } else if (this.begin > other.begin) {
+        return 1;
+      } else if (this.end == other.end) {
+        return 0;
+      } else if (this.end < other.end) {
+        return -1;
+      } else {
+        return 1;
+      }
     }
 
     /**
-     * @return the rangeList
+     * @return the label
      */
-    public List<Range> getRangeList()
-    {
-      return rangeList;
+    public String getLabel() {
+      return label;
     }
 
     /**
-     * @param rangeList the rangeList to set
+     * @param label the label to set
      */
-    public void setRangeList(List<Range> rangeList)
-    {
-      this.rangeList = rangeList;
+    public void setLabel(String label) {
+      this.label = label;
     }
 
-    private int findLastCharOffsetOfPreviousWord(String entireContents, int initialPosition)
-    {
-      boolean found = false;
-      int i = initialPosition;
-      while (!found && i >= 0)
-      {
-        char currentChar = entireContents.charAt(i);
-        if (i != ' ' && i != '\r' && i != '\n')
-        {
-          found = true;
-        }
-      }
-      if (i < 0) { i = 0; }
-      return i;
+    public LineAndTokenPosition getBeginLineAndToken() {
+      return beginLineAndToken;
     }
 
-    public class Range implements Comparable<Range>
-    {
-      public Range()
-      {
-      }
-
-      protected int begin;
-      protected int end;
-      protected LineAndTokenPosition beginLineAndToken;
-      protected LineAndTokenPosition endLineAndToken;
-      protected String label;
-
-      public String toString()
-      {
-        return String.format("RANGE \"%s\" [%d-%d]", label, begin, end);
-      }
-
-      public int getBegin()
-      {
-        return begin;
-      }
-
-      public void setBegin(int begin)
-      {
-        this.begin = begin;
-      }
-
-      public int getEnd()
-      {
-        return end;
-      }
-
-      public void setEnd(int end)
-      {
-        this.end = end;
-      }
-
-      @Override
-      public int compareTo(Range other)
-      {
-        if (this.begin < other.begin)
-        {
-          return -1;
-        } else if (this.begin > other.begin)
-        {
-          return 1;
-        } else if (this.end == other.end)
-        {
-          return 0;
-        } else if (this.end < other.end)
-        {
-          return -1;
-        } else
-        {
-          return 1;
-        }
-      }
-
-      /**
-       * @return the label
-       */
-      public String getLabel()
-      {
-        return label;
-      }
-
-      /**
-       * @param label the label to set
-       */
-      public void setLabel(String label)
-      {
-        this.label = label;
-      }
-
-      public LineAndTokenPosition getBeginLineAndToken()
-      {
-        return beginLineAndToken;
-      }
-
-      public void setBeginLineAndToken(LineAndTokenPosition beginLineAndToken)
-      {
-        this.beginLineAndToken = beginLineAndToken;
-      }
-
-      public LineAndTokenPosition getEndLineAndToken()
-      {
-        return endLineAndToken;
-      }
-
-      public void setEndLineAndToken(LineAndTokenPosition endLineAndToken)
-      {
-        this.endLineAndToken = endLineAndToken;
-      }
+    public void setBeginLineAndToken(LineAndTokenPosition beginLineAndToken) {
+      this.beginLineAndToken = beginLineAndToken;
     }
 
-    public class SectionRegexDefinition
-    {
-
-      protected Pattern regex;
-      protected String label;
-      protected boolean findAll;
-
-      public Pattern getRegex()
-      {
-        return regex;
-      }
-
-      public void setRegex(Pattern regex)
-      {
-        this.regex = regex;
-      }
-
-      public String getLabel()
-      {
-        return label;
-      }
-
-      public void setLabel(String label)
-      {
-        this.label = label;
-      }
-
-      public boolean isFindAll()
-      {
-        return findAll;
-      }
-
-      public void setFindAll(boolean findAll)
-      {
-        this.findAll = findAll;
-      }
-
+    public LineAndTokenPosition getEndLineAndToken() {
+      return endLineAndToken;
     }
 
-  public static ParsedTextFile processTextFile(File inputFile) throws FileNotFoundException, IOException
-  {
+    public void setEndLineAndToken(LineAndTokenPosition endLineAndToken) {
+      this.endLineAndToken = endLineAndToken;
+    }
+  }
+
+  public class HeadingRange {
+
+    protected int headingBegin;
+    protected int headingEnd;
+    protected String label;
+    protected String headingText;
+
+    @Override 
+    public String toString() {
+      return String.format("HEADING \"%s\" (%s)", headingText, label);
+    }
+
+    public int getHeadingBegin() {
+      return headingBegin;
+    }
+
+    public void setHeadingBegin(int begin) {
+      this.headingBegin = begin;
+    }
+
+    public int getHeadingEnd() {
+      return headingEnd;
+    }
+
+    public void setHeadingEnd(int end) {
+      this.headingEnd = end;
+    }
+
+    public void setLabel(String label) {
+      this.label = label;
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public void setHeadingText(String headingText) {
+      this.headingText = headingText;
+    }
+
+    public String getHeadingText() {
+      return headingText;
+    }
+  }
+
+  public class SectionRegexDefinition {
+
+    protected Pattern regex;
+    protected String label;
+    protected boolean findAll;
+
+    public Pattern getRegex() {
+      return regex;
+    }
+
+    public void setRegex(Pattern regex) {
+      this.regex = regex;
+    }
+
+    public String getLabel() {
+      return label;
+    }
+
+    public void setLabel(String label) {
+      this.label = label;
+    }
+
+    public boolean isFindAll() {
+      return findAll;
+    }
+
+    public void setFindAll(boolean findAll) {
+      this.findAll = findAll;
+    }
+  }
+
+  public static ParsedTextFile processTextFile(File inputFile) throws FileNotFoundException, IOException {
     System.out.format("processing text file \"%s\"...%n", inputFile.getAbsolutePath());
 
     FileReader fr = new FileReader(inputFile);
@@ -531,9 +660,7 @@ public class ZonerCli
     return parsedTextFile;
   }
 
-
-  public static ParsedTextFile processTextBufferedReader(BufferedReader br) throws FileNotFoundException, IOException
-  {
+  public static ParsedTextFile processTextBufferedReader(BufferedReader br) throws FileNotFoundException, IOException {
     StringWriter writer = new StringWriter();
     PrintWriter printer = new PrintWriter(writer);
 
@@ -541,8 +668,7 @@ public class ZonerCli
     //ArrayList<ArrayList<String>> textLookup = new ArrayList<ArrayList<String>>();
     ArrayList<String[]> textLookupTemp = new ArrayList<String[]>();
     int lineNumber = 0;
-    while ((currentLine = br.readLine()) != null)
-    {
+    while ((currentLine = br.readLine()) != null) {
       printer.println(currentLine);
 //      System.out.format("CURRENT LINE (pre) [%d]: %s%n", lineNumber, currentLine);
       //ArrayList<String> currentTextLookupLine = new ArrayList<String>();
@@ -553,11 +679,13 @@ public class ZonerCli
 //      Pattern pattern = Pattern.compile("\\s+");
 //      String tokenArray[] = pattern.split(currentLine);
 
+
       //logger.finest(String.format("before split: %s; %nafter split: %s", currentLine, printOutLineOfTokens(tokenArray)));
 //      for (String currentToken : tokenArray)
 //      {
 //        System.out.format("    CURRENT token (pre): %s%n", currentToken);
 //      }
+
       textLookupTemp.add(tokenArray);
 
       lineNumber++;
@@ -578,13 +706,10 @@ public class ZonerCli
     return parsedTextFile;
   }
 
-
-  public static String printOutLineOfTokens(String[] string)
-  {
+  public static String printOutLineOfTokens(String[] string) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    for (int i = 0; i < string.length; i++)
-    {
+    for (int i = 0; i < string.length; i++) {
       boolean isLast = (i == (string.length - 1));
       sb.append(i);
       sb.append(":");
@@ -593,19 +718,19 @@ public class ZonerCli
       String text = string[i];
       sb.append(text);
       sb.append('"');
-      if (!isLast) { sb.append(", "); }
+      if (!isLast) {
+        sb.append(", ");
+      }
     }
     sb.append("]");
 
     return sb.toString();
   }
 
-  public static String printOutFileOfLinesOfTokens(String[][] arrayOfLines)
-  {
+  public static String printOutFileOfLinesOfTokens(String[][] arrayOfLines) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    for (int i = 0; i < arrayOfLines.length; i++)
-    {
+    for (int i = 0; i < arrayOfLines.length; i++) {
       boolean isLast = (i == (arrayOfLines.length - 1));
       sb.append("line_");
       sb.append(i);
@@ -613,12 +738,13 @@ public class ZonerCli
       //String text = string[i].replace("\\", "\\\\").replace("\"", "\\\"");
       String text = printOutLineOfTokens(arrayOfLines[i]);
       sb.append(text);
-      if (!isLast) { sb.append(", "); }
+      if (!isLast) {
+        sb.append(", ");
+      }
       sb.append("\n");
     }
     sb.append("]");
 
     return sb.toString();
   }
-
 }

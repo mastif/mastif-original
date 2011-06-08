@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<root>
+<fragments>
+  <fragment>
+    <name>admit</name>
+    <expansion>(?:admit(?:ting)?|admission)</expansion>
+  </fragment>  
+  <fragment>
+    <name>left-time-mods</name>  
+    <expansion>((?:(?:pre-)?<fragment-ref name="admit"/>|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+')</expansion>
+  </fragment>
+  <fragment>
+    <name>left-descr-mods</name>  
+    <expansion>((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+)</expansion>
+  </fragment>
+  <fragment>
+    <name>allergies1</name>
+    <expansion>(?:allergies|allergy|adverse\s+drug\s+reactions?)</expansion>
+  </fragment>
+  <fragment>
+    <name>allergies2</name>
+    <expansion>(allergy(\s*\/\s*reaction)?\s+profile)</expansion>
+  </fragment>
+</fragments>
 <sections>
   <!-- ADDENDUM --> 
   <section>
@@ -17,17 +40,17 @@
   </section>
   <!-- ALLERGY --> 
   <section>
-    <regex>(?:(?:(?:allergies|allergy|adverse\s+drug\s+reactions?)|(allergy(\s*\/\s*reaction)?\s+profile))\s*\:)</regex>
+    <regex>(?:(?:<fragment-ref name="allergies1"/>|<fragment-ref name="allergies2"/>)\s*\:)</regex>
     <label>allergy</label>
   </section>
   <!-- APPOINTMENTS --> 
   <section>
-    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+')|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?(appointments?(?:\(?:\s+s\s+\))?)\s*(?:\(\s+s\s+\))?\s*\:)</regex>
+    <regex>((((?:(?:pre-)?<fragment-ref name="admit"/>|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+')|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?(appointments?(?:\(?:\s+s\s+\))?)\s*(?:\(\s+s\s+\))?\s*\:)</regex>
     <label>appointments</label>
   </section>
   <!-- ASSESSMENT --> 
   <section>
-    <regex>((((?:(?:pre-)?(?:admit(?:ting)?|admission)|current|discharge|follow[\s+\-]?up|home|interim|initial|postpartum|(?:pre|post)op(?:erative)?|transfer)\s+)|((?:brief(?:\s+resume\s+of)?|overall|other|additional|pertinent|relevant|(?:list\s+of\s+)?other|plan\s+for|standardized|summary\s+of|doctor(?:\s+\&apos;)?s)\s+))?(assessment)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
+    <regex>((<fragment-ref name="left-time-mods"/>|<fragment-ref name="left-descr-mods"/>)?(assessment)(\s+(?:(?:(?:UP)?ON|AS|AT|\@|OF|FOR|(?:PRIOR\s+TO)|(?:DURING))\s+(?:(?:(?:THE|THAT|THIS)\s+)?(?:TIME|DAY)\s+OF\s+)?(?:ADMISSION|ADMIT|DEATH|DISCHARGE|TRANSFER|COMPLICATIONS?|HOME|HOSPITALIZATION|OUTPATIENT)))?\s*\:)</regex>
     <label>assessment</label>
   </section>
    <!-- ASSESSMENT/PLAN --> 
@@ -522,4 +545,5 @@
     <label>work return</label>
   </section>
 </sections>
+</root>
 

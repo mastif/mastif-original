@@ -12,24 +12,36 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.DOMConfiguration;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSParser;
+import org.xml.sax.InputSource;
 
 /**
  * Hello world!
@@ -42,6 +54,7 @@ public class ZonerCli {
   public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
   protected String inputFilename;
   protected List<SectionRegexDefinition> sectionRegexDefinitionList;
+  protected Map<String,Node> fragmentMap;
   // This will include all the Ranges, including those we will eventuall mark
   // isIgnore because of overlaps
   protected List<Range> fullRangeList = new ArrayList<Range>();
@@ -50,6 +63,7 @@ public class ZonerCli {
   protected List<Range> rangeList = new ArrayList<Range>();
   protected List<HeadingRange> headings = new ArrayList<HeadingRange>();
   protected String entireContents;
+  public static final int expansionThreshold = 5;
 
   public ZonerCli() {
     try {
@@ -57,24 +71,55 @@ public class ZonerCli {
       URI regexFileUri = this.getClass().getClassLoader().getResource(regexFilename).toURI();
 
       Document input = parseDocument(regexFileUri.toString());
-
+    
       XPathFactory factory = XPathFactory.newInstance();
       XPath xpath = factory.newXPath();
-      XPathExpression sectionExpression = xpath.compile("/sections/section");
-      XPathExpression regexExpression = xpath.compile("./regex/text()");
+      XPathExpression sectionExpression = xpath.compile("/root/sections/section");
+      XPathExpression regexExpression = xpath.compile("./regex");
       XPathExpression regexIgnoreCaseExpression = xpath.compile("./regex/@ignore-case");
       XPathExpression regexFindAllExpression = xpath.compile("./regex/@find-all");
       XPathExpression labelExpression = xpath.compile("./label/text()");
+      XPathExpression fragmentExpression = xpath.compile("/root/fragments/fragment");
+      XPathExpression fragmentNameExpression = xpath.compile("./name/text()");
+      XPathExpression fragmentExpansionExpression = xpath.compile("./expansion/text()");
+      XPathExpression fragmentExpansionNode = xpath.compile("./expansion");
+      XPathExpression embeddedFragmentExpression = xpath.compile("./fragment-ref");
+      XPathExpression embeddedFragmentName = xpath.compile("./@name");
 
+
+// get all the fragment elements out of the xml file and has name/expansion pairs
+      fragmentMap = new LinkedHashMap<String,Node>();
+      NodeList fragmentNodeList =
+                (NodeList) fragmentExpression.evaluate(input, XPathConstants.NODESET);
+      for (int i=0; i<fragmentNodeList.getLength(); i++) {
+        Element fragmentElement = (Element) fragmentNodeList.item(i);
+        String nameString = fragmentNameExpression.evaluate(fragmentElement);
+        String expansionString = fragmentExpansionExpression.evaluate(fragmentElement);
+        Node expansionNode = (Node)fragmentExpansionNode.evaluate(fragmentElement, XPathConstants.NODE);
+        fragmentMap.put(nameString, expansionNode);
+        logger.log(Level.FINEST, "found fragment: {0} -> {1}",
+                   new Object[]{nameString, nodeToString(expansionNode)});
+      }
+
+// get all the section (regular expression) elements from the xml file,
+//        and expand as needed and create a regex Pattern for each     
+      
       sectionRegexDefinitionList = new ArrayList<SectionRegexDefinition>();
-
       NodeList sectionNodeList =
-              (NodeList) sectionExpression.evaluate(input, XPathConstants.NODESET);
+                (NodeList) sectionExpression.evaluate(input, XPathConstants.NODESET);
       for (int i = 0; i < sectionNodeList.getLength(); i++) {
         Element sectionElement = (Element) sectionNodeList.item(i);
         // logger.finest("found section element");
 
-        String regexString = regexExpression.evaluate(sectionElement);
+        Node regexNode = 
+                 (Node) regexExpression.evaluate(sectionElement, XPathConstants.NODE);
+        String regexString = expandFragments(regexNode, embeddedFragmentExpression,
+                embeddedFragmentName);
+        // if the fragment nesting is too deep, expandFragments will return null
+        // in that case, skip this regex
+        if (regexString == null)
+          continue;
+
         String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
         if (regexIgnoreCaseString == null || regexIgnoreCaseString.isEmpty()) {
           regexIgnoreCaseString = "true";
@@ -144,12 +189,115 @@ public class ZonerCli {
     return document;
   }
 
+  private String expandFragments(Node regexNode, XPathExpression embeddedFragmentExpression,
+          XPathExpression embeddedFragmentName){
+    int levels = 0;
+    Element parentRegexElement = (Element) regexNode;
+    Document ownerDocument = parentRegexElement.getOwnerDocument();
+    //logger.log(Level.FINEST, "expandFragments on textContent: {0}", parentRegexElement.getTextContent());
+    logger.log(Level.FINEST, "expandFragments on Node: {0}", nodeToString(regexNode));
+
+   /*** old way 
+    try {
+      NodeList fragmentList =
+              (NodeList) embeddedFragmentExpression.evaluate(regexNode, XPathConstants.NODESET);
+      while (fragmentList.getLength() > 0) {
+        for (int i = 0; i < fragmentList.getLength(); i++) {
+          Element fragmentRefElement = (Element) fragmentList.item(i);
+          String fragName = embeddedFragmentName.evaluate(fragmentRefElement);
+          Node fragExpansion = fragmentMap.get(fragName);
+          // todo only do this once?
+          //Element parentRegexElement = (Element)fragmentRefElement.getParentNode();
+          // todo only do this once?
+          //Document ownerDocument = fragmentRefElement.getOwnerDocument();
+          Text replacementTextNode = ownerDocument.createTextNode(fragExpansion.getTextContent());
+          parentRegexElement.replaceChild(replacementTextNode, fragmentRefElement);
+        }
+        // now that one level of fragments has been replaced, increment levels counter
+        // and check element for any new fragment references that may have been added
+        levels++;
+        fragmentList =
+                (NodeList) embeddedFragmentExpression.evaluate(parentRegexElement,
+                XPathConstants.NODESET);
+      } *****/
+    try {
+      NodeList fragmentList =
+              (NodeList) embeddedFragmentExpression.evaluate(regexNode, XPathConstants.NODESET);
+      while (levels < expansionThreshold && fragmentList.getLength() > 0) {
+        for (int i = 0; i < fragmentList.getLength(); i++) {
+          Element fragmentRefElement = (Element) fragmentList.item(i);
+          String fragName = embeddedFragmentName.evaluate(fragmentRefElement);
+          Node fragExpansionNode = fragmentMap.get(fragName);
+          // replace the fragmentRef with its expansion
+          Node parentNode = fragmentRefElement.getParentNode();
+          parentNode.replaceChild(fragExpansionNode, fragmentRefElement);
+          logger.log(Level.FINEST, "Level {0} fragment {1} expansion: {2}", 
+                  new Object[]{levels, i, nodeToString((Node)parentRegexElement)});
+        }
+        // now that we've handled all the fragments, increment levels and get a 
+        // new fragment list from fragments that were in the replacement nodes
+        levels++;
+        logger.log(Level.FINEST, "checking for any level {0} embedded fragments in {1}", 
+                new Object[]{levels, nodeToString((Node)parentRegexElement)});
+        // deepen the xpath search expression
+        StringBuffer nestedFragmentBuf = new StringBuffer("./");
+        for (int j=0; j<levels; j++) {
+          nestedFragmentBuf.append("expansion/");
+        }
+        nestedFragmentBuf.append("fragment-ref");
+        // todo not happy about doing this again in here
+        XPathFactory factory = XPathFactory.newInstance();
+        XPath xpath = factory.newXPath();
+        XPathExpression nestedFragmentExpression = xpath.compile(nestedFragmentBuf.toString());
+
+        fragmentList =
+                (NodeList) nestedFragmentExpression.evaluate(parentRegexElement,
+                XPathConstants.NODESET);
+        logger.log(Level.FINEST, "found {0} embedded fragments", fragmentList.getLength());
+      }
+    } catch (XPathExpressionException ex) {
+      String message = "problem (XPathExpressionException) expanding regex fragment";
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, message, ex);
+      throw new RuntimeException(message, ex);
+    }
+
+
+    if (levels == expansionThreshold) {
+      // nesting of fragments is too deep
+      return null;
+    }
+
+    logger.log(Level.FINEST, "\texpanded to {0}", parentRegexElement.getTextContent());
+    return parentRegexElement.getTextContent();
+  }
+
+  private static String nodeToString(Node node) {
+    TransformerFactory transFactory = TransformerFactory.newInstance();
+    Transformer transformer;
+    String str=null;
+    try {
+      transformer = transFactory.newTransformer();
+      StringWriter buffer = new StringWriter();
+      transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+      transformer.transform(new DOMSource(node), new StreamResult(buffer));
+      str = buffer.toString();
+    } catch (TransformerConfigurationException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (TransformerException ex) {
+      Logger.getLogger(ZonerCli.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return str;
+  }
+
   public static void main(String[] args) throws IOException {
     if (args.length != 1) {
       logger.severe("Usage:  " + ZonerCli.class.getName() + " <input file name>");
       return;
     }
 
+    logger.finest ("finest logging");
+    logger.severe ("severe logging");
+    System.out.println("runnning stdout...");
     String inputFile = args[0];
 
     //Pattern filenamePattern = Pattern.compile("(([a-z,A-Z]:\\)?[");

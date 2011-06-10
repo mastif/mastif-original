@@ -106,8 +106,8 @@
     </dependency>
     <dependency>
       <groupId>org.mitre.itc</groupId>
-      <artifactId>jcarafe_2.8.0</artifactId>
-      <version>0.9.6.RC1</version>
+      <artifactId>jcarafe_2.9.0</artifactId>
+      <version>0.9.8.1.RC2</version>
     </dependency>
     <dependency>
         <groupId>commons-cli</groupId>

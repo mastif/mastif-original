@@ -26,7 +26,7 @@ public class ScopeParser {
         List<IndexedAnnot> annots1 = decoder.decodeDocument(toks);
         List<ScopeOrCueAnnotation> annots = new ArrayList<ScopeOrCueAnnotation>();
         for (IndexedAnnot a : annots1) {
-            org.mitre.itc.jcarafe.crf.Annotation an = a.a();
+            org.mitre.itc.jcarafe.util.Annotation an = a.a();
             String typ = an.typ().labelHead();
             int lineNum = Integer.parseInt(an.vl().get());
             if (typ.equals("xcope")) {

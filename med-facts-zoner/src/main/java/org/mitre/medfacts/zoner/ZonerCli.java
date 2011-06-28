@@ -61,6 +61,7 @@ public class ZonerCli {
   // This will be the trimmed down list of Ranges, excluding all the
   // overlapping isIgnore Ranges
   protected List<Range> rangeList = new ArrayList<Range>();
+  protected List<Range> fullRangeListAdjusted = new ArrayList<Range>();
   protected List<HeadingRange> headings = new ArrayList<HeadingRange>();
   protected String entireContents;
   public static final int expansionThreshold = 5;
@@ -419,6 +420,8 @@ public class ZonerCli {
       logger.finest(String.format(" - %s", currentRange));
     }
     logger.finest("===");
+    
+    List<Range> fullRangeListAdjusted = new ArrayList<Range>();
 
     int rangeListSize = getFullRangeList().size();
     for (int i = 0; i < rangeListSize; i++) {
@@ -524,11 +527,15 @@ public class ZonerCli {
         currentRange.setEnd(oneBeforeNextRange);
         currentRange.setBeginLineAndToken(beginLineAndTokenPosition);
         currentRange.setEndLineAndToken(endLineAndTokenPosition);
+        
+        fullRangeListAdjusted.add(currentRange);
 
         //SectionAnnotation a = new SectionAnnotation();
       }
-
+      
     }
+    
+    this.fullRangeListAdjusted = fullRangeListAdjusted;
 
 //      while (admissionDateMatcher.find())
 //      {
@@ -895,4 +902,12 @@ public class ZonerCli {
 
     return sb.toString();
   }
+
+    public List<Range> getFullRangeListAdjusted() {
+        return fullRangeListAdjusted;
+    }
+
+    public void setFullRangeListAdjusted(List<Range> fullRangeListAdjusted) {
+        this.fullRangeListAdjusted = fullRangeListAdjusted;
+    }
 }

@@ -149,6 +149,24 @@ public class MedFactsRunner
   public void processZones()
   {
     List<ZoneAnnotation> zoneList = findZones(getEntireContents(), textLookup);
+    
+    StringWriter w = new StringWriter();
+    PrintWriter pw = new PrintWriter(w);
+    
+    pw.println("=== ZONE ANNOTATIONS begin ===");
+    if (zoneList == null)
+    {
+        pw.println("zone list is null :-(");
+    } else if (zoneList.size() == 0)
+    {
+        pw.println("zone list has zero items :-(");
+    } else
+    for (ZoneAnnotation z : zoneList)
+    {
+        pw.println(" * " + z);
+    }
+    pw.println("=== ZONE ANNOTATIONS end ===");
+    logger.info(w.toString());
 
     allAnnotationList.addAll(zoneList);
 
@@ -169,7 +187,7 @@ public class MedFactsRunner
     ZonerCli zoner = new ZonerCli();
     zoner.setEntireContents(entireContents);
     zoner.findHeadings();
-    List<Range> zonerRangeList = zoner.getRangeList();
+    List<Range> zonerRangeList = zoner.getFullRangeListAdjusted();
 
     ArrayList<ZoneAnnotation> tempZoneAnnotationList =
         new ArrayList<ZoneAnnotation>();
@@ -837,7 +855,9 @@ public class MedFactsRunner
             if (a instanceof ZoneAnnotation)
             {
               ZoneAnnotation zone = (ZoneAnnotation)a;
-              trainingInstance.addFeature("zone_" + escapeFeatureName(zone.getZoneName()));
+              final String zoneFeatureName = "zone_" + escapeFeatureName(zone.getZoneName());
+              logger.info("### zone feature: " + zoneFeatureName);
+              trainingInstance.addFeature(zoneFeatureName);
             }
           }
         }

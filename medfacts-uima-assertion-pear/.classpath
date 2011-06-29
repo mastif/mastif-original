@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="var" path="UIMA_HOME/lib/uima-core.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/opt/uima-2.3.1/docs/d/api/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-lgpl-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-mapper-lgpl-1.5.0.jar"/>
+	<classpathentry kind="lib" path="lib/jcarafe_2.8.0-0.9.6.RC1.jar"/>
+	<classpathentry kind="lib" path="lib/med-facts-i2b2-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/med-facts-zoner-1.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.8.0.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

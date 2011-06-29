@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<COMPONENT_INSTALLATION_DESCRIPTOR>
+	<OS>
+		<NAME>Windows and Linux</NAME>
+	</OS>
+	<TOOLKITS>
+		<JDK_VERSION>1.4.0</JDK_VERSION>
+	</TOOLKITS>
+	<UIMA_FRAMEWORK>
+	</UIMA_FRAMEWORK>
+	<SUBMITTED_COMPONENT>
+		<ID>org.mitre.medfacts.pear.DummyAssertionPear</ID>
+		<NAME></NAME>
+		<DESC>$main_root/desc/dummyAssertionAnalysisEngine.xml</DESC>
+		<DEPLOYMENT>standard</DEPLOYMENT>
+	</SUBMITTED_COMPONENT>
+	<INSTALLATION>
+		<PROCESS>
+			<ACTION>set_env_variable</ACTION>
+			<PARAMETERS>
+				<COMMENTS></COMMENTS>
+				<VAR_VALUE>$main_root/bin;$main_root/lib/commons-cli-1.2.jar;$main_root/lib/jackson-core-lgpl-1.5.0.jar;$main_root/lib/jackson-mapper-lgpl-1.5.0.jar;$main_root/lib/jcarafe_2.8.0-0.9.6.RC1.jar;$main_root/lib/med-facts-i2b2-1.0-SNAPSHOT.jar;$main_root/lib/med-facts-zoner-1.0-SNAPSHOT.jar;$main_root/lib/scala-library-2.8.0.jar;</VAR_VALUE>
+				<VAR_NAME>CLASSPATH</VAR_NAME>
+			</PARAMETERS>
+		</PROCESS>
+	</INSTALLATION>
+</COMPONENT_INSTALLATION_DESCRIPTOR>

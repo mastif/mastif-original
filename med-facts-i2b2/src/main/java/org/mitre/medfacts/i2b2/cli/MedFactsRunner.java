@@ -679,6 +679,7 @@ public class MedFactsRunner
                   annots.add((CueWordAnnotation)a);
               }
           }
+	  if (annots.size() > 0) {
           Collections.sort(annots);
           StringBuilder str = new StringBuilder("CWS_left");
           for (CueWordAnnotation a : annots) {
@@ -686,6 +687,25 @@ public class MedFactsRunner
               str.append(a.getCueWordType());
           }
           trainingInstance.addFeature(str.toString());
+	  }
+      }
+
+      if (checkForEnabledFeature("cueWordOrderingsRight")) {
+          List<CueWordAnnotation> annots = new ArrayList<CueWordAnnotation>();
+          for (Annotation a : allLineAnnotations) {
+	    if ((a instanceof CueWordAnnotation) && (a.getBegin().getTokenOffset() > conceptEndTokenOffset)) {
+                  annots.add((CueWordAnnotation)a);
+              }
+          }
+          Collections.sort(annots);
+	  if (annots.size() > 0) {
+          StringBuilder str = new StringBuilder("CWS_right");
+          for (CueWordAnnotation a : annots) {
+              str.append("_");
+              str.append(a.getCueWordType());
+          }
+          trainingInstance.addFeature(str.toString());
+	  }
       }
 
       //System.out.format("lineNumber: %d%n", lineNumber);

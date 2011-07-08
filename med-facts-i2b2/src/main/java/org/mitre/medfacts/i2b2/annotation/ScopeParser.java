@@ -8,8 +8,8 @@ package org.mitre.medfacts.i2b2.annotation;
 import java.util.List;
 import java.util.ArrayList;
 import org.mitre.medfacts.i2b2.util.Location;
-import org.mitre.itc.jcarafe.scopetagger.FullDecoder;
-import org.mitre.itc.jcarafe.scopetagger.IndexedAnnot;
+import org.mitre.jcarafe.scopetagger.FullDecoder;
+import org.mitre.jcarafe.scopetagger.IndexedAnnot;
 
 /**
  *
@@ -26,7 +26,7 @@ public class ScopeParser {
         List<IndexedAnnot> annots1 = decoder.decodeDocument(toks);
         List<ScopeOrCueAnnotation> annots = new ArrayList<ScopeOrCueAnnotation>();
         for (IndexedAnnot a : annots1) {
-            org.mitre.itc.jcarafe.util.Annotation an = a.a();
+            org.mitre.jcarafe.util.Annotation an = a.a();
             String typ = an.typ().labelHead();
             int lineNum = Integer.parseInt(an.vl().get());
             if (typ.equals("xcope")) {

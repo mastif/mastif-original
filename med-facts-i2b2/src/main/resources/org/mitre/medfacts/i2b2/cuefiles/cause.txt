@@ -1,21 +1,29 @@
-cause
+attributable
+attribute
+attributed
+attributes
+attributing
+because
+cause 
 caused
 causes
 causing
-lead to
-leads to
-leading to
-led to
+due to
+d/t
+give
+gives
 induce
 induced
 induces
 inducing
+lead to
+leads to
+leading to
+led to
 result in
 resulted in
 resuling in
 results in
-because of 
-give
-gives
-due to
-d/t
+secondary to
+
+

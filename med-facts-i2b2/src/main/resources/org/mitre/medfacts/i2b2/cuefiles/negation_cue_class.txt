@@ -11,8 +11,8 @@ weren't	not
 hadn't	not
 hasn't	not
 haven't	not
-won't
-wouldn't
+won't	not
+wouldn't	not
 never	not
 no longer	not
 in no way	not
@@ -27,9 +27,20 @@ no	no
 without	no
 absence of	no
 free of 	no
+clear of	no
+clear to	no
+negative for 	no
+neg for	no
 negative for 	no
 unremarkable for 	no
 unassociated with	no
+( - )	no
+non	no
+lack of	no
+lack	no
+lacked	no
+lacks	no
+lacking	no
 impossible	fail
 cannot	fail
 can't	fail
@@ -46,19 +57,18 @@ failed	fail
 failing	fail
 fails	fail
 failure	fail
+free of	absent
 free	absent
 absent	absent
+immune to	absent
 denied	deny
 denies	deny
 deny	deny
 denying	deny
-avoid	avoid
 avoided	avoid
-avoiding	avoid
 avoids	avoid
-avoidance	avoid
-prevent	avoid
-prevention	avoid
+prevented	avoid
+prevents
 prophylaxis against	avoid
 shouldn't	avoid
 mustn't	avoid
@@ -126,16 +136,10 @@ rid	stop
 interrupt	stop
 interruption	stop
 interruptions	stop
-resolve	disappear
+resolved	disappear
 resolution	disappear
-disappear	disappear
+disappeared	disappear
 disappearance	disappear
-allergic to	allergy
-allergies	allergy
-allergy	allergy
-intolerant		allergy
-intolerance	allergy
-intolerances	allergy
 rather than 	exception
 instead of	exception
 except	exception

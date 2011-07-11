@@ -672,6 +672,18 @@ public class MedFactsRunner
         }
       }
 
+      if (checkForEnabledFeature("cueWord_DEFINITE_left_2")) {
+	for (Annotation a : allLineAnnotations) {
+	  int offset = a.getBegin().getTokenOffset();
+	  if ((a instanceof CueWordAnnotation) && (offset < conceptBeginTokenOffset) && (offset > (conceptBeginTokenOffset - 3))) {
+	    CueWordAnnotation ca = (CueWordAnnotation)a;
+	    String text = ca.getCueWordText();
+	      if (text == "her" || text == "his" || text == "patient's" || text == "your" || text == "this")
+		trainingInstance.addFeature("cueWord_DEFINITE_left_2");
+          }
+	}
+      }
+
       if (checkForEnabledFeature("cueWordOrderingsLeft")) {
           List<CueWordAnnotation> annots = new ArrayList<CueWordAnnotation>();
           for (Annotation a : allLineAnnotations) {

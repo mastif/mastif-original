@@ -54,7 +54,7 @@ public class ZonerCli {
   public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
   protected String inputFilename;
   protected List<SectionRegexDefinition> sectionRegexDefinitionList;
-  protected Map<String,Node> fragmentMap;
+  protected Map<String, Node> fragmentMap;
   // This will include all the Ranges, including those we will eventuall mark
   // isIgnore because of overlaps
   protected List<Range> fullRangeList = new ArrayList<Range>();
@@ -65,14 +65,20 @@ public class ZonerCli {
   protected List<HeadingRange> headings = new ArrayList<HeadingRange>();
   protected String entireContents;
   public static final int expansionThreshold = 5;
+  private static String defaultRegexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
 
   public ZonerCli() {
+    this(null);
+  }
+
+  public ZonerCli(URI regexFileUri) {
     try {
-      String regexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
-      URI regexFileUri = this.getClass().getClassLoader().getResource(regexFilename).toURI();
+      if (regexFileUri == null) {
+        regexFileUri = this.getClass().getClassLoader().getResource(defaultRegexFilename).toURI();
+      }
 
       Document input = parseDocument(regexFileUri.toString());
-    
+
       XPathFactory factory = XPathFactory.newInstance();
       XPath xpath = factory.newXPath();
       XPathExpression sectionExpression = xpath.compile("/root/sections/section");
@@ -89,37 +95,38 @@ public class ZonerCli {
 
 
 // get all the fragment elements out of the xml file and has name/expansion pairs
-      fragmentMap = new LinkedHashMap<String,Node>();
+      fragmentMap = new LinkedHashMap<String, Node>();
       NodeList fragmentNodeList =
-                (NodeList) fragmentExpression.evaluate(input, XPathConstants.NODESET);
-      for (int i=0; i<fragmentNodeList.getLength(); i++) {
+              (NodeList) fragmentExpression.evaluate(input, XPathConstants.NODESET);
+      for (int i = 0; i < fragmentNodeList.getLength(); i++) {
         Element fragmentElement = (Element) fragmentNodeList.item(i);
         String nameString = fragmentNameExpression.evaluate(fragmentElement);
         String expansionString = fragmentExpansionExpression.evaluate(fragmentElement);
-        Node expansionNode = (Node)fragmentExpansionNode.evaluate(fragmentElement, XPathConstants.NODE);
+        Node expansionNode = (Node) fragmentExpansionNode.evaluate(fragmentElement, XPathConstants.NODE);
         fragmentMap.put(nameString, expansionNode);
         logger.log(Level.FINEST, "found fragment: {0} -> {1}",
-                   new Object[]{nameString, nodeToString(expansionNode)});
+                new Object[]{nameString, nodeToString(expansionNode)});
       }
 
 // get all the section (regular expression) elements from the xml file,
 //        and expand as needed and create a regex Pattern for each     
-      
+
       sectionRegexDefinitionList = new ArrayList<SectionRegexDefinition>();
       NodeList sectionNodeList =
-                (NodeList) sectionExpression.evaluate(input, XPathConstants.NODESET);
+              (NodeList) sectionExpression.evaluate(input, XPathConstants.NODESET);
       for (int i = 0; i < sectionNodeList.getLength(); i++) {
         Element sectionElement = (Element) sectionNodeList.item(i);
         // logger.finest("found section element");
 
-        Node regexNode = 
-                 (Node) regexExpression.evaluate(sectionElement, XPathConstants.NODE);
+        Node regexNode =
+                (Node) regexExpression.evaluate(sectionElement, XPathConstants.NODE);
         String regexString = expandFragments(regexNode, embeddedFragmentExpression,
                 embeddedFragmentName);
         // if the fragment nesting is too deep, expandFragments will return null
         // in that case, skip this regex
-        if (regexString == null)
+        if (regexString == null) {
           continue;
+        }
 
         String regexIgnoreCaseString = regexIgnoreCaseExpression.evaluate(sectionElement);
         if (regexIgnoreCaseString == null || regexIgnoreCaseString.isEmpty()) {
@@ -191,36 +198,36 @@ public class ZonerCli {
   }
 
   private String expandFragments(Node regexNode, XPathExpression embeddedFragmentExpression,
-          XPathExpression embeddedFragmentName){
+          XPathExpression embeddedFragmentName) {
     int levels = 0;
     Element parentRegexElement = (Element) regexNode;
     Document ownerDocument = parentRegexElement.getOwnerDocument();
     //logger.log(Level.FINEST, "expandFragments on textContent: {0}", parentRegexElement.getTextContent());
     logger.log(Level.FINEST, "expandFragments on Node: {0}", nodeToString(regexNode));
 
-   /*** old way 
+    /*** old way 
     try {
-      NodeList fragmentList =
-              (NodeList) embeddedFragmentExpression.evaluate(regexNode, XPathConstants.NODESET);
-      while (fragmentList.getLength() > 0) {
-        for (int i = 0; i < fragmentList.getLength(); i++) {
-          Element fragmentRefElement = (Element) fragmentList.item(i);
-          String fragName = embeddedFragmentName.evaluate(fragmentRefElement);
-          Node fragExpansion = fragmentMap.get(fragName);
-          // todo only do this once?
-          //Element parentRegexElement = (Element)fragmentRefElement.getParentNode();
-          // todo only do this once?
-          //Document ownerDocument = fragmentRefElement.getOwnerDocument();
-          Text replacementTextNode = ownerDocument.createTextNode(fragExpansion.getTextContent());
-          parentRegexElement.replaceChild(replacementTextNode, fragmentRefElement);
-        }
-        // now that one level of fragments has been replaced, increment levels counter
-        // and check element for any new fragment references that may have been added
-        levels++;
-        fragmentList =
-                (NodeList) embeddedFragmentExpression.evaluate(parentRegexElement,
-                XPathConstants.NODESET);
-      } *****/
+    NodeList fragmentList =
+    (NodeList) embeddedFragmentExpression.evaluate(regexNode, XPathConstants.NODESET);
+    while (fragmentList.getLength() > 0) {
+    for (int i = 0; i < fragmentList.getLength(); i++) {
+    Element fragmentRefElement = (Element) fragmentList.item(i);
+    String fragName = embeddedFragmentName.evaluate(fragmentRefElement);
+    Node fragExpansion = fragmentMap.get(fragName);
+    // todo only do this once?
+    //Element parentRegexElement = (Element)fragmentRefElement.getParentNode();
+    // todo only do this once?
+    //Document ownerDocument = fragmentRefElement.getOwnerDocument();
+    Text replacementTextNode = ownerDocument.createTextNode(fragExpansion.getTextContent());
+    parentRegexElement.replaceChild(replacementTextNode, fragmentRefElement);
+    }
+    // now that one level of fragments has been replaced, increment levels counter
+    // and check element for any new fragment references that may have been added
+    levels++;
+    fragmentList =
+    (NodeList) embeddedFragmentExpression.evaluate(parentRegexElement,
+    XPathConstants.NODESET);
+    } *****/
     try {
       NodeList fragmentList =
               (NodeList) embeddedFragmentExpression.evaluate(regexNode, XPathConstants.NODESET);
@@ -232,17 +239,17 @@ public class ZonerCli {
           // replace the fragmentRef with its expansion
           Node parentNode = fragmentRefElement.getParentNode();
           parentNode.replaceChild(fragExpansionNode, fragmentRefElement);
-          logger.log(Level.FINEST, "Level {0} fragment {1} expansion: {2}", 
-                  new Object[]{levels, i, nodeToString((Node)parentRegexElement)});
+          logger.log(Level.FINEST, "Level {0} fragment {1} expansion: {2}",
+                  new Object[]{levels, i, nodeToString((Node) parentRegexElement)});
         }
         // now that we've handled all the fragments, increment levels and get a 
         // new fragment list from fragments that were in the replacement nodes
         levels++;
-        logger.log(Level.FINEST, "checking for any level {0} embedded fragments in {1}", 
-                new Object[]{levels, nodeToString((Node)parentRegexElement)});
+        logger.log(Level.FINEST, "checking for any level {0} embedded fragments in {1}",
+                new Object[]{levels, nodeToString((Node) parentRegexElement)});
         // deepen the xpath search expression
         StringBuffer nestedFragmentBuf = new StringBuffer("./");
-        for (int j=0; j<levels; j++) {
+        for (int j = 0; j < levels; j++) {
           nestedFragmentBuf.append("expansion/");
         }
         nestedFragmentBuf.append("fragment-ref");
@@ -275,7 +282,7 @@ public class ZonerCli {
   private static String nodeToString(Node node) {
     TransformerFactory transFactory = TransformerFactory.newInstance();
     Transformer transformer;
-    String str=null;
+    String str = null;
     try {
       transformer = transFactory.newTransformer();
       StringWriter buffer = new StringWriter();
@@ -296,8 +303,8 @@ public class ZonerCli {
       return;
     }
 
-    logger.finest ("finest logging");
-    logger.severe ("severe logging");
+    logger.finest("finest logging");
+    logger.severe("severe logging");
     System.out.println("runnning stdout...");
     String inputFile = args[0];
 
@@ -420,7 +427,7 @@ public class ZonerCli {
       logger.finest(String.format(" - %s", currentRange));
     }
     logger.finest("===");
-    
+
     List<Range> fullRangeListAdjusted = new ArrayList<Range>();
 
     int rangeListSize = getFullRangeList().size();
@@ -462,7 +469,7 @@ public class ZonerCli {
           if (curRangeLen < nextRangeLen) {
             logger.finest("\ttruncating current: " + currentRange);
             currentRange.setTruncated(true);
-            currentRange.setEnd(nextRangeBegin-2);
+            currentRange.setEnd(nextRangeBegin - 1);
           } else {
             while (++j < rangeListSize && nextRangeBegin < end) {
               logger.finest("\tignoring next: " + nextRange);
@@ -501,8 +508,9 @@ public class ZonerCli {
         // todo is (nextRangeBegin - 2) the right place to start searching for the previous token?
         // it makes sense, because if the previous char is whitespace (which
         // it would have to be), you'd want to go back atleast two chars
+        // Actually we just need -1 because end offsets are different than begin offsets 
         if (!currentRange.isIgnore() && !isLast) {
-          oneBeforeNextRange = findLastCharOffsetOfPreviousWord(entireContents, nextRangeBegin - 2);
+          oneBeforeNextRange = findLastCharOffsetOfPreviousWord(entireContents, nextRangeBegin - 1);
         }
       } else { // isLast
         oneBeforeNextRange = getEntireContents().length() - 1;
@@ -527,14 +535,14 @@ public class ZonerCli {
         currentRange.setEnd(oneBeforeNextRange);
         currentRange.setBeginLineAndToken(beginLineAndTokenPosition);
         currentRange.setEndLineAndToken(endLineAndTokenPosition);
-        
+
         fullRangeListAdjusted.add(currentRange);
 
         //SectionAnnotation a = new SectionAnnotation();
       }
-      
+
     }
-    
+
     this.fullRangeListAdjusted = fullRangeListAdjusted;
 
 //      while (admissionDateMatcher.find())
@@ -555,7 +563,7 @@ public class ZonerCli {
   }
 
   public void pruneRanges() {
-    for (Iterator<Range> i = getFullRangeList().iterator(); i.hasNext(); ) {
+    for (Iterator<Range> i = getFullRangeList().iterator(); i.hasNext();) {
       Range checkRange = i.next();
       if (!checkRange.isIgnore()) {
         getRangeList().add(checkRange);
@@ -567,7 +575,7 @@ public class ZonerCli {
     getRangeList().clear();
     getFullRangeList().clear();
   }
-  
+
   /**
    * @return the rangeList
    */
@@ -575,7 +583,7 @@ public class ZonerCli {
     return fullRangeList;
   }
 
- public List<Range> getRangeList() {
+  public List<Range> getRangeList() {
     return rangeList;
   }
 
@@ -596,15 +604,15 @@ public class ZonerCli {
 
   public void logRangesAndHeadings() {
     logger.finest("================== RangeList ======================");
-    for (Iterator i = getRangeList().iterator(); i.hasNext(); ) {
+    for (Iterator i = getRangeList().iterator(); i.hasNext();) {
       logger.finest(i.next().toString());
     }
     logger.finest("================== FullRangeList ======================");
-    for (Iterator i = getFullRangeList().iterator(); i.hasNext(); ) {
+    for (Iterator i = getFullRangeList().iterator(); i.hasNext();) {
       logger.finest(i.next().toString());
     }
     logger.finest("================== Headings ======================");
-    for (Iterator i = getHeadings().iterator(); i.hasNext(); ) {
+    for (Iterator i = getHeadings().iterator(); i.hasNext();) {
       logger.finest(i.next().toString());
     }
   }
@@ -672,7 +680,6 @@ public class ZonerCli {
       this.truncated = truncated;
     }
 
-
     @Override
     public int compareTo(Range other) {
       if (this.begin < other.begin) {
@@ -726,7 +733,7 @@ public class ZonerCli {
     protected String label;
     protected String headingText;
 
-    @Override 
+    @Override
     public String toString() {
       return String.format("HEADING \"%s\" (%s)", headingText, label);
     }
@@ -903,11 +910,11 @@ public class ZonerCli {
     return sb.toString();
   }
 
-    public List<Range> getFullRangeListAdjusted() {
-        return fullRangeListAdjusted;
-    }
+  public List<Range> getFullRangeListAdjusted() {
+    return fullRangeListAdjusted;
+  }
 
-    public void setFullRangeListAdjusted(List<Range> fullRangeListAdjusted) {
-        this.fullRangeListAdjusted = fullRangeListAdjusted;
-    }
+  public void setFullRangeListAdjusted(List<Range> fullRangeListAdjusted) {
+    this.fullRangeListAdjusted = fullRangeListAdjusted;
+  }
 }

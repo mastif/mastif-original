@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
-import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;

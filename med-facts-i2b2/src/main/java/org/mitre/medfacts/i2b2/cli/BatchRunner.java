@@ -34,11 +34,13 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.jcarafe.jarafe.JarafeMETrainer;
+import org.mitre.jcarafe.jarafe.JarafeTagger;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.AssertionAnnotation;
 import org.mitre.medfacts.i2b2.annotation.AssertionValue;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
+import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
 import org.mitre.medfacts.i2b2.processors.FileProcessor;
@@ -84,6 +86,8 @@ public class BatchRunner
 
   protected ScopeParser scopeParser = null;
 
+  protected PartOfSpeechTagger posTagger = null;
+
   protected String fileNameSuffix;
 
   public static void main(String args[])
@@ -100,6 +104,7 @@ public class BatchRunner
     options.addOption("g", "gaussian-prior", true, "Gaussian prior to use for MaxEnt model");
     options.addOption("c", "cue-model", true, "Cue identification model");
     options.addOption("s", "scope-model", true, "Scope model");
+    options.addOption("p", "pos-model", true, "Part of speech model");
     
     CommandLineParser parser = new GnuParser();
     CommandLine cmd = null;
@@ -194,8 +199,10 @@ public class BatchRunner
     }
     String scopeModelFileName = cmd.getOptionValue("scope-model");
     String cueModelFileName = cmd.getOptionValue("cue-model");
+    String posModelFileName = cmd.getOptionValue("pos-model");
     File scopeModelFile = null;
     File cueModelFile = null;
+    File posModelFile = null;
     if (StringHandling.isAbsoluteFileName(scopeModelFileName))
     {
       scopeModelFile = new File(scopeModelFileName);
@@ -211,10 +218,19 @@ public class BatchRunner
     {
       cueModelFile = new File(baseDir, cueModelFileName);
     }
+
+    if (StringHandling.isAbsoluteFileName(posModelFileName))
+    {
+      posModelFile = new File(posModelFileName);
+    } else
+    {
+      posModelFile = new File(baseDir, posModelFileName);
+    }
+
     System.out.format("cue model file: %s%n", cueModelFile.getAbsolutePath());
     //initialize scope/cue parser
     ScopeParser scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(), cueModelFile.getAbsolutePath());
-
+    PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFile.getAbsolutePath());
 
 //    String baseDirectory = args[0];
 //    System.out.format("base directory: %s%n", baseDirectory);
@@ -225,6 +241,7 @@ public class BatchRunner
     batchRunner.setDecodeDirectory(decodeDir);
     batchRunner.setMode(mode);
     batchRunner.setScopeParser(scopeParser);
+    batchRunner.setPosTagger(posTagger);
     if (featuresFileName != null)
     {
       batchRunner.processEnabledFeaturesFile(featuresFile);
@@ -276,6 +293,7 @@ public class BatchRunner
     runner.setScopeFileProcessor(scopeFileProcessor);
     runner.setEnabledFeatureIdSet(enabledFeatureIdSet);
     runner.setScopeParser(getScopeParser());
+    runner.setPartOfSpeechTagger(getPartOfSpeechTagger());
     runner.setMode(mode);
 
     runner.setTextFilename(currentTextFile.getAbsolutePath());
@@ -768,9 +786,17 @@ public class BatchRunner
     return scopeParser;
   }
 
+  public PartOfSpeechTagger getPartOfSpeechTagger() {
+    return posTagger;
+  }
+
   public void setScopeParser(ScopeParser scopeParser)
   {
     this.scopeParser = scopeParser;
+  }
+
+  public void setPosTagger(PartOfSpeechTagger pt) {
+    this.posTagger = pt;
   }
 
   public RunConfiguration getRunConfiguration()

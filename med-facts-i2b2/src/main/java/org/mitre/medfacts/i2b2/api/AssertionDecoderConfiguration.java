@@ -1,7 +1,7 @@
 package org.mitre.medfacts.i2b2.api;
 
 import java.util.Set;
-import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 
 /**

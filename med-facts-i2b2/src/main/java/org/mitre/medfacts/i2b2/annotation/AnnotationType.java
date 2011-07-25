@@ -15,5 +15,6 @@ public enum AnnotationType
   RELATION,
   SCOPE,
   CUEWORD,
+    POS,
   ZONE
 }

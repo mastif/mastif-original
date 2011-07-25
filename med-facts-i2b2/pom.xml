@@ -105,9 +105,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mitre.itc</groupId>
+      <groupId>org.mitre</groupId>
       <artifactId>jcarafe-ext_2.9.0</artifactId>
-      <version>0.9.8.2.RC2</version>
+      <version>0.9.8.2.RC4</version>
     </dependency>
     <dependency>
         <groupId>commons-cli</groupId>

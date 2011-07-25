@@ -12,6 +12,7 @@ import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.annotation.AnnotationType;
 import org.mitre.medfacts.i2b2.annotation.Annotation;
+import org.mitre.medfacts.i2b2.annotation.PartOfSpeechAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,6 +45,7 @@ import org.mitre.medfacts.i2b2.annotation.CueWordAnnotation;
 import org.mitre.medfacts.i2b2.annotation.CueWordType;
 import org.mitre.medfacts.i2b2.annotation.ScopeAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
+import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.annotation.ZoneAnnotation;
 import org.mitre.medfacts.i2b2.processors.AssertionFileProcessor;
 import org.mitre.medfacts.i2b2.processors.ConceptFileProcessor;
@@ -84,6 +86,7 @@ public class MedFactsRunner
   protected String entireContents;
   protected Mode mode;
   protected ScopeParser scopeParser;
+  protected PartOfSpeechTagger posTagger;
 
   public MedFactsRunner()
   {
@@ -122,6 +125,17 @@ public class MedFactsRunner
   protected List<Annotation> allAnnotationList;
   private Map<AnnotationType,List<Annotation>> annotationsByType;
   protected Map<AnnotationType, List<TrainingInstance>> mapOfTrainingInstanceLists;
+
+  protected boolean inCWSCueWordSet(CueWordType cwt) {
+    return ((cwt == CueWordType.CAUSE) ||
+	    (cwt == CueWordType.CHANGE_STATE) ||
+	    (cwt == CueWordType.CONTINUE) ||
+	    (cwt == CueWordType.ASSOCIATION) ||
+	    (cwt == CueWordType.NEG_CUE_LIST) ||
+	    (cwt == CueWordType.NEG_CUE_CLASS) ||
+	    (cwt == CueWordType.CLAUSE_BOUNDARY) ||
+	    (cwt == CueWordType.UPDATED_SPECULATION_CUE_CLASS_07_07_11));
+  }
 
   public void execute()
   {
@@ -336,6 +350,14 @@ public class MedFactsRunner
     allAnnotationList.addAll(scopeOrCueAnnotationList);
   }
 
+  public static void processPartOfSpeechInProcess(Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList, String textLookup[][], PartOfSpeechTagger posTagger) throws RuntimeException {
+    List<PartOfSpeechAnnotation> posAnnotList = posTagger.posTagDocument(textLookup);
+    List<Annotation> newList = new ArrayList<Annotation>();
+    newList.addAll(posAnnotList);
+    annotationsByType.put(AnnotationType.POS, newList);
+    allAnnotationList.addAll(posAnnotList);
+  }
+
   public void validateAnnotations()
   {
     System.out.println("#####");
@@ -497,13 +519,19 @@ public class MedFactsRunner
     }
     MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, textLookup, scopeParser);
 
+    MedFactsRunner.processPartOfSpeechInProcess(annotationsByType, allAnnotationList, textLookup, posTagger);
+
     setAllAnnotationList(allAnnotationList);
     setAnnotationsByType(annotationsByType);
 
   }
 
   public void setScopeParser(ScopeParser parser) {
-      scopeParser = parser;
+    scopeParser = parser;
+  }
+
+  public void setPartOfSpeechTagger(PartOfSpeechTagger tagger) {
+    posTagger = tagger;
   }
 
   /**
@@ -672,51 +700,65 @@ public class MedFactsRunner
         }
       }
 
+      if (checkForEnabledFeature("posRightFeature")){
+	trainingInstance.addFeature(FeatureUtility.constructPosRightFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, (conceptBeginLine-1), currentLine, indexer));
+      }
+
+      if (checkForEnabledFeature("posLeftFeature")){
+	trainingInstance.addFeature(FeatureUtility.constructPosLeftFeatureList(conceptBeginTokenOffset, conceptEndTokenOffset, (conceptBeginLine-1), currentLine, indexer));
+      }
+
       if (checkForEnabledFeature("cueWord_DEFINITE_left_2")) {
-	for (Annotation a : allLineAnnotations) {
-	  int offset = a.getBegin().getTokenOffset();
-	  if ((a instanceof CueWordAnnotation) && (offset < conceptBeginTokenOffset) && (offset > (conceptBeginTokenOffset - 3))) {
-	    CueWordAnnotation ca = (CueWordAnnotation)a;
-	    String text = ca.getCueWordText();
-	      if (text == "her" || text == "his" || text == "patient's" || text == "your" || text == "this")
-		trainingInstance.addFeature("cueWord_DEFINITE_left_2");
-          }
+	for (int i = 1; i < 3; i++) {
+	  int relPos = conceptBeginTokenOffset - i;
+	  if (relPos >= 0) {
+	    if (currentLine[relPos].equals("her") || currentLine[relPos].equals("his") || currentLine[relPos].equals("patient's") || 
+		currentLine[relPos].equals("your") || currentLine[relPos].equals("this")) {
+	      trainingInstance.addFeature("cueWord_DEFINITE_left_2");
+	    }
+	  }
 	}
       }
 
       if (checkForEnabledFeature("cueWordOrderingsLeft")) {
           List<CueWordAnnotation> annots = new ArrayList<CueWordAnnotation>();
           for (Annotation a : allLineAnnotations) {
-              if ((a instanceof CueWordAnnotation) && (a.getBegin().getTokenOffset() < conceptBeginTokenOffset)) {
-                  annots.add((CueWordAnnotation)a);
+	    if (a instanceof CueWordAnnotation) {
+	      CueWordAnnotation an = (CueWordAnnotation)a;
+	      if ((inCWSCueWordSet(an.getCueWordType())) && (an.getBegin().getTokenOffset() < conceptBeginTokenOffset)) {
+                  annots.add(an);
               }
+	    }
           }
 	  if (annots.size() > 0) {
-          Collections.sort(annots);
-          StringBuilder str = new StringBuilder("CWS_left");
-          for (CueWordAnnotation a : annots) {
-              str.append("_");
-              str.append(a.getCueWordType());
-          }
-          trainingInstance.addFeature(str.toString());
+	    Collections.sort(annots);
+	    StringBuilder str = new StringBuilder("CWS_left");
+	    for (CueWordAnnotation a : annots) {
+	      str.append("_");
+	      str.append(a.getCueWordType());
+	    }
+	    trainingInstance.addFeature(str.toString());
 	  }
       }
 
       if (checkForEnabledFeature("cueWordOrderingsRight")) {
           List<CueWordAnnotation> annots = new ArrayList<CueWordAnnotation>();
           for (Annotation a : allLineAnnotations) {
-	    if ((a instanceof CueWordAnnotation) && (a.getBegin().getTokenOffset() > conceptEndTokenOffset)) {
-                  annots.add((CueWordAnnotation)a);
+	    if (a instanceof CueWordAnnotation) {
+	      CueWordAnnotation an = (CueWordAnnotation)a;
+	      if ((inCWSCueWordSet(an.getCueWordType())) && (an.getBegin().getTokenOffset() > conceptEndTokenOffset)) {
+		annots.add(an);
               }
+	    }
           }
           Collections.sort(annots);
 	  if (annots.size() > 0) {
-          StringBuilder str = new StringBuilder("CWS_right");
-          for (CueWordAnnotation a : annots) {
+	    StringBuilder str = new StringBuilder("CWS_right");
+	    for (CueWordAnnotation a : annots) {
               str.append("_");
               str.append(a.getCueWordType());
-          }
-          trainingInstance.addFeature(str.toString());
+	    }
+	    trainingInstance.addFeature(str.toString());
 	  }
       }
 
@@ -1098,25 +1140,46 @@ public class MedFactsRunner
   {
     Object temp[][] =
         {
-          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
-//          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
-          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_class.txt" },
-
-//          { CueWordType.NEGATION, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_list.txt" },
-//          { CueWordType.NEGATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/updated_negation_cue_class.txt" },
-//          { CueWordType.SPECULATION, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_list.txt" },
-//          { CueWordType.SPECULATION_CLASS, "org/mitre/medfacts/i2b2/cuefiles/speculation_cue_class.txt" },
           { CueWordType.CONDITIONAL, "org/mitre/medfacts/i2b2/cuefiles/conditional_cue_list.txt" },
-          { CueWordType.HYPOTHETICAL, "org/mitre/medfacts/i2b2/cuefiles/updated_hypothetical_cue_list.txt" },
           { CueWordType.NOT_PATIENT, "org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt" },
           { CueWordType.NEGEX_PSEUDONEG, "org/mitre/medfacts/i2b2/cuefiles/NegEx_pseudoneg.txt" },
           { CueWordType.NEGEX_SCOPEEND, "org/mitre/medfacts/i2b2/cuefiles/NegEx_scope_terminators.txt" },
           { CueWordType.ACTIVITY, "org/mitre/medfacts/i2b2/cuefiles/activity_cue.txt" },
+	  { CueWordType.ALLERGY, "org/mitre/medfacts/i2b2/cuefiles/allergy.txt" },
+	  { CueWordType.APPEAR, "org/mitre/medfacts/i2b2/cuefiles/appear.txt" },
+	  { CueWordType.ASSOCIATION, "org/mitre/medfacts/i2b2/cuefiles/association.txt" },
+	  { CueWordType.AVOID, "org/mitre/medfacts/i2b2/cuefiles/avoid.txt" },
           { CueWordType.CAUSE, "org/mitre/medfacts/i2b2/cuefiles/cause.txt" },
+	  { CueWordType.CERTAINTY, "org/mitre/medfacts/i2b2/cuefiles/certainty.txt" },
+	  { CueWordType.CHANGE_STATE, "org/mitre/medfacts/i2b2/cuefiles/change_state.txt" },
           { CueWordType.CLAUSE_BOUNDARY, "org/mitre/medfacts/i2b2/cuefiles/clause_boundary_cue_list.txt" },
           { CueWordType.COND_CONCEPT, "org/mitre/medfacts/i2b2/cuefiles/conditional_concept.txt" },
+	  { CueWordType.CONTINUE, "org/mitre/medfacts/i2b2/cuefiles/continue.txt" },
+	  { CueWordType.COPULAR, "org/mitre/medfacts/i2b2/cuefiles/copular.txt" },
+	  { CueWordType.DECLINE, "org/mitre/medfacts/i2b2/cuefiles/decline.txt" },
+	  { CueWordType.DEF_DETERMINER, "org/mitre/medfacts/i2b2/cuefiles/def_determiner.txt" },
+	  { CueWordType.DENY, "org/mitre/medfacts/i2b2/cuefiles/deny.txt" },
+	  { CueWordType.DISAPPEAR, "org/mitre/medfacts/i2b2/cuefiles/disappear.txt" },
+	  { CueWordType.EVIDENCE, "org/mitre/medfacts/i2b2/cuefiles/evidence.txt" },
+	  { CueWordType.EXPERIENCE, "org/mitre/medfacts/i2b2/cuefiles/experience.txt" },
+	  { CueWordType.EXTENT, "org/mitre/medfacts/i2b2/cuefiles/extent.txt" },
+	  { CueWordType.FAIL, "org/mitre/medfacts/i2b2/cuefiles/fail.txt" },
+	  { CueWordType.HISTORY, "org/mitre/medfacts/i2b2/cuefiles/history.txt" },
+	  { CueWordType.HYPOTHETICAL_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/hypothetical_cue_list.txt" },
+	  { CueWordType.INSTANCE, "org/mitre/medfacts/i2b2/cuefiles/instance.txt" },
           { CueWordType.NEG_CONCEPT, "org/mitre/medfacts/i2b2/cuefiles/negated_concept.txt" },
-        }
+	  { CueWordType.NEG_CUE_CLASS, "org/mitre/medfacts/i2b2/cuefiles/negation_cue_class.txt" },
+	  { CueWordType.NEG_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/negation_cue_list.txt" },
+	  { CueWordType.NOT_PATIENT_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/not_patient_cue_list.txt" },
+	  { CueWordType.PHRASE_BOUNDARY_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/phrase_boundary_cue_list.txt" },
+	  { CueWordType.POSSESSIVE, "org/mitre/medfacts/i2b2/cuefiles/possessive.txt" },
+	  { CueWordType.PSEUDONEG, "org/mitre/medfacts/i2b2/cuefiles/pseudoneg.txt" },
+	  { CueWordType.PSEUDOSPEC, "org/mitre/medfacts/i2b2/cuefiles/pseudospec.txt" },
+	  { CueWordType.REPORT, "org/mitre/medfacts/i2b2/cuefiles/report.txt" },
+	  { CueWordType.STOP, "org/mitre/medfacts/i2b2/cuefiles/stop.txt" },
+	  { CueWordType.TEMPORAL_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/temporal_cue_list.txt" },
+	  { CueWordType.UPDATED_HYPOTHETICAL_CUE_LIST, "org/mitre/medfacts/i2b2/cuefiles/updated_hypothetical_cue_list.txt" },
+	  { CueWordType.UPDATED_SPECULATION_CUE_CLASS_07_07_11, "org/mitre/medfacts/i2b2/cuefiles/updated_speculation_cue_class_07_07_11.txt" }}
         ;
 
     try

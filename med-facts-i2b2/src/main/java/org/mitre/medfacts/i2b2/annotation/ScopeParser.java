@@ -19,7 +19,6 @@ public class ScopeParser {
     FullDecoder decoder = null;
     public ScopeParser(String sModel, String cModel) {
         decoder = FullDecoder.apply(sModel, cModel);
-
     }
 
     public List<ScopeOrCueAnnotation> decodeDocument(String [][] toks) {

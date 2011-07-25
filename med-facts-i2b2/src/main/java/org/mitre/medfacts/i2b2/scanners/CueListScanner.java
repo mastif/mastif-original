@@ -198,11 +198,11 @@ public class CueListScanner
         } else if (tabSeparatedInput.length == 1)
         {
           input = tabSeparatedInput[0];
-        } else if (tabSeparatedInput.length == 2)
+        } else if ((tabSeparatedInput.length == 2) || (tabSeparatedInput.length == 3))
         {
           input = tabSeparatedInput[0];
           cueWordClass = tabSeparatedInput[1];
-        } else if (tabSeparatedInput.length > 2)
+        } else if (tabSeparatedInput.length > 3)
         {
           throw new RuntimeException("cue terms file should have one or two tab separated items on each line, but had more than two");
         }

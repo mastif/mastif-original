@@ -20,6 +20,7 @@ import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceAccessException;
 import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.i2b2.api.AssertionDecoderConfiguration;
@@ -33,6 +34,7 @@ import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
 import edu.mayo.bmi.uima.core.type.NamedEntity;
 import edu.mayo.bmi.uima.core.type.UmlsConcept;
+import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 public class DummyAssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	Logger logger = Logger.getLogger(DummyAssertionAnalysisEngine.class.getName());
@@ -68,26 +70,57 @@ public class DummyAssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			int end = namedEntityAnnotation.getEnd();
 			String conceptText = namedEntityAnnotation.getCoveredText();
 			
-			FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
+			Concept concept = new Concept(jcas, begin, end);
+			concept.setConceptText(conceptText);
+			concept.setConceptType(null);
 			
-			logger.info("        before iterating over concepts...");
-			for (FeatureStructure currentConceptArrayItem : conceptArray.toArray())
+			int namedEntityTypeId = namedEntityAnnotation.getTypeID();
+			
+			ConceptType conceptType = null;
+			switch (namedEntityTypeId)
 			{
-				logger.info("        begin single concept");
-				UmlsConcept umlsConcept = (UmlsConcept)currentConceptArrayItem;
-				
-				String codingScheme = umlsConcept.getCodingScheme();
-				String cui = umlsConcept.getCui();
-				String tui = umlsConcept.getTui();
-				
-				Concept concept = new Concept(jcas, begin, end);
-				concept.setConceptText(conceptText);
-				concept.setConceptType(null);
-				
-				concept.addToIndexes();
-				logger.info("        end single concept");
+			case TypeSystemConst.NE_TYPE_ID_DISORDER:
+			//case TypeSystemConst.NE_TYPE_ID_FINDING:
+				conceptType = ConceptType.PROBLEM;
+				break;
+			case TypeSystemConst.NE_TYPE_ID_FINDING:
+				conceptType = ConceptType.TEST;
+				break;
+			case TypeSystemConst.NE_TYPE_ID_PROCEDURE:
+			case TypeSystemConst.NE_TYPE_ID_DRUG:
+				conceptType = ConceptType.TREATMENT;
+				break;
+			case TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE:
+			default:
+				conceptType = null;
+				break;
 			}
-			logger.info("        after iterating over concepts.");
+			if (conceptType != null)
+			{
+				concept.setConceptType(conceptType.toString());
+				concept.addToIndexes();
+			}
+
+//			FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
+//			
+//			logger.info("        before iterating over concepts...");
+//			for (FeatureStructure currentConceptArrayItem : conceptArray.toArray())
+//			{
+//				logger.info("        begin single concept");
+//				UmlsConcept umlsConcept = (UmlsConcept)currentConceptArrayItem;
+//				
+//				String codingScheme = umlsConcept.getCodingScheme();
+//				String cui = umlsConcept.getCui();
+//				String tui = umlsConcept.getTui();
+//				
+//				Concept concept = new Concept(jcas, begin, end);
+//				concept.setConceptText(conceptText);
+//				concept.setConceptType(null);
+//				
+//				concept.addToIndexes();
+//				logger.info("        end single concept");
+//			}
+//			logger.info("        after iterating over concepts.");
 			logger.info("    end single named entity");
 		}
 		logger.info("    after iterating over named entities.");

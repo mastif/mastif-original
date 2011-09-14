@@ -40,7 +40,7 @@ import edu.mayo.bmi.uima.core.type.UmlsConcept;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
 public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
-	Logger logger = Logger.getLogger(ConceptConverterAnalysisEngine.class.getName());
+	public static final Logger logger = Logger.getLogger(ConceptConverterAnalysisEngine.class.getName());
 
 	public ConceptConverterAnalysisEngine()
 	{
@@ -73,6 +73,8 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 			int end = namedEntityAnnotation.getEnd();
 			String conceptText = namedEntityAnnotation.getCoveredText();
 			
+			logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText, begin, end));
+			
 			Concept concept = new Concept(jcas, begin, end);
 			concept.setConceptText(conceptText);
 			concept.setConceptType(null);
@@ -82,11 +84,14 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 			
 			ConceptType conceptType = ConceptLookup.lookupConceptType(ontologyConceptArray);
 			
+			logger.info(String.format("got concept type: %s", conceptType));
+			
 			if (conceptType != null)
 			{
 				concept.setConceptType(conceptType.toString());
 				concept.addToIndexes();
 			}
+			logger.info("finished adding new Concept annotation. " + concept);
 
 //			FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
 //			

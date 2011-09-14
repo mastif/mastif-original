@@ -2,6 +2,7 @@ package org.mitre.medfacts.uima.assertion;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.logging.Logger;
 
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.cas.FSArray;
@@ -12,6 +13,8 @@ import edu.mayo.bmi.uima.core.type.UmlsConcept;
 
 public class ConceptLookup
 {
+  public static final Logger logger = Logger.getLogger(ConceptConverterAnalysisEngine.class.getName());
+
   protected static HashSet<String> problemSet = new HashSet<String>();
   protected static HashSet<String> testSet = new HashSet<String>();
   protected static HashSet<String> treatmentSet = new HashSet<String>();
@@ -52,6 +55,7 @@ public class ConceptLookup
   
   public static ConceptType lookupConceptType(FSArray ontologyConceptArray)
   {
+    logger.info("begin ConceptLookup.lookupConceptType");
     FeatureStructure firstConceptFS = null;
     boolean hasConcept =
       (ontologyConceptArray != null &&
@@ -62,6 +66,7 @@ public class ConceptLookup
     {
       firstConceptFS = ontologyConceptArray.get(0);
     }
+    logger.info("hasConcept: " + hasConcept);
     OntologyConcept ontologyConcept = (OntologyConcept)firstConceptFS;
     boolean isRxnorm = false;
     boolean isUmls = false;
@@ -76,6 +81,8 @@ public class ConceptLookup
       isRxnorm = "RXNORM".equalsIgnoreCase(ontologyConcept.getCodingScheme());
     }
     
+    logger.info(String.format("isUmls: %b; isRxnorm: %b", isUmls, isRxnorm));
+    
     if (isRxnorm)
     {
       return ConceptType.TREATMENT;
@@ -87,20 +94,26 @@ public class ConceptLookup
     // if we're continuing, this means we are umls (and we are not rxnorm)
     
     String tui = umlsConcept.getTui();
+    logger.info(String.format("tui: %s", tui));
     
+    ConceptType conceptType = null;
     if (problemSet.contains(tui))
     {
-      return ConceptType.PROBLEM;
+      conceptType = ConceptType.PROBLEM;
     } else if (testSet.contains(tui))
     {
-      return ConceptType.TEST;
+      conceptType = ConceptType.TEST;
     } else if (treatmentSet.contains(tui))
     {
-      return ConceptType.TREATMENT;
+      conceptType = ConceptType.TREATMENT;
     } else
     {
-      return null;
+      conceptType = null;
     }
+    
+    logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", conceptType.toString()));
+    
+    return conceptType;
   }
 
 }

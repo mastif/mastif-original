@@ -3,7 +3,12 @@ package org.mitre.medfacts.uima.assertion;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.jcas.cas.FSArray;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
+
+import edu.mayo.bmi.uima.core.type.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.UmlsConcept;
 
 public class ConceptLookup
 {
@@ -45,8 +50,44 @@ public class ConceptLookup
     testSet.addAll(Arrays.asList(laboratoryTuis));
   }
   
-  public static ConceptType lookupTui(String tui)
+  public static ConceptType lookupConceptType(FSArray ontologyConceptArray)
   {
+    FeatureStructure firstConceptFS = null;
+    boolean hasConcept =
+      (ontologyConceptArray != null &&
+       ontologyConceptArray.size() >= 1 &&
+       ontologyConceptArray.get(0) instanceof OntologyConcept
+      );
+    if (hasConcept)
+    {
+      firstConceptFS = ontologyConceptArray.get(0);
+    }
+    OntologyConcept ontologyConcept = (OntologyConcept)firstConceptFS;
+    boolean isRxnorm = false;
+    boolean isUmls = false;
+
+    UmlsConcept umlsConcept = null;
+    if (ontologyConcept instanceof UmlsConcept)
+    {
+      isUmls = true;
+      umlsConcept = (UmlsConcept)firstConceptFS;
+    } else
+    {
+      isRxnorm = "RXNORM".equalsIgnoreCase(ontologyConcept.getCodingScheme());
+    }
+    
+    if (isRxnorm)
+    {
+      return ConceptType.TREATMENT;
+    } else if (!isUmls) // is not umls and is not rxnorm
+    {
+      return null;
+    }
+    
+    // if we're continuing, this means we are umls (and we are not rxnorm)
+    
+    String tui = umlsConcept.getTui();
+    
     if (problemSet.contains(tui))
     {
       return ConceptType.PROBLEM;

@@ -2,7 +2,9 @@ package org.mitre.medfacts.uima.assertion;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,13 +35,14 @@ import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
 import edu.mayo.bmi.uima.core.type.NamedEntity;
+import edu.mayo.bmi.uima.core.type.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.UmlsConcept;
 import edu.mayo.bmi.uima.core.util.TypeSystemConst;
 
-public class DummyAssertionAnalysisEngine extends JCasAnnotator_ImplBase {
-	Logger logger = Logger.getLogger(DummyAssertionAnalysisEngine.class.getName());
+public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
+	Logger logger = Logger.getLogger(ConceptConverterAnalysisEngine.class.getName());
 
-	public DummyAssertionAnalysisEngine()
+	public ConceptConverterAnalysisEngine()
 	{
 	}
 
@@ -74,27 +77,11 @@ public class DummyAssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			concept.setConceptText(conceptText);
 			concept.setConceptType(null);
 			
-			int namedEntityTypeId = namedEntityAnnotation.getTypeID();
+			FSArray ontologyConceptArray = namedEntityAnnotation.getOntologyConceptArr();
+
 			
-			ConceptType conceptType = null;
-			switch (namedEntityTypeId)
-			{
-			case TypeSystemConst.NE_TYPE_ID_DISORDER:
-			//case TypeSystemConst.NE_TYPE_ID_FINDING:
-				conceptType = ConceptType.PROBLEM;
-				break;
-			case TypeSystemConst.NE_TYPE_ID_FINDING:
-				conceptType = ConceptType.TEST;
-				break;
-			case TypeSystemConst.NE_TYPE_ID_PROCEDURE:
-			case TypeSystemConst.NE_TYPE_ID_DRUG:
-				conceptType = ConceptType.TREATMENT;
-				break;
-			case TypeSystemConst.NE_TYPE_ID_ANATOMICAL_SITE:
-			default:
-				conceptType = null;
-				break;
-			}
+			ConceptType conceptType = ConceptLookup.lookupConceptType(ontologyConceptArray);
+			
 			if (conceptType != null)
 			{
 				concept.setConceptType(conceptType.toString());
@@ -230,5 +217,6 @@ public class DummyAssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 		
 		logger.info("beginning of process()");
 	}
+	
 
 }

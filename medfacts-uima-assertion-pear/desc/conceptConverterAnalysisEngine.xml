@@ -4,7 +4,7 @@
   <primitive>true</primitive>
   <annotatorImplementationName>org.mitre.medfacts.uima.assertion.ConceptConverterAnalysisEngine</annotatorImplementationName>
   <analysisEngineMetaData>
-    <name>dummyAssertionAnalysisEngine</name>
+    <name>conceptConverterAnalysisEngine</name>
     <description/>
     <version>1.0</version>
     <vendor/>

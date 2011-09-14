@@ -25,9 +25,10 @@
         <inputs>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.UmlsConcept</type>
           <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.OntologyConcept</type>
         </inputs>
         <outputs>
-          <type allAnnotatorFeatures="true">org.mitre.medfacts.types.Assertion</type>
+          <type allAnnotatorFeatures="true">org.mitre.medfacts.types.Concept</type>
         </outputs>
         <languagesSupported/>
       </capability>

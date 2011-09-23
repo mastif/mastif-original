@@ -4,14 +4,14 @@
 		<NAME>Windows and Linux</NAME>
 	</OS>
 	<TOOLKITS>
-		<JDK_VERSION>1.4.0</JDK_VERSION>
+		<JDK_VERSION>1.6.0</JDK_VERSION>
 	</TOOLKITS>
 	<UIMA_FRAMEWORK>
 	</UIMA_FRAMEWORK>
 	<SUBMITTED_COMPONENT>
-		<ID>org.mitre.medfacts.pear.DummyAssertionPear</ID>
+		<ID>org.mitre.medfacts.pear.AssertionPear</ID>
 		<NAME></NAME>
-		<DESC>$main_root/desc/dummyAssertionAnalysisEngine.xml</DESC>
+		<DESC>$main_root/desc/assertionMiniPipelineAnalysisEngine.xml</DESC>
 		<DEPLOYMENT>standard</DEPLOYMENT>
 	</SUBMITTED_COMPONENT>
 	<INSTALLATION>

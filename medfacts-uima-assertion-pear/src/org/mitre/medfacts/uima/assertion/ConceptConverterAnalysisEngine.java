@@ -50,6 +50,7 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException
 	{
 		logger.info("beginning of process()");
+        logger.info("beginning of process2()");
 		String contents = jcas.getDocumentText();
 		
 		int umlsConceptType = UmlsConcept.type;
@@ -63,6 +64,13 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 		int namedEntityType = NamedEntity.type;
 		AnnotationIndex<Annotation> namedEntityAnnotationIndex =
 			jcas.getAnnotationIndex(namedEntityType);
+		
+		int totalAnnotationCount = jcas.getAnnotationIndex().size();
+		int namedEntityAnnotationCount = namedEntityAnnotationIndex.size();
+		
+		logger.info(String.format("    total annotation count %d", totalAnnotationCount));
+		logger.info(String.format("    named entity annotation count %d", namedEntityAnnotationCount));
+		
 		logger.info("    before iterating over named entities...");
 		for (FeatureStructure featureStructure : namedEntityAnnotationIndex)
 		{

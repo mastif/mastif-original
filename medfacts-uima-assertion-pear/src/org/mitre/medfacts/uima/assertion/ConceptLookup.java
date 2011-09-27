@@ -111,7 +111,7 @@ public class ConceptLookup
       conceptType = null;
     }
     
-    logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", conceptType.toString()));
+    logger.info(String.format("ConceptLookup.lookupConceptType() END -- conceptType is %s", (conceptType == null ? null : conceptType.toString())));
     
     return conceptType;
   }

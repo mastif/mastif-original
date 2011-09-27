@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Jun 01 11:04:20 EDT 2011
- * XML source: C:/workspace.medfacts-uima/medfacts-uima-assertion-pear/desc/dummyAssertionAnalysisEngine.xml
+ * Updated by JCasGen Tue Sep 27 09:25:17 EDT 2011
+ * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/conceptConverterAnalysisEngine.xml
  * @generated */
 public class IdentifiedAnnotation extends Annotation {
   /** @generated

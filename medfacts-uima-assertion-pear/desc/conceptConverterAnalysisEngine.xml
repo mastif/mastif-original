@@ -13,9 +13,9 @@
     <typeSystemDescription>
       <imports>
         <import location="medfactsTypeSystem.xml"/>
-        <import location="file:/C:/medfact/arc2rc7/desc/type-system/core/OntologyConcept.xml"/>
-        <import location="file:/C:/medfact/arc2rc7/desc/type-system/core/UmlsConcept.xml"/>
-        <import location="file:/C:/medfact/arc2rc7/desc/type-system/core/NamedEntity.xml"/>
+        <import location="file:/work/medfacts/ctakes/installed_pears/core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
+        <import location="file:/work/medfacts/ctakes/installed_pears/core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
+        <import location="file:/work/medfacts/ctakes/installed_pears/core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

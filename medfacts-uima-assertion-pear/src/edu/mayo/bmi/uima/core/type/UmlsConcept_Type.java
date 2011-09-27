@@ -13,7 +13,7 @@ import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
 /** 
- * Updated by JCasGen Wed Jun 01 11:04:20 EDT 2011
+ * Updated by JCasGen Tue Sep 27 09:25:17 EDT 2011
  * @generated */
 public class UmlsConcept_Type extends OntologyConcept_Type {
   /** @generated */

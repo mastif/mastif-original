@@ -1,6 +1,8 @@
 package org.mitre.medfacts.uima.assertion;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,11 @@ import org.mitre.medfacts.types.Concept;
 import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
+import edu.mayo.bmi.uima.core.type.BaseToken;
+import edu.mayo.bmi.uima.core.type.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.WordToken;
+
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
 
@@ -39,6 +46,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException
 	{
 		String contents = jcas.getDocumentText();
+		
+		String tokenizedContents = tokenizeCasDocumentText(jcas);
 		
 		int conceptType = Concept.type;
 		AnnotationIndex<Annotation> conceptAnnotationIndex =
@@ -119,7 +128,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 
 	    SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
 	    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
-	    p.setContents(contents);
+	    p.setContents(tokenizedContents);
 	    for (ApiConcept apiConcept : apiConceptList)
 	    {
 	      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
@@ -141,4 +150,81 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    }
 	}
 
+  public String tokenizeCasDocumentText(JCas jcas)
+  {
+    ArrayList<ArrayList<String>> arrayOfLines = construct2DTokenArray(jcas);
+    
+    String spaceSeparatedTokensInput = convert2DTokenArrayToText(arrayOfLines);
+
+    return spaceSeparatedTokensInput;
+  }
+
+  public ArrayList<ArrayList<String>> construct2DTokenArray(JCas jcas)
+  {
+    int sentenceType = Sentence.type;
+    AnnotationIndex<Annotation> sentenceAnnotationIndex =
+      jcas.getAnnotationIndex(sentenceType);
+    ArrayList<ArrayList<String>> arrayOfLines = new ArrayList<ArrayList<String>>();
+    
+    //ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
+    for (Annotation annotation : sentenceAnnotationIndex)
+    {
+      Sentence sentence = (Sentence)annotation;
+      int sentenceBegin = sentence.getBegin();
+      int sentenceEnd = sentence.getEnd();
+      
+      AnnotationIndex<Annotation> tokenAnnotationIndex = jcas.getAnnotationIndex(BaseToken.type);
+      ArrayList<String> arrayOfTokens = new ArrayList<String>();
+      for (Annotation baseTokenAnnotationUntyped : tokenAnnotationIndex)
+      {
+        BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
+        if (baseToken instanceof WordToken ||
+            baseToken instanceof PunctuationToken)
+        {
+          String currentTokenText = baseToken.getCoveredText();
+          arrayOfTokens.add(currentTokenText);
+        }
+      }
+      arrayOfLines.add(arrayOfTokens);
+      
+    }
+    return arrayOfLines;
+  }
+
+  public String convert2DTokenArrayToText(ArrayList<ArrayList<String>> arrayOfLines)
+  {
+    final String DELIM = " ";
+    StringWriter writer = new StringWriter();
+    PrintWriter printer = new PrintWriter(writer);
+    
+    boolean isFirstLine = true;
+    for (ArrayList<String> line : arrayOfLines)
+    {
+      if (!isFirstLine)
+      {
+        printer.println();
+      }
+      
+      boolean isFirstTokenOnLine = true;
+      for (String currentToken : line)
+      {
+        if (!isFirstTokenOnLine)
+        {
+          printer.print(DELIM);
+        }
+        printer.print(currentToken);
+        isFirstTokenOnLine = false;
+      }
+      
+      isFirstLine = false;
+    }
+    
+    printer.close();
+    
+    String output = writer.toString();
+    return output;
+  }
+
 }
+
+

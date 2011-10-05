@@ -13,7 +13,7 @@ import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
 /** 
- * Updated by JCasGen Tue Sep 27 09:25:17 EDT 2011
+ * Updated by JCasGen Wed Oct 05 09:20:52 EDT 2011
  * @generated */
 public class Assertion_Type extends Concept_Type {
   /** @generated */
@@ -57,6 +57,24 @@ public class Assertion_Type extends Concept_Type {
     ll_cas.ll_setStringValue(addr, casFeatCode_assertionType, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_conceptExternalId;
+  /** @generated */
+  final int     casFeatCode_conceptExternalId;
+  /** @generated */ 
+  public int getConceptExternalId(int addr) {
+        if (featOkTst && casFeat_conceptExternalId == null)
+      jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
+    return ll_cas.ll_getIntValue(addr, casFeatCode_conceptExternalId);
+  }
+  /** @generated */    
+  public void setConceptExternalId(int addr, int v) {
+        if (featOkTst && casFeat_conceptExternalId == null)
+      jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
+    ll_cas.ll_setIntValue(addr, casFeatCode_conceptExternalId, v);}
+    
+  
 
 
 
@@ -69,6 +87,10 @@ public class Assertion_Type extends Concept_Type {
  
     casFeat_assertionType = jcas.getRequiredFeatureDE(casType, "assertionType", "uima.cas.String", featOkTst);
     casFeatCode_assertionType  = (null == casFeat_assertionType) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_assertionType).getCode();
+
+ 
+    casFeat_conceptExternalId = jcas.getRequiredFeatureDE(casType, "conceptExternalId", "uima.cas.Integer", featOkTst);
+    casFeatCode_conceptExternalId  = (null == casFeat_conceptExternalId) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_conceptExternalId).getCode();
 
   }
 }

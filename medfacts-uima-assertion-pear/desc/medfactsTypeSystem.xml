@@ -20,6 +20,11 @@
           <description/>
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>externalId</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>
@@ -31,6 +36,11 @@
           <name>assertionType</name>
           <description>assertion type -- one of present, absent, possible, conditional, hypothetical, or assocated_with_someone_else</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>conceptExternalId</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>

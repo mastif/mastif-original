@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Tue Sep 27 09:25:17 EDT 2011
- * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/conceptConverterAnalysisEngine.xml
+ * Updated by JCasGen Wed Oct 05 09:20:52 EDT 2011
+ * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
  * @generated */
 public class Concept extends Annotation {
   /** @generated
@@ -93,6 +93,24 @@ public class Concept extends Annotation {
     if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_conceptText == null)
       jcasType.jcas.throwFeatMissing("conceptText", "org.mitre.medfacts.types.Concept");
     jcasType.ll_cas.ll_setStringValue(addr, ((Concept_Type)jcasType).casFeatCode_conceptText, v);}    
+   
+    
+  //*--------------*
+  //* Feature: externalId
+
+  /** getter for externalId - gets 
+   * @generated */
+  public int getExternalId() {
+    if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_externalId == null)
+      jcasType.jcas.throwFeatMissing("externalId", "org.mitre.medfacts.types.Concept");
+    return jcasType.ll_cas.ll_getIntValue(addr, ((Concept_Type)jcasType).casFeatCode_externalId);}
+    
+  /** setter for externalId - sets  
+   * @generated */
+  public void setExternalId(int v) {
+    if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_externalId == null)
+      jcasType.jcas.throwFeatMissing("externalId", "org.mitre.medfacts.types.Concept");
+    jcasType.ll_cas.ll_setIntValue(addr, ((Concept_Type)jcasType).casFeatCode_externalId, v);}    
   }
 
     

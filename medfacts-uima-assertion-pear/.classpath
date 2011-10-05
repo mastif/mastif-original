@@ -11,10 +11,11 @@
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-lgpl-1.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-mapper-lgpl-1.5.0.jar"/>
-	<classpathentry kind="lib" path="lib/jcarafe_2.8.0-0.9.6.RC1.jar"/>
 	<classpathentry kind="lib" path="lib/med-facts-i2b2-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/med-facts-zoner-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/scala-library-2.8.0.jar"/>
 	<classpathentry kind="var" path="CTAKES_INSTALLED_PEARS/core/bin"/>
+	<classpathentry kind="lib" path="lib/jcarafe-core_2.9.0-0.9.8.2.RC5.jar"/>
+	<classpathentry kind="lib" path="lib/jcarafe-ext_2.9.0-0.9.8.2.RC5.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.9.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

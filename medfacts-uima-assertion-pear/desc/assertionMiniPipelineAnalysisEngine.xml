@@ -6,6 +6,9 @@
     <delegateAnalysisEngine key="conceptConverterAnalysisEngine">
       <import location="conceptConverterAnalysisEngine.xml"/>
     </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="assertionAnalysisEngine">
+      <import location="assertionAnalysisEngine.xml"/>
+    </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>
     <name>assertionMiniPipelineAnalysisEngine</name>
@@ -17,6 +20,7 @@
     <flowConstraints>
       <fixedFlow>
         <node>conceptConverterAnalysisEngine</node>
+        <node>assertionAnalysisEngine</node>
       </fixedFlow>
     </flowConstraints>
     <fsIndexCollection/>

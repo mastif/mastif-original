@@ -18,7 +18,7 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceAccessException;
-import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.i2b2.api.AssertionDecoderConfiguration;
@@ -47,7 +47,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	{
 		String contents = jcas.getDocumentText();
 		
-		String tokenizedContents = tokenizeCasDocumentText(jcas);
+		//String tokenizedContents = tokenizeCasDocumentText(jcas);
 		
 		int conceptType = Concept.type;
 		AnnotationIndex<Annotation> conceptAnnotationIndex =
@@ -67,6 +67,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			apiConcept.setEnd(end);
 			apiConcept.setText(conceptText);
 			apiConcept.setType(conceptAnnotation.getConceptType());
+			apiConcept.setExternalId(conceptAnnotation.getAddress());
 			
 			apiConceptList.add(apiConcept);
 		}
@@ -109,8 +110,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 //
 //	    List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, contents, converter);
 
-	    LineTokenToCharacterOffsetConverter converter =
-          new LineTokenToCharacterOffsetConverter(contents);
+//	    LineTokenToCharacterOffsetConverter converter =
+//          new LineTokenToCharacterOffsetConverter(contents);
 	    
 	    AssertionDecoderConfiguration assertionDecoderConfiguration =
 	        new AssertionDecoderConfiguration();
@@ -126,9 +127,10 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    assertionDecoder = new JarafeMEDecoder(assertionModelContents);
 	    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
 
-	    SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
+	    SingleDocumentProcessor p = new SingleDocumentProcessor();
 	    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
-	    p.setContents(tokenizedContents);
+	    //p.setContents(tokenizedContents);
+      p.setContents(contents);
 	    for (ApiConcept apiConcept : apiConceptList)
 	    {
 	      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
@@ -150,47 +152,55 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    }
 	}
 
-  public String tokenizeCasDocumentText(JCas jcas)
-  {
-    ArrayList<ArrayList<String>> arrayOfLines = construct2DTokenArray(jcas);
-    
-    String spaceSeparatedTokensInput = convert2DTokenArrayToText(arrayOfLines);
-
-    return spaceSeparatedTokensInput;
-  }
-
-  public ArrayList<ArrayList<String>> construct2DTokenArray(JCas jcas)
-  {
-    int sentenceType = Sentence.type;
-    AnnotationIndex<Annotation> sentenceAnnotationIndex =
-      jcas.getAnnotationIndex(sentenceType);
-    ArrayList<ArrayList<String>> arrayOfLines = new ArrayList<ArrayList<String>>();
-    
-    //ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
-    for (Annotation annotation : sentenceAnnotationIndex)
-    {
-      Sentence sentence = (Sentence)annotation;
-      int sentenceBegin = sentence.getBegin();
-      int sentenceEnd = sentence.getEnd();
-      
-      AnnotationIndex<Annotation> tokenAnnotationIndex = jcas.getAnnotationIndex(BaseToken.type);
-      ArrayList<String> arrayOfTokens = new ArrayList<String>();
-      for (Annotation baseTokenAnnotationUntyped : tokenAnnotationIndex)
-      {
-        BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
-        if (baseToken instanceof WordToken ||
-            baseToken instanceof PunctuationToken)
-        {
-          String currentTokenText = baseToken.getCoveredText();
-          arrayOfTokens.add(currentTokenText);
-        }
-      }
-      arrayOfLines.add(arrayOfTokens);
-      
-    }
-    return arrayOfLines;
-  }
-
+//  public String tokenizeCasDocumentText(JCas jcas)
+//  {
+//    ArrayList<ArrayList<String>> arrayOfLines = construct2DTokenArray(jcas);
+//    
+//    String spaceSeparatedTokensInput = convert2DTokenArrayToText(arrayOfLines);
+//
+//    return spaceSeparatedTokensInput;
+//  }
+//
+//  public ArrayList<ArrayList<String>> construct2DTokenArray(JCas jcas)
+//  {
+//    int sentenceType = Sentence.type;
+//    AnnotationIndex<Annotation> sentenceAnnotationIndex =
+//      jcas.getAnnotationIndex(sentenceType);
+//    ArrayList<ArrayList<String>> arrayOfLines = new ArrayList<ArrayList<String>>();
+//    
+//    //ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
+//    for (Annotation annotation : sentenceAnnotationIndex)
+//    {
+//      Sentence sentence = (Sentence)annotation;
+//      int sentenceBegin = sentence.getBegin();
+//      int sentenceEnd = sentence.getEnd();
+//      
+//      AnnotationIndex<Annotation> tokenAnnotationIndex = jcas.getAnnotationIndex(BaseToken.type);
+//      ArrayList<String> arrayOfTokens = new ArrayList<String>();
+//      for (Annotation baseTokenAnnotationUntyped : tokenAnnotationIndex)
+//      {
+//        // ignore tokens that are outside of the sentence.
+//        // there has to be a better way to do this with Constraints, but this
+//        // should work for now...
+//        if (baseTokenAnnotationUntyped.getBegin() < sentenceBegin ||
+//            baseTokenAnnotationUntyped.getEnd() > sentenceEnd)
+//        {
+//          continue;
+//        }
+//        BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
+//        if (baseToken instanceof WordToken ||
+//            baseToken instanceof PunctuationToken)
+//        {
+//          String currentTokenText = baseToken.getCoveredText();
+//          arrayOfTokens.add(currentTokenText);
+//        }
+//      }
+//      arrayOfLines.add(arrayOfTokens);
+//      
+//    }
+//    return arrayOfLines;
+//  }
+//
   public String convert2DTokenArrayToText(ArrayList<ArrayList<String>> arrayOfLines)
   {
     final String DELIM = " ";
@@ -226,5 +236,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
   }
 
 }
+
 
 

@@ -21,7 +21,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceAccessException;
-import org.mitre.itc.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
@@ -94,11 +94,18 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 			
 			logger.info(String.format("got concept type: %s", conceptType));
 			
-			if (conceptType != null)
-			{
-				concept.setConceptType(conceptType.toString());
-				concept.addToIndexes();
-			}
+//			if (conceptType != null)
+//			{
+//				concept.setConceptType(conceptType.toString());
+//				concept.addToIndexes();
+//			}
+
+			// now always generating a concept annotation whether or not the
+			// conceptType is null (previously, we only generated a concept
+			// annotation if the conceptType was not null)
+      concept.setConceptType(conceptType.toString());
+      concept.addToIndexes();
+			
 			logger.info("finished adding new Concept annotation. " + concept);
 
 //			FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();

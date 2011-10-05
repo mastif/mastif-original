@@ -13,6 +13,7 @@ import java.io.StringWriter;
  */
 public class AssertionAnnotation extends ConceptAnnotation
 {
+  private Integer conceptExternalId;
   protected AssertionValue assertionValue;
 
   /**
@@ -69,6 +70,16 @@ public class AssertionAnnotation extends ConceptAnnotation
     w.append(getAssertionValue().toString().toLowerCase());
     w.append("\"");
     return w.toString();
+  }
+
+  public Integer getConceptExternalId()
+  {
+    return conceptExternalId;
+  }
+
+  public void setConceptExternalId(Integer conceptExternalId)
+  {
+    this.conceptExternalId = conceptExternalId;
   }
 
 }

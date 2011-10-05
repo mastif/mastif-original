@@ -103,8 +103,10 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 			// now always generating a concept annotation whether or not the
 			// conceptType is null (previously, we only generated a concept
 			// annotation if the conceptType was not null)
-      concept.setConceptType(conceptType.toString());
-      concept.addToIndexes();
+			if (conceptType != null) {
+				concept.setConceptType(conceptType.toString());
+			}
+			concept.addToIndexes();
 			
 			logger.info("finished adding new Concept annotation. " + concept);
 

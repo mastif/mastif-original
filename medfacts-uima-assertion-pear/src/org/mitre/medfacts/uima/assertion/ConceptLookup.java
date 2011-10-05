@@ -64,6 +64,11 @@ public class ConceptLookup
     testSet.addAll(Arrays.asList(proceduresTuis));
     treatmentSet.addAll(Arrays.asList(deviceTuis));
     testSet.addAll(Arrays.asList(laboratoryTuis));
+    
+    ConceptLookup.problemSet = problemSet;
+    ConceptLookup.testSet = testSet;
+    ConceptLookup.treatmentSet = treatmentSet;
+    ConceptLookup.ignoredSet = ignoredSet;
   }
   
   public static ConceptType lookupConceptType(FSArray ontologyConceptArray)

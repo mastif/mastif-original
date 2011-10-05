@@ -18,7 +18,8 @@ public class ConceptAnnotation extends Annotation
   protected List<ScopeAnnotation> EnclosingScopes; /* Alex Yeh: list of scopes that contain this concept.
                                                     *  Declare here instead of in AssertionAnnotation class because the latter might not be used with "assertions" that do not mention the expected value.
                                                     */
-
+  protected Integer externalId;
+  
   /**
    * @return the conceptType
    */
@@ -83,6 +84,16 @@ public class ConceptAnnotation extends Annotation
     w.append(getConceptType().toString().toLowerCase());
     w.append("\"");
     return w.toString();
+  }
+
+  public Integer getExternalId()
+  {
+    return externalId;
+  }
+
+  public void setExternalId(Integer externalId)
+  {
+    this.externalId = externalId;
   }
 
 }

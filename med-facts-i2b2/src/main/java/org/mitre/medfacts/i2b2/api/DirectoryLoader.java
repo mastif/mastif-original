@@ -149,7 +149,7 @@ public class DirectoryLoader
 
         String conceptType = ((ConceptAnnotation)currentAnnotation).getConceptType().toString();
 
-        ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType, text);
+        ApiConcept apiConcept = new ApiConcept(beginCharacter, endCharacter, conceptType, text, null);
         apiConceptList.add(apiConcept);
 
       }

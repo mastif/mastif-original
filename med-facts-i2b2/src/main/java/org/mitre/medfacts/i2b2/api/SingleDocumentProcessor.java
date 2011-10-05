@@ -95,7 +95,7 @@ public class SingleDocumentProcessor
 
   public void addConcept(int begin, int end, String conceptType, String text)
   {
-    ApiConcept apiConcept = new ApiConcept(begin, end, conceptType, text);
+    ApiConcept apiConcept = new ApiConcept(begin, end, conceptType, text, null);
     apiConceptList.add(apiConcept);
   }
 
@@ -114,7 +114,7 @@ public class SingleDocumentProcessor
     this.apiConceptList = apiConceptList;
   }
 
-  private void preprocess()
+  public void preprocess()
   {
     String arrayOfArrayOfTokens[][] = null;
     String arrayOfLines[] = null;
@@ -136,7 +136,7 @@ public class SingleDocumentProcessor
     this.arrayOfArrayOfTokens = arrayOfArrayOfTokens;
   }
 
-  private void generateAnnotations()
+  public void generateAnnotations()
   {
     MedFactsRunner.postProcessForCueWords(arrayOfArrayOfTokens, allAnnotationList, annotationsByType);
 
@@ -147,7 +147,7 @@ public class SingleDocumentProcessor
     generateConceptAnnotations(apiConceptList, annotationsByType, allAnnotationList);
   }
 
-  private Map<Integer, TrainingInstance> generateFeatures()
+  public Map<Integer, TrainingInstance> generateFeatures()
   {
     TreeMap<Integer, ApiConcept> problemMap = new TreeMap<Integer, ApiConcept>();
     int i = 0;
@@ -359,7 +359,7 @@ public class SingleDocumentProcessor
     return trainingInstanceMap;
   }
 
-  private Map<Integer, String> decode(Map<Integer, TrainingInstance> trainingInstanceMap)
+  public Map<Integer, String> decode(Map<Integer, TrainingInstance> trainingInstanceMap)
   {
     Map<Integer, String> assertionMap = new TreeMap<Integer, String>();
 
@@ -400,7 +400,7 @@ public class SingleDocumentProcessor
   }
 
 
-  private boolean checkForEnabledFeature(String featureId)
+  public boolean checkForEnabledFeature(String featureId)
   {
     Set<String> enabledFeatureIdSet = assertionDecoderConfiguration.getEnabledFeatureIdSet();
     return (enabledFeatureIdSet == null) || enabledFeatureIdSet.contains(featureId);
@@ -438,6 +438,7 @@ public class SingleDocumentProcessor
       c.setEnd(endLocation);
       c.setConceptText(currentApiConcept.getText());
       c.setConceptType(ConceptType.valueOf(currentApiConcept.getType()));
+      
       c.setEnclosingScopes(null);
 
       allAnnotationList.add(c);

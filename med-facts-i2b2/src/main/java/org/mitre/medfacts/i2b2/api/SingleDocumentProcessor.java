@@ -81,6 +81,11 @@ public class SingleDocumentProcessor
     //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
     assertionTypeMap = decode(trainingInstanceMap);
+    postprocess();
+  }
+
+  public void postprocess()
+  {
   }
 
   public String getContents()
@@ -168,9 +173,15 @@ public class SingleDocumentProcessor
       Integer index = problemEntrySet.getKey();
       ApiConcept problem = problemEntrySet.getValue();
 
+      // TODO fix this code to either replace/enhance the use of the converter
+      // or use some other method
+      List<LineAndTokenPosition> beginAndEndOfConcept = calculateBeginAndEndOfConcept(problem);
+      LineAndTokenPosition problemBegin = beginAndEndOfConcept.get(0);
+      LineAndTokenPosition problemEnd = beginAndEndOfConcept.get(1);
       logger.info(String.format("<<PROB>> %s", problem));
-      LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
-      LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
+      
+//      LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
+//      LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
       int lineNumber = problemBegin.getLine();
 
       int conceptBeginTokenOffset = problemBegin.getTokenOffset();
@@ -357,6 +368,19 @@ public class SingleDocumentProcessor
     }
 
     return trainingInstanceMap;
+  }
+
+  public List<LineAndTokenPosition> calculateBeginAndEndOfConcept(
+      ApiConcept problem)
+  {
+    LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
+    LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
+    
+    ArrayList<LineAndTokenPosition> list = new ArrayList<LineAndTokenPosition>();
+    list.add(problemBegin);
+    list.add(problemEnd);
+    
+    return list;
   }
 
   public Map<Integer, String> decode(Map<Integer, TrainingInstance> trainingInstanceMap)

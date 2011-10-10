@@ -148,6 +148,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    	
 	    	Assertion assertion = new Assertion(jcas, originalConcept.getBegin(), originalConcept.getEnd());
 	    	assertion.setAssertionType(currentAssertionType);
+	      assertion.setConceptExternalId(originalConcept.getExternalId());
 	    	assertion.addToIndexes();
 	    }
 	}

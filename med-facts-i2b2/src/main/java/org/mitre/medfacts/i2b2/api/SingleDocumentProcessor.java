@@ -430,6 +430,11 @@ public class SingleDocumentProcessor
     return (enabledFeatureIdSet == null) || enabledFeatureIdSet.contains(featureId);
   }
 
+  public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
+  {
+    return converter.convertReverse(characterOffset);
+  }
+  
   public void generateConceptAnnotations(List<ApiConcept> apiConceptList, Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList)
   {
     List<Annotation> i2b2ConceptList = annotationsByType.get(AnnotationType.CONCEPT);
@@ -447,8 +452,8 @@ public class SingleDocumentProcessor
       int endCharacter = currentApiConcept.getEnd();
 
       // TODO FIX THIS!! Converter won't work with uima code!!!
-      LineAndTokenPosition beginPosition = converter.convertReverse(beginCharacter);
-      LineAndTokenPosition endPosition = converter.convertReverse(endCharacter);
+      LineAndTokenPosition beginPosition = convertCharacterOffsetToLineToken(beginCharacter);
+      LineAndTokenPosition endPosition = convertCharacterOffsetToLineToken(endCharacter);
 
       Location beginLocation = new Location();
       beginLocation.setLine(beginPosition.getLine());

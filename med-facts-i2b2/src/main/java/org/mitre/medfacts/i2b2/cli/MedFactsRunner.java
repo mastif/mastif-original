@@ -208,6 +208,7 @@ public class MedFactsRunner
 
     for (Range currentRange : zonerRangeList)
     {
+      // TODO fix zoner to either not convert+return line:token or pass in a converter object
       LineAndTokenPosition rangeBegin = currentRange.getBeginLineAndToken();
       LineAndTokenPosition rangeEnd = currentRange.getEndLineAndToken();
 

@@ -446,6 +446,7 @@ public class SingleDocumentProcessor
       int beginCharacter = currentApiConcept.getBegin();
       int endCharacter = currentApiConcept.getEnd();
 
+      // TODO FIX THIS!! Converter won't work with uima code!!!
       LineAndTokenPosition beginPosition = converter.convertReverse(beginCharacter);
       LineAndTokenPosition endPosition = converter.convertReverse(endCharacter);
 

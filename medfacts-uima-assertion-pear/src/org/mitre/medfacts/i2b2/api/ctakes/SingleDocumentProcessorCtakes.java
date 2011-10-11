@@ -38,11 +38,11 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     super();
   }
 
-  public SingleDocumentProcessorCtakes(
-      LineTokenToCharacterOffsetConverter converter)
-  {
-    super(converter);
-  }
+//  public SingleDocumentProcessorCtakes(
+//      LineTokenToCharacterOffsetConverter converter)
+//  {
+//    super(converter);
+//  }
 
   public JCas getJcas()
   {
@@ -54,6 +54,12 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     this.jcas = jcas;
   }
   
+  @Override
+  protected void preExecutionTest()
+  {
+    // do not construct converter (since we don't have the full text in tokenized format)
+  }
+
   public void preprocess()
   {
     String arrayOfArrayOfTokens[][] = null;
@@ -118,22 +124,80 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     }
     return arrayOfLines;
   }
-
-  public List<LineAndTokenPosition> calculateBeginAndEndOfConcept(
-      ApiConcept problem)
+  
+  public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
-    int externalId = problem.getExternalId();
-    int sentenceTypeId = Sentence.type;
     int baseTokenTypeId = BaseToken.type;
-    //jcas.getAnnotationIndex(sentenceTypeId);
-    
-    int problemBegin = problem.getBegin();
-    int problemEnd = problem.getEnd();
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
     ConstraintConstructorFindContainedWithin constraintConstructorFindContainedWithin = new ConstraintConstructorFindContainedWithin(jcas);
     
-    AnnotationIndex<Annotation> sentenceAnnotationIndex = jcas.getAnnotationIndex(sentenceTypeId);
+    Type sentenceType = jcas.getTypeSystem().getType(Sentence.class.getName());
+    Type baseTokenType = jcas.getTypeSystem().getType(BaseToken.class.getName());
+
+    FSIterator<Annotation> filteredIterator =
+        constraintConstructorFindContainedBy.createFilteredIterator(
+          characterOffset, characterOffset, sentenceType);
+
+    if (!filteredIterator.hasNext())
+    {
+      throw new RuntimeException("Surrounding sentence annotation not found!!");
+    }
+    Annotation sentenceAnnotation = filteredIterator.next();
+    Sentence sentence = (Sentence)sentenceAnnotation;
+    int lineNumber = sentence.getSentenceNumber() + 1;
+    
+    
+    FSIterator<Annotation> tokensInSentenceIterator =
+        jcas.getAnnotationIndex(baseTokenTypeId).subiterator(sentence);
+    
+    if (!tokensInSentenceIterator.hasNext())
+    {
+      throw new RuntimeException("First token in sentence not found!!");
+    }
+    Annotation firstTokenAnnotation = tokensInSentenceIterator.next();
+    BaseToken firstToken = (BaseToken)firstTokenAnnotation;
+    int firstTokenInSentenceNumber = firstToken.getTokenNumber();
+    
+    
+    FSIterator<Annotation> beginTokenInSentenceIterator =
+        constraintConstructorFindContainedBy.createFilteredIterator(
+          characterOffset, characterOffset, baseTokenType);
+    
+    if (!beginTokenInSentenceIterator.hasNext())
+    {
+      throw new RuntimeException("First token in sentence not found!!");
+    }
+    Annotation beginTokenAnnotation = beginTokenInSentenceIterator.next();
+    BaseToken beginToken = (BaseToken)beginTokenAnnotation;
+    int beginTokenNumber = beginToken.getTokenNumber();
+    int beginTokenWordNumber = beginTokenNumber - firstTokenInSentenceNumber;
+    
+    LineAndTokenPosition b = new LineAndTokenPosition();
+    b.setLine(lineNumber);
+    b.setTokenOffset(beginTokenWordNumber);
+
+    return b;
+  }
+
+  public List<LineAndTokenPosition> calculateBeginAndEndOfConcept
+    (ApiConcept problem)
+  {
+    return calculateBeginAndEndOfConcept(problem.getBegin(), problem.getEnd());
+  }
+  
+  public List<LineAndTokenPosition> calculateBeginAndEndOfConcept(
+      int problemBegin, int problemEnd)
+  {
+    //int externalId = problem.getExternalId();
+    //int sentenceTypeId = Sentence.type;
+    int baseTokenTypeId = BaseToken.type;
+    //jcas.getAnnotationIndex(sentenceTypeId);
+    
+    ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
+    ConstraintConstructorFindContainedWithin constraintConstructorFindContainedWithin = new ConstraintConstructorFindContainedWithin(jcas);
+    
+    //AnnotationIndex<Annotation> sentenceAnnotationIndex = jcas.getAnnotationIndex(sentenceTypeId);
     Type sentenceType = jcas.getTypeSystem().getType(Sentence.class.getName());
     Type baseTokenType = jcas.getTypeSystem().getType(BaseToken.class.getName());
     ///

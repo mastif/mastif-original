@@ -97,14 +97,14 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
       while (tokensInThisSentenceIterator.hasNext())
       {
         Annotation baseTokenAnnotationUntyped = tokensInThisSentenceIterator.next();
-        // ignore tokens that are outside of the sentence.
-        // there has to be a better way to do this with Constraints, but this
-        // should work for now...
-        if (baseTokenAnnotationUntyped.getBegin() < sentenceBegin ||
-            baseTokenAnnotationUntyped.getEnd() > sentenceEnd)
-        {
-          continue;
-        }
+//        // ignore tokens that are outside of the sentence.
+//        // there has to be a better way to do this with Constraints, but this
+//        // should work for now...
+//        if (baseTokenAnnotationUntyped.getBegin() < sentenceBegin ||
+//            baseTokenAnnotationUntyped.getEnd() > sentenceEnd)
+//        {
+//          continue;
+//        }
         BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
         if (baseToken instanceof WordToken ||
             baseToken instanceof PunctuationToken)

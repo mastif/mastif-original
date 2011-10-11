@@ -467,7 +467,14 @@ public class SingleDocumentProcessor
       c.setBegin(beginLocation);
       c.setEnd(endLocation);
       c.setConceptText(currentApiConcept.getText());
-      c.setConceptType(ConceptType.valueOf(currentApiConcept.getType()));
+      String conceptType = currentApiConcept.getType();
+      if (conceptType != null && !conceptType.isEmpty())
+      {
+        c.setConceptType(ConceptType.valueOf(conceptType));
+      } else
+      {
+        c.setConceptType(null);
+      }
       
       c.setEnclosingScopes(null);
 

@@ -9,11 +9,14 @@ import org.apache.uima.jcas.cas.TOP_Type;
 
 
 
+import org.apache.uima.jcas.tcas.Annotation;
+
+
 /** 
- * Updated by JCasGen Wed Oct 05 09:20:52 EDT 2011
+ * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
  * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
  * @generated */
-public class Assertion extends Concept {
+public class Assertion extends Annotation {
   /** @generated
    * @ordered 
    */
@@ -77,21 +80,21 @@ public class Assertion extends Concept {
    
     
   //*--------------*
-  //* Feature: conceptExternalId
+  //* Feature: associatedConcept
 
-  /** getter for conceptExternalId - gets 
+  /** getter for associatedConcept - gets 
    * @generated */
-  public int getConceptExternalId() {
-    if (Assertion_Type.featOkTst && ((Assertion_Type)jcasType).casFeat_conceptExternalId == null)
-      jcasType.jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
-    return jcasType.ll_cas.ll_getIntValue(addr, ((Assertion_Type)jcasType).casFeatCode_conceptExternalId);}
+  public Concept getAssociatedConcept() {
+    if (Assertion_Type.featOkTst && ((Assertion_Type)jcasType).casFeat_associatedConcept == null)
+      jcasType.jcas.throwFeatMissing("associatedConcept", "org.mitre.medfacts.types.Assertion");
+    return (Concept)(jcasType.ll_cas.ll_getFSForRef(jcasType.ll_cas.ll_getRefValue(addr, ((Assertion_Type)jcasType).casFeatCode_associatedConcept)));}
     
-  /** setter for conceptExternalId - sets  
+  /** setter for associatedConcept - sets  
    * @generated */
-  public void setConceptExternalId(int v) {
-    if (Assertion_Type.featOkTst && ((Assertion_Type)jcasType).casFeat_conceptExternalId == null)
-      jcasType.jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
-    jcasType.ll_cas.ll_setIntValue(addr, ((Assertion_Type)jcasType).casFeatCode_conceptExternalId, v);}    
+  public void setAssociatedConcept(Concept v) {
+    if (Assertion_Type.featOkTst && ((Assertion_Type)jcasType).casFeat_associatedConcept == null)
+      jcasType.jcas.throwFeatMissing("associatedConcept", "org.mitre.medfacts.types.Assertion");
+    jcasType.ll_cas.ll_setRefValue(addr, ((Assertion_Type)jcasType).casFeatCode_associatedConcept, jcasType.ll_cas.ll_getFSRef(v));}    
   }
 
     

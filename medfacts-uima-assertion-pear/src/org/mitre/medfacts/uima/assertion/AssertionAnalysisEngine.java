@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -140,6 +141,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
 	    logger.info(String.format("    - done processing \"%s\"."));
 	    
+	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas);
+	    
 	    for (Entry<Integer, String>  current : assertionTypeMap.entrySet())
 	    {
 	    	String currentAssertionType = current.getValue();
@@ -148,10 +151,41 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    	
 	    	Assertion assertion = new Assertion(jcas, originalConcept.getBegin(), originalConcept.getEnd());
 	    	assertion.setAssertionType(currentAssertionType);
-	      assertion.setConceptExternalId(originalConcept.getExternalId());
+	    	Concept associatedConcept = (Concept) annotationMap.get(originalConcept.getExternalId());
+	      assertion.setAssociatedConcept(associatedConcept);
 	    	assertion.addToIndexes();
+	    	
+	    	
 	    }
 	}
+
+  public Map<Integer, Annotation> generateAnnotationMap(JCas jcas)
+  {
+    return generateAnnotationMap(jcas, null);
+  }
+  
+	public Map<Integer, Annotation> generateAnnotationMap(JCas jcas, Integer typeId)
+  {
+	  Map<Integer, Annotation> annotationMap = new HashMap<Integer, Annotation>();
+	  
+	  AnnotationIndex<Annotation> index = null;
+	  if (typeId == null)
+	  {
+	    index = jcas.getAnnotationIndex();
+	  } else
+	  {
+	    index = jcas.getAnnotationIndex(typeId);
+	  }
+	  FSIterator<Annotation> iterator = index.iterator();
+	  while (iterator.hasNext())
+	  {
+	    Annotation current = iterator.next();
+	    int address = current.getAddress();
+	    annotationMap.put(address, current);
+	  }
+	  
+	  return annotationMap;
+  }
 
 //  public String tokenizeCasDocumentText(JCas jcas)
 //  {

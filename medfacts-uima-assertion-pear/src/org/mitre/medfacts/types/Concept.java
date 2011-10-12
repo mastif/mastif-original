@@ -11,7 +11,7 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Oct 05 09:20:52 EDT 2011
+ * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
  * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
  * @generated */
 public class Concept extends Annotation {

@@ -30,7 +30,7 @@
     <typeDescription>
       <name>org.mitre.medfacts.types.Assertion</name>
       <description/>
-      <supertypeName>org.mitre.medfacts.types.Concept</supertypeName>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
       <features>
         <featureDescription>
           <name>assertionType</name>
@@ -38,9 +38,9 @@
           <rangeTypeName>uima.cas.String</rangeTypeName>
         </featureDescription>
         <featureDescription>
-          <name>conceptExternalId</name>
+          <name>associatedConcept</name>
           <description/>
-          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+          <rangeTypeName>org.mitre.medfacts.types.Concept</rangeTypeName>
         </featureDescription>
       </features>
     </typeDescription>

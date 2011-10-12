@@ -12,10 +12,12 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.impl.FeatureImpl;
 import org.apache.uima.cas.Feature;
 
+import org.apache.uima.jcas.tcas.Annotation_Type;
+
 /** 
- * Updated by JCasGen Wed Oct 05 09:20:52 EDT 2011
+ * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
  * @generated */
-public class Assertion_Type extends Concept_Type {
+public class Assertion_Type extends Annotation_Type {
   /** @generated */
   protected FSGenerator getFSGenerator() {return fsGenerator;}
   /** @generated */
@@ -59,20 +61,20 @@ public class Assertion_Type extends Concept_Type {
   
  
   /** @generated */
-  final Feature casFeat_conceptExternalId;
+  final Feature casFeat_associatedConcept;
   /** @generated */
-  final int     casFeatCode_conceptExternalId;
+  final int     casFeatCode_associatedConcept;
   /** @generated */ 
-  public int getConceptExternalId(int addr) {
-        if (featOkTst && casFeat_conceptExternalId == null)
-      jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
-    return ll_cas.ll_getIntValue(addr, casFeatCode_conceptExternalId);
+  public int getAssociatedConcept(int addr) {
+        if (featOkTst && casFeat_associatedConcept == null)
+      jcas.throwFeatMissing("associatedConcept", "org.mitre.medfacts.types.Assertion");
+    return ll_cas.ll_getRefValue(addr, casFeatCode_associatedConcept);
   }
   /** @generated */    
-  public void setConceptExternalId(int addr, int v) {
-        if (featOkTst && casFeat_conceptExternalId == null)
-      jcas.throwFeatMissing("conceptExternalId", "org.mitre.medfacts.types.Assertion");
-    ll_cas.ll_setIntValue(addr, casFeatCode_conceptExternalId, v);}
+  public void setAssociatedConcept(int addr, int v) {
+        if (featOkTst && casFeat_associatedConcept == null)
+      jcas.throwFeatMissing("associatedConcept", "org.mitre.medfacts.types.Assertion");
+    ll_cas.ll_setRefValue(addr, casFeatCode_associatedConcept, v);}
     
   
 
@@ -89,8 +91,8 @@ public class Assertion_Type extends Concept_Type {
     casFeatCode_assertionType  = (null == casFeat_assertionType) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_assertionType).getCode();
 
  
-    casFeat_conceptExternalId = jcas.getRequiredFeatureDE(casType, "conceptExternalId", "uima.cas.Integer", featOkTst);
-    casFeatCode_conceptExternalId  = (null == casFeat_conceptExternalId) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_conceptExternalId).getCode();
+    casFeat_associatedConcept = jcas.getRequiredFeatureDE(casType, "associatedConcept", "org.mitre.medfacts.types.Concept", featOkTst);
+    casFeatCode_associatedConcept  = (null == casFeat_associatedConcept) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_associatedConcept).getCode();
 
   }
 }

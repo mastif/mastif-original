@@ -42,7 +42,7 @@ public class CharacterOffsetToLineTokenConverterTest
       "She has paraplegia secondary to HTLV exposure while on vacation in the Bahamas six years ago ." + eol;
 
     CharacterOffsetToLineTokenConverter c =
-        new CharacterOffsetToLineTokenConverter(input);
+        new CharacterOffsetToLineTokenConverterDefaultImpl(input);
 
     int testCharacterOffset1 = 0;
     LineAndTokenPosition output1 = c.convert(testCharacterOffset1);

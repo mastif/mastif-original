@@ -66,6 +66,8 @@ public class ZonerCli {
   protected String entireContents;
   public static final int expansionThreshold = 5;
   private static String defaultRegexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
+  private CharacterOffsetToLineTokenConverter converter;
+
 
   public ZonerCli() {
     this(null);
@@ -328,6 +330,16 @@ public class ZonerCli {
     findHeadings();
     pruneRanges();
   }
+  
+  public void initialize()
+  {
+    if (converter == null)
+    {
+      converter = new
+        CharacterOffsetToLineTokenConverterDefaultImpl(getEntireContents());
+    }
+
+  }
 
   /**
    * @return the inputFilename
@@ -521,10 +533,11 @@ public class ZonerCli {
         int realSectionEnd = oneBeforeNextRange;
 
 //        update range to reflect section end
-        CharacterOffsetToLineTokenConverter c =
-                new CharacterOffsetToLineTokenConverter(getEntireContents());
-        LineAndTokenPosition beginLineAndTokenPosition = c.convert(begin);
-        LineAndTokenPosition endLineAndTokenPosition = c.convert(realSectionEnd);
+        // TODO replace converter with overrideable conversion (standard vs ctakes)
+//        CharacterOffsetToLineTokenConverter c =
+//                new CharacterOffsetToLineTokenConverterDefaultImpl(getEntireContents());
+        LineAndTokenPosition beginLineAndTokenPosition = converter.convert(begin);
+        LineAndTokenPosition endLineAndTokenPosition = converter.convert(realSectionEnd);
 
         logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) %s to %s ",
                 currentRange, getEntireContents().substring(begin, end),
@@ -916,5 +929,15 @@ public class ZonerCli {
 
   public void setFullRangeListAdjusted(List<Range> fullRangeListAdjusted) {
     this.fullRangeListAdjusted = fullRangeListAdjusted;
+  }
+
+  public CharacterOffsetToLineTokenConverter getConverter()
+  {
+    return converter;
+  }
+
+  public void setConverter(CharacterOffsetToLineTokenConverter converter)
+  {
+    this.converter = converter;
   }
 }

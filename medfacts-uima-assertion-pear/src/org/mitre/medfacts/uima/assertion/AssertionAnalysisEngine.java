@@ -29,6 +29,7 @@ import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.types.Assertion;
 import org.mitre.medfacts.types.Concept;
 import org.mitre.medfacts.types.Concept_Type;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
 import edu.mayo.bmi.uima.core.type.BaseToken;
@@ -132,6 +133,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
 	    //p.setContents(tokenizedContents);
       p.setContents(contents);
+      CharacterOffsetToLineTokenConverter converter = new ;
+      p.setConverter(converter);
 	    for (ApiConcept apiConcept : apiConceptList)
 	    {
 	      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
@@ -141,7 +144,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
 	    logger.info(String.format("    - done processing \"%s\"."));
 	    
-	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas);
+	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
 	    
 	    for (Entry<Integer, String>  current : assertionTypeMap.entrySet())
 	    {

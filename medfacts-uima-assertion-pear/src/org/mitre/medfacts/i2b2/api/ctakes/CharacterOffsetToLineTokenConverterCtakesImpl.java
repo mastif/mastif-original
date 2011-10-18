@@ -2,133 +2,35 @@ package org.mitre.medfacts.i2b2.api.ctakes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import org.apache.uima.cas.ConstraintFactory;
-import org.apache.uima.cas.FSBooleanConstraint;
-import org.apache.uima.cas.FSIntConstraint;
 import org.apache.uima.cas.FSIterator;
-import org.apache.uima.cas.FSMatchConstraint;
-import org.apache.uima.cas.FSTypeConstraint;
-import org.apache.uima.cas.Feature;
-import org.apache.uima.cas.FeaturePath;
 import org.apache.uima.cas.Type;
-import org.apache.uima.cas.TypeSystem;
-import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
-import org.mitre.medfacts.i2b2.api.SingleDocumentProcessor;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
-import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
 import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.Sentence_Type;
-import edu.mayo.bmi.uima.core.type.WordToken;
 
-public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
+public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterOffsetToLineTokenConverter
 {
-  
   protected JCas jcas;
-
-
-  public SingleDocumentProcessorCtakes()
+  
+  public CharacterOffsetToLineTokenConverterCtakesImpl()
   {
-    super();
+    
   }
-
-//  public SingleDocumentProcessorCtakes(
-//      LineTokenToCharacterOffsetConverter converter)
-//  {
-//    super(converter);
-//  }
-
-  public JCas getJcas()
-  {
-    return jcas;
-  }
-
-  public void setJcas(JCas jcas)
+  
+  public CharacterOffsetToLineTokenConverterCtakesImpl(JCas jcas)
   {
     this.jcas = jcas;
   }
   
-  @Override
-  protected void preExecutionTest()
+  public LineAndTokenPosition convert(int characterOffset)
   {
-    if (converter2 == null)
-    {
-      converter2 =
-          new CharacterOffsetToLineTokenConverterCtakesImpl(jcas);
-    }
-  }
-
-  public void preprocess()
-  {
-    String arrayOfArrayOfTokens[][] = null;
-    
-    ArrayList<ArrayList<String>> returnedObject = construct2DTokenArray(jcas);
-    arrayOfArrayOfTokens = new String[returnedObject.size()][];
-    String template[] = new String[0];
-    for (int i=0; i < returnedObject.size(); i++)
-    {
-      ArrayList<String> current = returnedObject.get(i);
-      String temp[] = current.toArray(template);
-      arrayOfArrayOfTokens[i] = temp;
-    }
-    
-    this.arrayOfArrayOfTokens = arrayOfArrayOfTokens;
-  }
-  
-  public void postprocess()
-  {
-    
-  }
-
-  public ArrayList<ArrayList<String>> construct2DTokenArray(JCas jcas)
-  {
-    int sentenceType = Sentence.type;
-    AnnotationIndex<Annotation> sentenceAnnotationIndex =
-      jcas.getAnnotationIndex(sentenceType);
-    ArrayList<ArrayList<String>> arrayOfLines = new ArrayList<ArrayList<String>>();
-    
-    //ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
-    for (Annotation annotation : sentenceAnnotationIndex)
-    {
-      Sentence sentence = (Sentence)annotation;
-      int sentenceBegin = sentence.getBegin();
-      int sentenceEnd = sentence.getEnd();
-      
-      AnnotationIndex<Annotation> tokenAnnotationIndex = jcas.getAnnotationIndex(BaseToken.type);
-      FSIterator<Annotation> tokensInThisSentenceIterator = tokenAnnotationIndex.subiterator(sentence);
-      ArrayList<String> arrayOfTokens = new ArrayList<String>();
-      //for (Annotation baseTokenAnnotationUntyped : tokenAnnotationIndex)
-      while (tokensInThisSentenceIterator.hasNext())
-      {
-        Annotation baseTokenAnnotationUntyped = tokensInThisSentenceIterator.next();
-//        // ignore tokens that are outside of the sentence.
-//        // there has to be a better way to do this with Constraints, but this
-//        // should work for now...
-//        if (baseTokenAnnotationUntyped.getBegin() < sentenceBegin ||
-//            baseTokenAnnotationUntyped.getEnd() > sentenceEnd)
-//        {
-//          continue;
-//        }
-        BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
-        if (baseToken instanceof WordToken ||
-            baseToken instanceof PunctuationToken)
-        {
-          String currentTokenText = baseToken.getCoveredText();
-          arrayOfTokens.add(currentTokenText);
-        }
-      }
-      arrayOfLines.add(arrayOfTokens);
-      
-    }
-    return arrayOfLines;
+    return convertCharacterOffsetToLineToken(characterOffset);
   }
   
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
@@ -269,66 +171,12 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     return list;
   }
 
-//  /**
-//   * @param problemBegin
-//   * @param problemEnd
-//   * @param sentenceType
-//   * @return
-//   */
-//  public FSIterator<Annotation> createFilteredIteratorByBeginEndAndType(
-//      int problemBegin, int problemEnd, Type sentenceType)
-//  {
-//    ConstraintFactory cf = jcas.getConstraintFactory();
-//    TypeSystem ts = jcas.getTypeSystem();
-//    Type annotationType = ts.getType(Annotation.class.getName());
-//    Feature sentenceBeginFeature = annotationType.getFeatureByBaseName("begin");
-//    FeaturePath sentenceBeginFeaturePath = jcas.createFeaturePath();
-//    sentenceBeginFeaturePath.addFeature(sentenceBeginFeature);
-//    
-//    Feature sentenceEndFeature = annotationType.getFeatureByBaseName("end");
-//    FeaturePath sentenceEndFeaturePath = jcas.createFeaturePath();
-//    sentenceEndFeaturePath.addFeature(sentenceEndFeature);
-//    
-//    FSMatchConstraint beginAndEnd = constructContainedByConstraint(
-//        problemBegin, problemEnd, cf, sentenceBeginFeaturePath,
-//        sentenceEndFeaturePath);
-//    
-//    
-//    FSTypeConstraint sentenceTypeConstraint = cf.createTypeConstraint();
-//    sentenceTypeConstraint.add(sentenceType);
-//    
-//    FSMatchConstraint beginAndEndAndType = cf.and(beginAndEnd, sentenceTypeConstraint);
-//    
-//    FSIterator<Annotation> filteredIterator =
-//        jcas.createFilteredIterator(jcas.getAnnotationIndex().iterator(),  beginAndEndAndType);
-//    return filteredIterator;
-//  }
-//
-//  /**
-//   * @param problemBegin
-//   * @param problemEnd
-//   * @param cf
-//   * @param sentenceBeginFeaturePath
-//   * @param sentenceEndFeaturePath
-//   * @return
-//   */
-//  public FSMatchConstraint constructContainedByConstraint(int problemBegin,
-//      int problemEnd, ConstraintFactory cf,
-//      FeaturePath sentenceBeginFeaturePath, FeaturePath sentenceEndFeaturePath)
-//  {
-//    FSIntConstraint sentenceBeginIntConstraint = cf.createIntConstraint();
-//    sentenceBeginIntConstraint.leq(problemBegin);
-//    
-//    FSIntConstraint sentenceEndIntConstraint = cf.createIntConstraint();
-//    sentenceEndIntConstraint.geq(problemEnd);
-//    
-//    
-//    FSMatchConstraint begin = cf.embedConstraint(sentenceBeginFeaturePath, sentenceBeginIntConstraint);
-//    FSMatchConstraint end = cf.embedConstraint(sentenceEndFeaturePath, sentenceEndIntConstraint);
-//    
-//    FSMatchConstraint beginAndEnd = cf.and(begin, end);
-//    return beginAndEnd;
-//  }
-
 }
+
+
+
+
+
+
+
 

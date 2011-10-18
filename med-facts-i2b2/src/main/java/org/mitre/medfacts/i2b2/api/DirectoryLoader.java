@@ -104,7 +104,7 @@ public class DirectoryLoader
 
     List<ApiConcept> apiConceptList = parseConceptFile(conceptFile, contents, converter);
 
-    SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
+    SingleDocumentProcessor p = new SingleDocumentProcessor();
     p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
     p.setContents(contents);
     for (ApiConcept apiConcept : apiConceptList)

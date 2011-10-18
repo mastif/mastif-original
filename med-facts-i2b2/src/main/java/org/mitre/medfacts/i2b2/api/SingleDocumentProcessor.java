@@ -42,7 +42,7 @@ public class SingleDocumentProcessor
   protected String contents;
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
   protected Map<Integer, String> assertionTypeMap;
-  protected LineTokenToCharacterOffsetConverter converter;
+//  protected LineTokenToCharacterOffsetConverter converter;
   protected CharacterOffsetToLineTokenConverter converter2;
   //protected Set<String> enabledFeatureIdSet;
   //protected JarafeMEDecoder assertionDecoder;
@@ -70,11 +70,11 @@ public class SingleDocumentProcessor
 
   protected void preExecutionTest()
   {
-    if (converter == null)
-    {
-      converter =
-          new LineTokenToCharacterOffsetConverter(contents);
-    }
+//    if (converter == null)
+//    {
+//      converter =
+//          new LineTokenToCharacterOffsetConverter(contents);
+//    }
     if (converter2 == null)
     {
       converter2 =
@@ -383,8 +383,10 @@ public class SingleDocumentProcessor
   public List<LineAndTokenPosition> calculateBeginAndEndOfConcept(
       ApiConcept problem)
   {
-    LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
-    LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
+//    LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
+//    LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
+    LineAndTokenPosition problemBegin = converter2.convert(problem.getBegin());
+    LineAndTokenPosition problemEnd = converter2.convert(problem.getEnd());
     
     ArrayList<LineAndTokenPosition> list = new ArrayList<LineAndTokenPosition>();
     list.add(problemBegin);
@@ -442,7 +444,8 @@ public class SingleDocumentProcessor
 
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
-    return converter.convertReverse(characterOffset);
+    //return converter.convertReverse(characterOffset);
+    return converter2.convert(characterOffset);
   }
   
   public void generateConceptAnnotations(List<ApiConcept> apiConceptList, Map<AnnotationType, List<Annotation>> annotationsByType, List<Annotation> allAnnotationList)

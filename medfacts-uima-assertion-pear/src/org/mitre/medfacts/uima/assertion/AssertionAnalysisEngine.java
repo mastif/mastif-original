@@ -24,6 +24,7 @@ import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.i2b2.api.AssertionDecoderConfiguration;
 import org.mitre.medfacts.i2b2.api.SingleDocumentProcessor;
+import org.mitre.medfacts.i2b2.api.ctakes.CharacterOffsetToLineTokenConverterCtakesImpl;
 import org.mitre.medfacts.i2b2.cli.BatchRunner;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.types.Assertion;
@@ -133,8 +134,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
 	    //p.setContents(tokenizedContents);
       p.setContents(contents);
-      CharacterOffsetToLineTokenConverter converter = new ;
-      p.setConverter(converter);
+      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverterCtakesImpl();
+      p.setConverter2(converter);
 	    for (ApiConcept apiConcept : apiConceptList)
 	    {
 	      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));

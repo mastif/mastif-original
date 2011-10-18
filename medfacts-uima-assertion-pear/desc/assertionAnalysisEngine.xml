@@ -47,6 +47,11 @@
       <optional>false</optional>
     </externalResourceDependency>
     <externalResourceDependency>
+      <key>posModelResource</key>
+      <description/>
+      <optional>false</optional>
+    </externalResourceDependency>
+    <externalResourceDependency>
       <key>enabledFeaturesResource</key>
       <description/>
       <optional>false</optional>
@@ -82,6 +87,13 @@
           <fileUrl>file:org/mitre/medfacts/resources/featureFile11b</fileUrl>
         </fileResourceSpecifier>
       </externalResource>
+      <externalResource>
+        <name>posModelResourceImpl</name>
+        <description/>
+        <fileResourceSpecifier>
+          <fileUrl>file:org/mitre/medfacts/resources/pos.model</fileUrl>
+        </fileResourceSpecifier>
+      </externalResource>
     </externalResources>
     <externalResourceBindings>
       <externalResourceBinding>
@@ -99,6 +111,10 @@
       <externalResourceBinding>
         <key>enabledFeaturesResource</key>
         <resourceName>enabledFeaturesResourceImpl</resourceName>
+      </externalResourceBinding>
+      <externalResourceBinding>
+        <key>posModelResource</key>
+        <resourceName>posModelResourceImpl</resourceName>
       </externalResourceBinding>
     </externalResourceBindings>
   </resourceManagerConfiguration>

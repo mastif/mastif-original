@@ -20,6 +20,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceAccessException;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.i2b2.api.AssertionDecoderConfiguration;
@@ -78,6 +79,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 		String assertionModelContents;
 		String scopeModelFilePath;
 		String cueModelFilePath;
+    String posModelFilePath;
 		File enabledFeaturesFile;
 		
 		try {
@@ -93,6 +95,11 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			String cueModelResourceKey = "cueModelResource";
 			cueModelFilePath = getContext().getResourceFilePath(
 					cueModelResourceKey);
+
+      String posModelResourceKey = "posModelResource";
+      posModelFilePath = getContext().getResourceFilePath(
+          posModelResourceKey);
+			
 			String enabledFeaturesResourceKey = "enabledFeaturesResource";
 			String enabledFeaturesFilePath = getContext().getResourceFilePath(
 					enabledFeaturesResourceKey);
@@ -119,8 +126,13 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    AssertionDecoderConfiguration assertionDecoderConfiguration =
 	        new AssertionDecoderConfiguration();
 
+      logger.info(String.format("scope model file: %s", scopeModelFilePath));
+      logger.info(String.format("cue model file: %s", cueModelFilePath));
 	    ScopeParser scopeParser = new ScopeParser(scopeModelFilePath, cueModelFilePath);
 	    assertionDecoderConfiguration.setScopeParser(scopeParser);
+	    
+	    logger.info(String.format("pos model file: %s", posModelFilePath));
+	    PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
 	    
 	    Set<String> enabledFeatureIdSet = null;
 	    enabledFeatureIdSet = BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);

@@ -32,8 +32,8 @@ import org.mitre.medfacts.i2b2.annotation.ConceptAnnotation;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverterDefaultImpl;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
-import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 /**
  *
  * @author WELLNER
@@ -117,7 +117,7 @@ public class AssertionDocumentObject<ConceptTypeParam> {
     }
 
     public void addConceptAnnotation(int startCharOffset, int endCharOffset, String typ, ConceptTypeParam conceptType) {
-      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverter(wholeText);
+      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverterDefaultImpl(wholeText);
 
       LineAndTokenPosition startLineAndTokenPosition = converter.convert(startCharOffset);
       LineAndTokenPosition endLineAndTokenPosition = converter.convert(endCharOffset);

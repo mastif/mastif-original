@@ -57,6 +57,7 @@ import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.ParsedTextFile;
 import org.mitre.medfacts.zoner.ZonerCli;
@@ -87,6 +88,7 @@ public class MedFactsRunner
   protected Mode mode;
   protected ScopeParser scopeParser;
   protected PartOfSpeechTagger posTagger;
+  private CharacterOffsetToLineTokenConverter converter;
 
   public MedFactsRunner()
   {
@@ -162,7 +164,7 @@ public class MedFactsRunner
 
   public void processZones()
   {
-    List<ZoneAnnotation> zoneList = findZones(getEntireContents(), textLookup);
+    List<ZoneAnnotation> zoneList = findZones(getEntireContents(), textLookup, getConverter());
     
     StringWriter w = new StringWriter();
     PrintWriter pw = new PrintWriter(w);
@@ -196,9 +198,10 @@ public class MedFactsRunner
 
   }
 
-  public static List<ZoneAnnotation> findZones(String entireContents, String textLookup[][])
+  public static List<ZoneAnnotation> findZones(String entireContents, String textLookup[][], CharacterOffsetToLineTokenConverter converter)
   {
     ZonerCli zoner = new ZonerCli();
+    zoner.setConverter(converter);
     zoner.setEntireContents(entireContents);
     zoner.findHeadings();
     List<Range> zonerRangeList = zoner.getFullRangeListAdjusted();
@@ -1399,6 +1402,16 @@ public class MedFactsRunner
       }
     }
     return assertionList;
+  }
+
+  public CharacterOffsetToLineTokenConverter getConverter()
+  {
+    return converter;
+  }
+
+  public void setConverter(CharacterOffsetToLineTokenConverter converter)
+  {
+    this.converter = converter;
   }
 
 }

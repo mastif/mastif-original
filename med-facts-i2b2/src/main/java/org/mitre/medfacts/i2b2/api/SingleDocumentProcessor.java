@@ -26,6 +26,8 @@ import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.Location;
 import org.mitre.medfacts.i2b2.util.StringHandling;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverterDefaultImpl;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
@@ -41,6 +43,7 @@ public class SingleDocumentProcessor
   protected List<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
   protected Map<Integer, String> assertionTypeMap;
   protected LineTokenToCharacterOffsetConverter converter;
+  protected CharacterOffsetToLineTokenConverter converter2;
   //protected Set<String> enabledFeatureIdSet;
   //protected JarafeMEDecoder assertionDecoder;
 
@@ -58,10 +61,12 @@ public class SingleDocumentProcessor
   {
   }
 
+  /*
   public SingleDocumentProcessor(LineTokenToCharacterOffsetConverter converter)
   {
     this.converter = converter;
   }
+  */
 
   protected void preExecutionTest()
   {
@@ -69,6 +74,11 @@ public class SingleDocumentProcessor
     {
       converter =
           new LineTokenToCharacterOffsetConverter(contents);
+    }
+    if (converter2 == null)
+    {
+      converter2 =
+          new CharacterOffsetToLineTokenConverterDefaultImpl(contents);
     }
   }
   
@@ -407,7 +417,7 @@ public class SingleDocumentProcessor
 
   public void processZones()
   {
-    List<ZoneAnnotation> zoneList = MedFactsRunner.findZones(contents, arrayOfArrayOfTokens);
+    List<ZoneAnnotation> zoneList = MedFactsRunner.findZones(contents, arrayOfArrayOfTokens, converter2);
 
     allAnnotationList.addAll(zoneList);
 
@@ -501,6 +511,16 @@ public class SingleDocumentProcessor
   public void setAssertionTypeMap(Map<Integer, String> assertionTypeMap)
   {
     this.assertionTypeMap = assertionTypeMap;
+  }
+
+  public CharacterOffsetToLineTokenConverter getConverter2()
+  {
+    return converter2;
+  }
+
+  public void setConverter2(CharacterOffsetToLineTokenConverter converter2)
+  {
+    this.converter2 = converter2;
   }
 
 }

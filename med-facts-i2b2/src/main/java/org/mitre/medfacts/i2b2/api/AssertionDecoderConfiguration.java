@@ -2,6 +2,7 @@ package org.mitre.medfacts.i2b2.api;
 
 import java.util.Set;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
+import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
 
 /**
@@ -13,6 +14,7 @@ public class AssertionDecoderConfiguration
   protected JarafeMEDecoder assertionDecoder;
   protected Set<String> enabledFeatureIdSet;
   protected ScopeParser scopeParser;
+  private PartOfSpeechTagger posTagger;
 
   public JarafeMEDecoder getAssertionDecoder()
   {
@@ -42,5 +44,15 @@ public class AssertionDecoderConfiguration
   public void setScopeParser(ScopeParser scopeParser)
   {
     this.scopeParser = scopeParser;
+  }
+
+  public PartOfSpeechTagger getPosTagger()
+  {
+    return posTagger;
+  }
+
+  public void setPosTagger(PartOfSpeechTagger posTagger)
+  {
+    this.posTagger = posTagger;
   }
 }

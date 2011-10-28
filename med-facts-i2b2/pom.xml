@@ -56,14 +56,23 @@
           <configuration>
             <mainClass>org.mitre.medfacts.i2b2.cli.BatchRunner</mainClass>
             <arguments>
-              <argument>--base-dir="C:/workspace.medical_facts/med_facts_work.2010-08-18T1000/med-facts-i2b2-data/"</argument>
+              <argument>--base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data"</argument>
+              <argument>--cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data/cue.model"</argument>
+              <argument>--scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data/scope.model"</argument>
+              <argument>--pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data/pos.model"</argument>
+              
+              <!--
+              <argument>- -base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data.quick"</argument>
+              <argument>- -cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/cue.model"</argument>
+              <argument>- -scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/scope.model"</argument>
+              <argument>- -pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/pos.model"</argument>
+              -->
+
               <argument>--train=train</argument>
               <argument>--decode=eval</argument>
-              <argument>--features-file=featureFile9</argument>
+              <argument>--features-file="featureFile9"</argument>
               <argument>--gaussian-prior=1.0</argument>
               <argument>--mode=eval</argument>
-              <argument>--scope-model=scope.model</argument>
-              <argument>--cue-model=cue.model</argument>
             </arguments>
           </configuration>
         </plugin>

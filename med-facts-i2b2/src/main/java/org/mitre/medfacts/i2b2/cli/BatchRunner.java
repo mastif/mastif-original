@@ -50,6 +50,8 @@ import org.mitre.medfacts.i2b2.training.TrainingInstance;
 import org.mitre.medfacts.i2b2.util.Constants;
 import org.mitre.medfacts.i2b2.util.RandomAssignmentSystem;
 import org.mitre.medfacts.i2b2.util.StringHandling;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverterDefaultImpl;
 
 /**
  *
@@ -284,7 +286,7 @@ public class BatchRunner
     File scopeFile = new File(scopeFilename);
     boolean scopeFileExists = scopeFile.exists();
     System.out.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present");
-
+    
     MedFactsRunner runner = new MedFactsRunner();
 
     runner.setConceptFileProcessor(conceptFileProcessor);

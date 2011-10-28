@@ -58,6 +58,7 @@ import org.mitre.medfacts.i2b2.util.AnnotationIndexer;
 import org.mitre.medfacts.i2b2.util.ArrayPrinter;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
+import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverterDefaultImpl;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.ParsedTextFile;
 import org.mitre.medfacts.zoner.ZonerCli;
@@ -144,6 +145,9 @@ public class MedFactsRunner
     try
       {
         processTextFile();
+        
+        this.converter = new CharacterOffsetToLineTokenConverterDefaultImpl(entireContents);
+        
         processAnnotationFiles();
         MedFactsRunner.postProcessForCueWords(textLookup, allAnnotationList, annotationsByType);
         processZones();

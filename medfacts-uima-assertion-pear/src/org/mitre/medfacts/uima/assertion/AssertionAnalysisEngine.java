@@ -133,6 +133,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    
 	    logger.info(String.format("pos model file: %s", posModelFilePath));
 	    PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
+      assertionDecoderConfiguration.setPosTagger(posTagger);
+
 	    
 	    Set<String> enabledFeatureIdSet = null;
 	    enabledFeatureIdSet = BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);

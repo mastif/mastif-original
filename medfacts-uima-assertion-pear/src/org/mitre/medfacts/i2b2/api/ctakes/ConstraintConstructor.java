@@ -11,6 +11,7 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.TypeSystem;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import java.util.Iterator;
 
 public abstract class ConstraintConstructor
 {
@@ -36,7 +37,10 @@ public abstract class ConstraintConstructor
   {
     ConstraintFactory cf = jcas.getConstraintFactory();
     TypeSystem ts = jcas.getTypeSystem();
-    Type annotationType = ts.getType(Annotation.class.getName());
+    Iterator<Type> it = ts.getTypeIterator();
+    //Type annotationType = ts.getType(Annotation.class.getName()); // this returns "org.apache.uima.tcas.Annotation" which isn't in type system
+    Type annotationType = ts.getType("uima.tcas.Annotation"); // should be safe to hard code this
+    System.err.println("annotation type: " + annotationType);
     Feature sentenceBeginFeature = annotationType.getFeatureByBaseName("begin");
     FeaturePath sentenceBeginFeaturePath = jcas.createFeaturePath();
     sentenceBeginFeaturePath.addFeature(sentenceBeginFeature);

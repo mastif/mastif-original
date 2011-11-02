@@ -28,6 +28,7 @@ import edu.mayo.bmi.uima.core.type.PunctuationToken;
 import edu.mayo.bmi.uima.core.type.Sentence;
 import edu.mayo.bmi.uima.core.type.Sentence_Type;
 import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.NumToken;
 
 public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
 {
@@ -68,6 +69,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
 
   public void preprocess()
   {
+	  System.err.println("PREPROCESSING using CTAKES");
     String arrayOfArrayOfTokens[][] = null;
     
     ArrayList<ArrayList<String>> returnedObject = construct2DTokenArray(jcas);
@@ -79,6 +81,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
       String temp[] = current.toArray(template);
       arrayOfArrayOfTokens[i] = temp;
     }
+    
     
     this.arrayOfArrayOfTokens = arrayOfArrayOfTokens;
   }
@@ -119,6 +122,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
 //        }
         BaseToken baseToken = (BaseToken)baseTokenAnnotationUntyped;
         if (baseToken instanceof WordToken ||
+            baseToken instanceof NumToken ||
             baseToken instanceof PunctuationToken)
         {
           String currentTokenText = baseToken.getCoveredText();
@@ -180,6 +184,9 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     int beginTokenWordNumber = beginTokenNumber - firstTokenInSentenceNumber;
     
     LineAndTokenPosition b = new LineAndTokenPosition();
+    System.err.println("Mapping character to line and token start: " + characterOffset);
+    System.err.println("=> lineNumber: " + lineNumber);
+    System.err.println("=> beginToken Number: " + beginTokenWordNumber);
     b.setLine(lineNumber);
     b.setTokenOffset(beginTokenWordNumber);
 

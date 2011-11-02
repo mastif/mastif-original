@@ -131,6 +131,7 @@ public class SingleDocumentProcessor
 
   public void preprocess()
   {
+	  
     String arrayOfArrayOfTokens[][] = null;
     String arrayOfLines[] = null;
 
@@ -196,8 +197,13 @@ public class SingleDocumentProcessor
 
       int conceptBeginTokenOffset = problemBegin.getTokenOffset();
       int conceptEndTokenOffset = problemEnd.getTokenOffset();
-
+      
+      if (conceptBeginTokenOffset < 0) conceptBeginTokenOffset = 0;
+      if (conceptEndTokenOffset < 0) conceptEndTokenOffset = 0;
+      
       String currentLine[] = arrayOfArrayOfTokens[lineNumber - 1];
+      int lineLength = currentLine.length;
+      
 
       if (assertionDecoderConfiguration.getEnabledFeatureIdSet() == null)
       {
@@ -210,7 +216,7 @@ public class SingleDocumentProcessor
       TrainingInstance trainingInstance = new TrainingInstance();
 
       if (checkForEnabledFeature("conceptUnigrams")) {
-          for (int k = conceptBeginTokenOffset; k <= conceptEndTokenOffset; k++) {
+          for (int k = conceptBeginTokenOffset; k <= conceptEndTokenOffset && k < lineLength; k++) {
               trainingInstance.addFeature("concept_unigram_" + StringHandling.escapeStringForFeatureName(currentLine[k]));
           }
       }
@@ -295,7 +301,9 @@ public class SingleDocumentProcessor
           if (checkForEnabledFeature("concepts")) {
             if (a instanceof ConceptAnnotation) {
                 ConceptAnnotation concept = (ConceptAnnotation) a;
-
+                if ((concept.getConceptType() != null) && (concept.getConceptText() != null)) {
+                System.err.println("concept: " + concept);
+                System.err.println("concept type = " + concept.getConceptType());
                 String conceptType = concept.getConceptType().toString();
                 int thisConceptBegin = concept.getBegin().getTokenOffset();
                 int thisConceptEnd = concept.getEnd().getTokenOffset();
@@ -310,6 +318,7 @@ public class SingleDocumentProcessor
                     }
                     trainingInstance.addFeature("concept_" + conceptType + "_right");
                 }
+            }	
             }
             }
 

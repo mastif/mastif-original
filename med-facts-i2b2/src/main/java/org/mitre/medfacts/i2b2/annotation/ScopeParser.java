@@ -18,6 +18,7 @@ import org.mitre.jcarafe.scopetagger.IndexedAnnot;
 public class ScopeParser {
     FullDecoder decoder = null;
     public ScopeParser(String sModel, String cModel) {
+    	System.err.println("scope model: " + sModel);
         decoder = FullDecoder.apply(sModel, cModel);
     }
 

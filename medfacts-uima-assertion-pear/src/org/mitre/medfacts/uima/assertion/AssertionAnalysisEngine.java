@@ -26,6 +26,7 @@ import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.i2b2.api.AssertionDecoderConfiguration;
 import org.mitre.medfacts.i2b2.api.SingleDocumentProcessor;
 import org.mitre.medfacts.i2b2.api.ctakes.CharacterOffsetToLineTokenConverterCtakesImpl;
+import org.mitre.medfacts.i2b2.api.ctakes.SingleDocumentProcessorCtakes;
 import org.mitre.medfacts.i2b2.cli.BatchRunner;
 import org.mitre.medfacts.i2b2.util.StringHandling;
 import org.mitre.medfacts.types.Assertion;
@@ -65,7 +66,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			ApiConcept apiConcept = new ApiConcept();
 			int begin = conceptAnnotation.getBegin();
 			int end = conceptAnnotation.getEnd();
-			String conceptText = contents.substring(begin, begin + end + 1);
+			String conceptText = contents.substring(begin, end);
 			
 			apiConcept.setBegin(begin);
 			apiConcept.setEnd(end);
@@ -144,11 +145,13 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    assertionDecoder = new JarafeMEDecoder(assertionModelContents);
 	    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
 
-	    SingleDocumentProcessor p = new SingleDocumentProcessor();
+	    //SingleDocumentProcessor p = new SingleDocumentProcessor();
+	    SingleDocumentProcessorCtakes p = new SingleDocumentProcessorCtakes();
+	    p.setJcas(jcas);
 	    p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
 	    //p.setContents(tokenizedContents);
       p.setContents(contents);
-      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverterCtakesImpl();
+      CharacterOffsetToLineTokenConverter converter = new CharacterOffsetToLineTokenConverterCtakesImpl(jcas);
       p.setConverter2(converter);
 	    for (ApiConcept apiConcept : apiConceptList)
 	    {
@@ -157,7 +160,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    }
 	    p.processSingleDocument();
 	    Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
-	    logger.info(String.format("    - done processing \"%s\"."));
+	    logger.info(String.format("    - done processing ..\"."));
 	    
 	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
 	    

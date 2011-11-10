@@ -50,9 +50,13 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException
 	{
+	  logger.info("(logging statement) AssertionAnalysisEngine.process() BEGIN");
+    System.out.println("(stdout) AssertionAnalysisEngine.process() BEGIN");
 		String contents = jcas.getDocumentText();
 		
 		//String tokenizedContents = tokenizeCasDocumentText(jcas);
+		
+		
 		
 		int conceptType = Concept.type;
 		AnnotationIndex<Annotation> conceptAnnotationIndex =
@@ -158,8 +162,16 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	      logger.info(String.format("dir loader concept: %s", apiConcept.toString()));
 	      p.addConcept(apiConcept);
 	    }
+
+	    logger.info("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
+	    System.out.println("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
+	    
 	    p.processSingleDocument();
-	    Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
+      
+	    logger.info("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
+      System.out.println("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
+
+      Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
 	    logger.info(String.format("    - done processing ..\"."));
 	    
 	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
@@ -178,6 +190,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    	
 	    	
 	    }
+	    logger.info("(logging statement) AssertionAnalysisEngine.process() END");
+	    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
 	}
 
   public Map<Integer, Annotation> generateAnnotationMap(JCas jcas)

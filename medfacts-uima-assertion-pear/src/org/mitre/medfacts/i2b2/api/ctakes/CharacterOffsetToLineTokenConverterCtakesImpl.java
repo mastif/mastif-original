@@ -2,6 +2,7 @@ package org.mitre.medfacts.i2b2.api.ctakes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
@@ -16,6 +17,7 @@ import edu.mayo.bmi.uima.core.type.Sentence;
 
 public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterOffsetToLineTokenConverter
 {
+  protected Logger logger = Logger.getLogger(CharacterOffsetToLineTokenConverterCtakesImpl.class.getName());
   protected JCas jcas;
   
   public CharacterOffsetToLineTokenConverterCtakesImpl()
@@ -35,6 +37,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
+    logger.info("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
     int baseTokenTypeId = BaseToken.type;
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);

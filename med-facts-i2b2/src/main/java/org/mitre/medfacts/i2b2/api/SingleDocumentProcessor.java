@@ -84,6 +84,9 @@ public class SingleDocumentProcessor
   
   public void processSingleDocument()
   {
+    logger.info("(logging statement) SingleDocumentProcessor.processSingleDocument() BEGIN");
+    System.out.println("(logging statement) SingleDocumentProcessor.processSingleDocument() BEGIN");
+
     preExecutionTest();
     preprocess();
     generateAnnotations();
@@ -92,6 +95,9 @@ public class SingleDocumentProcessor
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
     assertionTypeMap = decode(trainingInstanceMap);
     postprocess();
+
+    logger.info("(logging statement) SingleDocumentProcessor.processSingleDocument() END");
+    System.out.println("(logging statement) SingleDocumentProcessor.processSingleDocument() END");
   }
 
   public void postprocess()
@@ -428,6 +434,9 @@ public class SingleDocumentProcessor
 
   public void processZones()
   {
+    logger.info("(logging statement) SingleDocumentProcessor.processZones() BEGIN");
+    System.out.println("(logging statement) SingleDocumentProcessor.processZones() BEGIN");
+    
     List<ZoneAnnotation> zoneList = MedFactsRunner.findZones(contents, arrayOfArrayOfTokens, converter2);
 
     allAnnotationList.addAll(zoneList);
@@ -442,6 +451,8 @@ public class SingleDocumentProcessor
       z.addAll(zoneList);
     }
 
+    logger.info("(logging statement) SingleDocumentProcessor.processZones() END");
+    System.out.println("(logging statement) SingleDocumentProcessor.processZones() END");
   }
 
 

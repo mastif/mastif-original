@@ -81,19 +81,20 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 			apiConceptList.add(apiConcept);
 		}
 		
-		String assertionModelContents;
+//		byte assertionModelContents[];
 		String scopeModelFilePath;
 		String cueModelFilePath;
     String posModelFilePath;
 		File enabledFeaturesFile;
 		
+		File assertionModelFile = null;
 		try {
 			String assertionModelResourceKey = "assertionModelResource";
 			String assertionModelFilePath = getContext().getResourceFilePath(
 					assertionModelResourceKey);
-			File assertionModelFile = new File(assertionModelFilePath);
-			assertionModelContents = StringHandling
-					.readEntireContents(assertionModelFile);
+			assertionModelFile = new File(assertionModelFilePath);
+//			assertionModelContents = StringHandling
+//					.readEntireContentsBinary(assertionModelFile);
 			String scopeModelResourceKey = "scopeModelResource";
 			scopeModelFilePath = getContext().getResourceFilePath(
 					scopeModelResourceKey);
@@ -146,7 +147,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
 
 	    JarafeMEDecoder assertionDecoder = null;
-	    assertionDecoder = new JarafeMEDecoder(assertionModelContents);
+	    assertionDecoder = new JarafeMEDecoder(assertionModelFile);
 	    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
 
 	    //SingleDocumentProcessor p = new SingleDocumentProcessor();

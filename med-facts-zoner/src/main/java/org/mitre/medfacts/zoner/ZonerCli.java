@@ -529,7 +529,10 @@ public class ZonerCli {
       }
 
       if (!currentRange.isIgnore()) {
-
+        // TODO this is where it's breaking!!! Should find not just one
+        // character back, but rather previous non-whitespace character that
+        // is at least one character back
+        // int realSectionEnd = oneBeforeNextRange;
         int realSectionEnd = oneBeforeNextRange;
 
 //        update range to reflect section end
@@ -637,8 +640,13 @@ public class ZonerCli {
     int i = initialPosition;
     while (!found && i >= 0) {
       char currentChar = entireContents.charAt(i);
-      if (i != ' ' && i != '\r' && i != '\n') {
+      //if (i != ' ' && i != '\r' && i != '\n')
+      if (currentChar != ' ' && currentChar != '\r' && currentChar != '\n')
+      {
         found = true;
+      } else
+      {
+        i--;
       }
     }
     if (i < 0) {

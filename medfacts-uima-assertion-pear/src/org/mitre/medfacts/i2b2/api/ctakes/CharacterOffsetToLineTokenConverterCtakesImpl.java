@@ -52,7 +52,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 
     if (!filteredIterator.hasNext())
     {
-      throw new RuntimeException("Surrounding sentence annotation not found!!");
+      throw new RuntimeException("Surrounding sentence annotation not found[" + characterOffset + "]!!");
     }
     Annotation sentenceAnnotation = filteredIterator.next();
     Sentence sentence = (Sentence)sentenceAnnotation;

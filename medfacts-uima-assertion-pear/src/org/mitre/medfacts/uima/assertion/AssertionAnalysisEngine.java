@@ -86,22 +86,15 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 		String cueModelFilePath;
 		String posModelFilePath;
 		File enabledFeaturesFile;
-		File assertionModelFile;
 		
 		File assertionModelFile = null;
 		try {
 			String assertionModelResourceKey = "assertionModelResource";
 			String assertionModelFilePath = getContext().getResourceFilePath(
 					assertionModelResourceKey);
-<<<<<<< .mine
-			assertionModelFile = new File(assertionModelFilePath);
-			assertionModelContents = StringHandling
-					.readEntireContents(assertionModelFile);
-=======
 			assertionModelFile = new File(assertionModelFilePath);
 //			assertionModelContents = StringHandling
 //					.readEntireContentsBinary(assertionModelFile);
->>>>>>> .r286
 			String scopeModelResourceKey = "scopeModelResource";
 			scopeModelFilePath = getContext().getResourceFilePath(
 					scopeModelResourceKey);

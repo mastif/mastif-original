@@ -24,10 +24,10 @@
        element, and just changing the following two properties -->  
   <scm>
     <connection>
-      svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
     </connection>
     <developerConnection>
-      svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/medfacts-uima-assertion-pear
     </developerConnection>
     <url>
       https://developer.mitre.org/gf/project/medfact/scmsvn/?action=browse&amp;path=%2Fbranches%2Fapi_wrapper_take_two%2Fmedfacts-uima-assertion-pear%2F
@@ -161,4 +161,21 @@
       
     </plugins>
  	</build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>1.6</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javancss-maven-plugin</artifactId>
+        <version>2.0-beta-2</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
 </project>

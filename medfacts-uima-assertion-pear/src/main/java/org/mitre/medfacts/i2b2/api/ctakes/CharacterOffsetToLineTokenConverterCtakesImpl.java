@@ -2,10 +2,12 @@ package org.mitre.medfacts.i2b2.api.ctakes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.apache.uima.cas.FSIterator;
 import org.apache.uima.cas.Type;
+import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.mitre.medfacts.i2b2.api.ApiConcept;
@@ -20,6 +22,8 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   protected Logger logger = Logger.getLogger(CharacterOffsetToLineTokenConverterCtakesImpl.class.getName());
   protected JCas jcas;
   
+  protected TreeMap<Integer, Sentence> beginTreeMap;
+  
   public CharacterOffsetToLineTokenConverterCtakesImpl()
   {
     
@@ -28,7 +32,33 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   public CharacterOffsetToLineTokenConverterCtakesImpl(JCas jcas)
   {
     this.jcas = jcas;
-    //buildSentenceBoundaryMap(jcas);
+    buildSentenceBoundaryMap();
+  }
+  
+  public void buildSentenceBoundaryMap()
+  {
+	  beginTreeMap = new TreeMap<Integer, Sentence>();
+	  
+	  AnnotationIndex<Annotation> annotationIndex = jcas.getAnnotationIndex(Sentence.type);
+	  for (Annotation current : annotationIndex)
+	  {
+		  Sentence currentSentence = (Sentence)current;
+		  
+		  int begin = currentSentence.getBegin();
+		  beginTreeMap.put(begin, currentSentence);
+	  }
+  }
+  
+  public Sentence findPreviousOrCurrentSentence(int characterOffset)
+  {
+	  Integer floorKey = beginTreeMap.floorKey(characterOffset);
+	  if (floorKey == null)
+	  {
+		  return null;
+	  }
+	  Sentence floorEntry = beginTreeMap.get(floorKey);
+	  
+	  return floorEntry;
   }
   
   public LineAndTokenPosition convert(int characterOffset)
@@ -47,16 +77,29 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
     Type sentenceType = jcas.getTypeSystem().getType(Sentence.class.getName());
     Type baseTokenType = jcas.getTypeSystem().getType(BaseToken.class.getName());
 
-    FSIterator<Annotation> filteredIterator =
-        constraintConstructorFindContainedBy.createFilteredIterator(
-          characterOffset, characterOffset, sentenceType);
-
-    if (!filteredIterator.hasNext())
+//    FSIterator<Annotation> filteredIterator =
+//        constraintConstructorFindContainedBy.createFilteredIterator(
+//          characterOffset, characterOffset, sentenceType);
+//
+//    if (!filteredIterator.hasNext())
+//    {
+//      throw new RuntimeException("Surrounding sentence annotation not found[" + characterOffset + "]!!");
+//    }
+//    Annotation sentenceAnnotation = filteredIterator.next();
+//    Sentence sentence = (Sentence)sentenceAnnotation;
+    
+    logger.info("finding current or previous sentence for character offset " + characterOffset);
+    Sentence sentence = findPreviousOrCurrentSentence(characterOffset);
+    if (sentence == null)
     {
-      throw new RuntimeException("Surrounding sentence annotation not found[" + characterOffset + "]!!");
+    	logger.info("current or previous sentence IS NULL!");
+    } else
+    {
+    	logger.info("current or previous sentence -- id: " + sentence.getAddress() +
+    			"; begin: " + sentence.getBegin() + 
+    			"; end: " + sentence.getEnd());
     }
-    Annotation sentenceAnnotation = filteredIterator.next();
-    Sentence sentence = (Sentence)sentenceAnnotation;
+    
     int lineNumber = sentence.getSentenceNumber() + 1;
     
     

@@ -193,6 +193,30 @@
           </executions>
         </plugin>         
         -->
+        
+        <plugin>
+          <groupId>org.apache.uima</groupId>
+          <artifactId>PearPackagingMavenPlugin</artifactId>
+          <!-- <version>2.3.1</version> -->
+          <extensions>true</extensions>        
+          <executions>
+            <execution>
+              <id>build uima annnotator Pear</id>
+              <!-- <goals><goal>package</goal></goals> -->
+                 <!-- needs to run after the jar is built
+                      after docbooks are packaged and copied to pearPackaging/doc folder -->
+              <!-- <phase>integration-test</phase> -->  <!-- after first copies from jar/docbk pkg -->
+              <configuration> 
+                <classpath>$main_root/../core/bin</classpath>
+                <!-- <datapath>$main_root/resources</datapath> -->
+                <!-- <componentId>${project.artifactId}</componentId> -->
+                <!-- <mainComponentDesc>${pearMainDescriptor}</mainComponentDesc> -->
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        
+        
       </plugins>
     </pluginManagement>      
 	  <plugins>

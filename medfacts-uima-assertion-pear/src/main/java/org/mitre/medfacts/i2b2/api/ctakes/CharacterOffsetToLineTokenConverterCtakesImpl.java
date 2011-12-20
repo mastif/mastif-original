@@ -28,6 +28,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   public CharacterOffsetToLineTokenConverterCtakesImpl(JCas jcas)
   {
     this.jcas = jcas;
+    //buildSentenceBoundaryMap(jcas);
   }
   
   public LineAndTokenPosition convert(int characterOffset)

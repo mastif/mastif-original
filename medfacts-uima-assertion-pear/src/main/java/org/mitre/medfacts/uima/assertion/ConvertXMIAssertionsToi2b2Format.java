@@ -36,6 +36,7 @@ public class ConvertXMIAssertionsToi2b2Format {
 		return CasCreationUtils.createCas(tsDesc);
 	}
 	
+	
 	public static void main(String [] args) throws IOException, InvalidXMLException, CASException {
 		File dir = new File(args[0]);
 		File odir = new File(args[2]);

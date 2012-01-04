@@ -185,7 +185,7 @@ public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
     LineAndTokenPosition b = new LineAndTokenPosition();
     b.setLine(lineNumber);
     b.setTokenOffset(beginTokenWordNumber);
-
+    
     return b;
   }
 

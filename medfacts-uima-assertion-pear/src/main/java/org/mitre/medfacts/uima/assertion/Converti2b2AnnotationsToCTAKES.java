@@ -114,6 +114,8 @@ public class Converti2b2AnnotationsToCTAKES {
 		p.preprocess();
 		String [][] tokenArrays = p.getTokenArrays();
 		jcas.setSofaDataString(contents, "");
+		int sentNum = 0;
+		int tokNum = 0;
 		for (int i=0; i < tokenArrays.length; i++) {
 			Sentence sent = new Sentence(jcas);
 			LineAndTokenPosition sentStart = new LineAndTokenPosition();
@@ -123,7 +125,9 @@ public class Converti2b2AnnotationsToCTAKES {
 			sentEnd.setLine(i+1);
 			sentEnd.setTokenOffset(tokenArrays[i].length-1);
 			sent.setBegin(converter.convert(sentStart).getBegin()); // get begin of first token
-			sent.setEnd(converter.convert(sentEnd).getEnd()); // get end of last token
+			sent.setEnd(converter.convert(sentEnd).getEnd() + 1); // get end of last token
+			sent.setSentenceNumber(sentNum);
+			sentNum++;
 			sent.addToIndexes();
 			for (int j=0; j < tokenArrays[i].length; j++) {
 				WordToken tok = new WordToken(jcas);
@@ -131,7 +135,9 @@ public class Converti2b2AnnotationsToCTAKES {
 				word.setLine(i+1);
 				word.setTokenOffset(j);
 				tok.setBegin(converter.convert(word).getBegin());
-				tok.setEnd(converter.convert(word).getEnd());
+				tok.setEnd(converter.convert(word).getEnd() + 1);
+				tok.setTokenNumber(tokNum);
+				tokNum++;
 				tok.addToIndexes();
 			}
 		}
@@ -142,9 +148,10 @@ public class Converti2b2AnnotationsToCTAKES {
 			assertionStart.setLine(a.getBegin().getLine());
 			assertionStart.setTokenOffset(a.getBegin().getTokenOffset());
 			assertionEnd.setLine(a.getEnd().getLine());
-			assertionEnd.setTokenOffset(a.getBegin().getTokenOffset());
+			assertionEnd.setTokenOffset(a.getEnd().getTokenOffset());
 			assertion.setBegin(converter.convert(assertionStart).getBegin());
-			assertion.setEnd(converter.convert(assertionEnd).getEnd());
+			assertion.setEnd(converter.convert(assertionEnd).getEnd() + 1);
+			assertion.setConceptType("PROBLEM");
 			assertion.addToIndexes();
 		}
 		writeXmi(cas,xmiOutFile);

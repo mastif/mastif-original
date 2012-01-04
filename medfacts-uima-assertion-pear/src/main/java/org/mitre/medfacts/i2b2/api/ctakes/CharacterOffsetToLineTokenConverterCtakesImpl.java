@@ -214,6 +214,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
     LineAndTokenPosition e = new LineAndTokenPosition();
     e.setLine(lineNumber);
     e.setTokenOffset(endTokenWordNumber);
+    System.out.println("Adding lineTokenEnding " + lineNumber + " offset = " + endTokenWordNumber);
     list.add(e);
     return list;
   }

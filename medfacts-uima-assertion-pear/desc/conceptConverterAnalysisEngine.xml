@@ -13,9 +13,14 @@
     <typeSystemDescription>
       <imports>
         <import location="medfactsTypeSystem.xml"/>
+	<import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
+        <import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
+        <import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
+	<!--
         <import location="../../core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
         <import location="../../core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
         <import location="../../core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
+	-->
         <!--
         <import location="file:/tmp/pear/svn/cTAKES/core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
         <import location="file:/tmp/pear/svn/cTAKES/core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>

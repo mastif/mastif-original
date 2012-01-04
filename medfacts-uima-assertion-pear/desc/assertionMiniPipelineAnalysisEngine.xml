@@ -3,11 +3,11 @@
   <frameworkImplementation>org.apache.uima.java</frameworkImplementation>
   <primitive>false</primitive>
   <delegateAnalysisEngineSpecifiers>
-    <delegateAnalysisEngine key="conceptConverterAnalysisEngine">
-      <import location="conceptConverterAnalysisEngine.xml"/>
-    </delegateAnalysisEngine>
     <delegateAnalysisEngine key="assertionAnalysisEngine">
       <import location="assertionAnalysisEngine.xml"/>
+    </delegateAnalysisEngine>
+    <delegateAnalysisEngine key="conceptConverterAnalysisEngine">
+      <import location="conceptConverterAnalysisEngine.xml"/>
     </delegateAnalysisEngine>
   </delegateAnalysisEngineSpecifiers>
   <analysisEngineMetaData>

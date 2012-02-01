@@ -3,6 +3,7 @@ package org.mitre.medfacts.i2b2.api.ctakes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import org.apache.uima.cas.FSIterator;
@@ -23,6 +24,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   protected JCas jcas;
   
   protected TreeMap<Integer, Sentence> beginTreeMap;
+  protected TreeSet<Integer> tokenBeginEndTreeSet;
   
   public CharacterOffsetToLineTokenConverterCtakesImpl()
   {
@@ -33,6 +35,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   {
     this.jcas = jcas;
     buildSentenceBoundaryMap();
+    buildTokenBoundaryMap();
   }
   
   public void buildSentenceBoundaryMap()
@@ -46,6 +49,22 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 		  
 		  int begin = currentSentence.getBegin();
 		  beginTreeMap.put(begin, currentSentence);
+	  }
+  }
+  
+  public void buildTokenBoundaryMap()
+  {
+	  tokenBeginEndTreeSet = new TreeSet<Integer>();
+	  
+	  AnnotationIndex<Annotation> annotationIndex = jcas.getAnnotationIndex(BaseToken.type);
+	  for (Annotation current : annotationIndex)
+	  {
+		  BaseToken bt = (BaseToken)current;
+		  int begin = bt.getBegin();
+		  int end = bt.getEnd();
+		  
+		  tokenBeginEndTreeSet.add(begin);
+		  tokenBeginEndTreeSet.add(end);
 	  }
   }
   
@@ -66,9 +85,40 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
     return convertCharacterOffsetToLineToken(characterOffset);
   }
   
+  public int adjustOffsetToBestMatch(int original)
+  {
+	  logger.finest("inside adjustOffsetToBestMatch");
+	  Integer newValue = tokenBeginEndTreeSet.floor(original);
+	  
+	  if (newValue == null)
+	  {
+		  logger.finest("no previous token begin or end found. using begin of first token.");
+		  newValue = tokenBeginEndTreeSet.first();
+	  } else
+	  {
+		  if (original == newValue)
+			  logger.finest("value not adjusted: " + original);
+		  else
+			  logger.finest("found previous token boundary. original: " + original + "; new value: " + newValue);
+	  }
+	  
+	  if (newValue == null)
+	  {
+		  logger.info("no previous and no first token found!!");
+	  }
+	  
+	  logger.finest("end adjustOffsetToBestMatch");
+	  
+	  return newValue;
+  }
+  
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
     logger.info("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
+    
+    logger.info("before adjusting input character offset...");
+    characterOffset = adjustOffsetToBestMatch(characterOffset);
+    logger.info("after adjusting input character offset.");
     int baseTokenTypeId = BaseToken.type;
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
@@ -121,7 +171,7 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
     
     if (!beginTokenInSentenceIterator.hasNext())
     {
-      throw new RuntimeException("First token in sentence not found!!");
+      throw new RuntimeException("First token in sentence not found!! (character offset request = " + characterOffset);
     }
     Annotation beginTokenAnnotation = beginTokenInSentenceIterator.next();
     BaseToken beginToken = (BaseToken)beginTokenAnnotation;

@@ -67,6 +67,10 @@ public class SingleDocumentProcessor
     this.converter = converter;
   }
   */
+  
+  public String[][] getTokenArrays() {
+	  return arrayOfArrayOfTokens; 
+  }
 
   protected void preExecutionTest()
   {
@@ -89,10 +93,14 @@ public class SingleDocumentProcessor
 
     preExecutionTest();
     preprocess();
+    System.out.println("(logging statement) generateAnnotations() BEGIN");
     generateAnnotations();
+    System.out.println("(logging statement) generateAnnotations() END");
     indexer.indexAnnotations(allAnnotationList);
     //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
+    System.out.println("(logging statement) generateFeatures() BEGIN");
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
+    System.out.println("(logging statement) generateFeatures() END");
     assertionTypeMap = decode(trainingInstanceMap);
     postprocess();
 
@@ -181,7 +189,7 @@ public class SingleDocumentProcessor
       }
       i++;
     }
-
+    
     TreeMap<Integer, TrainingInstance> trainingInstanceMap =
         new TreeMap<Integer, TrainingInstance>();
 

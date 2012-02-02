@@ -150,7 +150,7 @@ public class LineTokenToCharacterOffsetConverter
     int token = lineAndTokenPosition.getTokenOffset();
 
     ArrayList<BeginAndEndCharacterOffsetPair> lineArray = offsets.get(line - 1);
-    if (lineArray == null) { return null; }
+    if ((lineArray == null) || (lineArray.size() < 1)) { return null; }
     BeginAndEndCharacterOffsetPair offsetsForToken = lineArray.get(token);
     
     return offsetsForToken;

@@ -147,7 +147,7 @@ public class BatchRunner
     if (cmd.hasOption("base-dir"))
     {
       baseDir = cmd.getOptionValue("base-dir");
-      System.out.format("using base directory: \"%s\"%n", baseDir);
+      logger.info(String.format("using base directory: \"%s\"%n", baseDir));
     }
 
     boolean hasFeaturesFile = false;
@@ -161,9 +161,9 @@ public class BatchRunner
     String trainDir = null;
     if (isTrain)
     {
-      System.out.println("running training...");
+      logger.info("running training...");
       String trainDirRelative = cmd.getOptionValue("train");
-      System.out.format("trainDirRelative: %s%n", trainDirRelative);
+      logger.info(String.format("trainDirRelative: %s%n", trainDirRelative));
       if (trainDirRelative == null)
       {
         trainDir = baseDir;
@@ -172,16 +172,16 @@ public class BatchRunner
         File trainDirFile = new File(baseDir, trainDirRelative);
         trainDir = trainDirFile.getAbsolutePath();
       }
-      System.out.format("using training dir: \"%s\"%n", trainDir);
-      System.out.println("finished running training.");
+      logger.info(String.format("using training dir: \"%s\"%n", trainDir));
+      logger.info("finished running training.");
     }
 
     String decodeDir = null;
     if (isDecode)
     {
-      System.out.println("running decode...");
+      logger.info("running decode...");
       String decodeDirRelative = cmd.getOptionValue("decode");
-      System.out.format("decodeDirRelative: %s%n", decodeDirRelative);
+      logger.info(String.format("decodeDirRelative: %s%n", decodeDirRelative));
       if (decodeDirRelative == null)
       {
         decodeDir = baseDir;
@@ -190,8 +190,8 @@ public class BatchRunner
         File decodeDirFile = new File(baseDir, decodeDirRelative);
         decodeDir = decodeDirFile.getAbsolutePath();
       }
-      System.out.format("using decode dir: \"%s\"%n", decodeDir);
-      System.out.println("finished running decode.");
+      logger.info(String.format("using decode dir: \"%s\"%n", decodeDir));
+      logger.info("finished running decode.");
     }
 
     File featuresFile = null;
@@ -212,7 +212,7 @@ public class BatchRunner
     {
       scopeModelFile = new File(baseDir, scopeModelFileName);
     }
-    System.out.format("scope model file: %s%n", scopeModelFile.getAbsolutePath());
+    logger.info(String.format("scope model file: %s%n", scopeModelFile.getAbsolutePath()));
     if (StringHandling.isAbsoluteFileName(cueModelFileName))
     {
       cueModelFile = new File(cueModelFileName);
@@ -229,13 +229,13 @@ public class BatchRunner
       posModelFile = new File(baseDir, posModelFileName);
     }
 
-    System.out.format("cue model file: %s%n", cueModelFile.getAbsolutePath());
+    logger.info(String.format("cue model file: %s%n", cueModelFile.getAbsolutePath()));
     //initialize scope/cue parser
     ScopeParser scopeParser = new ScopeParser(scopeModelFile.getAbsolutePath(), cueModelFile.getAbsolutePath());
     PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFile.getAbsolutePath());
 
 //    String baseDirectory = args[0];
-//    System.out.format("base directory: %s%n", baseDirectory);
+//    logger.info(String.format("base directory: %s%n", baseDirectory);
 
     BatchRunner batchRunner = new BatchRunner();
     batchRunner.setBaseDirectoryString(baseDir);
@@ -262,30 +262,30 @@ public class BatchRunner
 
   public List<TrainingInstance> processFile(File currentTextFile, Mode mode)
   {
-    System.out.format(" * %s%n", currentTextFile);
+    logger.info(String.format(" * %s%n", currentTextFile));
     String currentTextFilename = currentTextFile.getAbsolutePath();
     String baseFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(currentTextFilename).replaceFirst("");
-    System.out.format("    - base filename: %s%n", baseFilename);
+    logger.info(String.format("    - base filename: %s%n", baseFilename));
 
     String conceptFilename = baseFilename + Constants.FILE_EXTENSION_CONCEPT_FILE;
     File conceptFile = new File(conceptFilename);
     boolean conceptFileExists = conceptFile.exists();
-    System.out.format("    - concept filename: %s (%s)%n", conceptFilename, conceptFileExists ? "EXISTS" : "not present");
+    logger.info(String.format("    - concept filename: %s (%s)%n", conceptFilename, conceptFileExists ? "EXISTS" : "not present"));
 
     String assertionFilename = baseFilename + Constants.FILE_EXTENSION_ASSERTION_FILE;
     File assertionFile = new File(assertionFilename);
     boolean assertionFileExists = assertionFile.exists();
-    System.out.format("    - assertion filename: %s (%s)%n", assertionFilename, assertionFileExists ? "EXISTS" : "not present");
+    logger.info(String.format("    - assertion filename: %s (%s)%n", assertionFilename, assertionFileExists ? "EXISTS" : "not present"));
 
     String relationFilename = baseFilename + Constants.FILE_EXTENSION_RELATION_FILE;
     File relationFile = new File(relationFilename);
     boolean relationFileExists = relationFile.exists();
-    System.out.format("    - relation filename: %s (%s)%n", relationFilename, relationFileExists ? "EXISTS" : "not present");
+    logger.info(String.format("    - relation filename: %s (%s)%n", relationFilename, relationFileExists ? "EXISTS" : "not present"));
 
     String scopeFilename = baseFilename + Constants.FILE_EXTENSION_SCOPE_FILE;
     File scopeFile = new File(scopeFilename);
     boolean scopeFileExists = scopeFile.exists();
-    System.out.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present");
+    logger.info(String.format("    - scope filename: %s (%s)%n", scopeFilename, scopeFileExists ? "EXISTS" : "not present"));
     
     MedFactsRunner runner = new MedFactsRunner();
 
@@ -332,18 +332,18 @@ public class BatchRunner
         return name.endsWith(".txt");
       }
     });
-    System.out.println("=== TEXT FILE LIST BEGIN ===");
-    System.out.format("outside before \"for (File currentExtFile : textFiles)\"%n");
+    logger.info("=== TEXT FILE LIST BEGIN ===");
+    logger.info(String.format("outside before \"for (File currentExtFile : textFiles)\"%n"));
     for (File currentTextFile : textFiles)
     {
-      System.out.format("inside \"for (File currentExtFile : textFiles)\" BEGIN for file \"%s\"%n", currentTextFile.getAbsolutePath());
-      System.out.format("runConfiguration is null? %b%n", (runConfiguration == null));
+      logger.info(String.format("inside \"for (File currentExtFile : textFiles)\" BEGIN for file \"%s\"%n", currentTextFile.getAbsolutePath()));
+      logger.info(String.format("runConfiguration is null? %b%n", (runConfiguration == null)));
 
       boolean runConfigurationContainsFile = runConfiguration == null || runConfiguration.containsFile(currentTextFile);
 
       if (runConfiguration != null)
       {
-        System.out.format("$$$ INCLUDE OR NOT [\"%s\"]: %b%n", currentTextFile.getAbsolutePath(), runConfigurationContainsFile);
+        logger.info(String.format("$$$ INCLUDE OR NOT [\"%s\"]: %b%n", currentTextFile.getAbsolutePath(), runConfigurationContainsFile));
       }
       if (runConfigurationContainsFile)
       {
@@ -353,9 +353,9 @@ public class BatchRunner
       {
         // skip file if not in the current run configuration
       }
-      System.out.format("inside \"for (File currentExtFile : textFiles)\" END for file \"%s\"%n", currentTextFile.getAbsolutePath());
+      logger.info(String.format("inside \"for (File currentExtFile : textFiles)\" END for file \"%s\"%n", currentTextFile.getAbsolutePath()));
     }
-    System.out.format("outside after \"for (File currentExtFile : textFiles)\"%n");
+    logger.info(String.format("outside after \"for (File currentExtFile : textFiles)\"%n"));
   }
 
   /**
@@ -385,7 +385,7 @@ public class BatchRunner
     //createTrainingSplit();
     trainAndEval();
 
-    System.out.println("=== TEXT FILE LIST END ===");
+    logger.info("=== TEXT FILE LIST END ===");
   }
 
   /**
@@ -488,7 +488,7 @@ public class BatchRunner
         boolean actualMatchesExpected = actualAssertionValueString.equalsIgnoreCase(expectedValue);
         if (actualMatchesExpected)
         {
-          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d] [assertion line: %d] %s ###BEGIN FEATURES###%s###END FEATURES###%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
+          logger.info(String.format("MATCHES (actual/expected) %s/%s [%s:%d] [assertion line: %d] %s ###BEGIN FEATURES###%s###END FEATURES###%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString()));
           matchCount++;
         } else
         {
@@ -525,8 +525,8 @@ public class BatchRunner
 
     printOutResultFiles();
 
-    System.out.format("matches: %d%n", matchCount);
-    System.out.format("not matches: %d%n", notMatchCount);
+    logger.info(String.format("matches: %d%n", matchCount));
+    logger.info(String.format("not matches: %d%n", notMatchCount));
 //    String classification1 = decoder.classifyInstance(l1);
 //    assert(classification1.equals("absent"));
 
@@ -635,11 +635,11 @@ public class BatchRunner
     Set<String> featureIdSet = new HashSet<String>();
     try
     {
-      System.out.format("opening enabled features file: %s%n", enabledFeaturesFile);
+      logger.info(String.format("opening enabled features file: %s%n", enabledFeaturesFile));
       fileReader = new FileReader(enabledFeaturesFile);
       BufferedReader br = new BufferedReader(fileReader);
 
-      System.out.println("=== FEATURE IDS BEGIN ===");
+      logger.info("=== FEATURE IDS BEGIN ===");
       for (String currentLine = null; (currentLine = br.readLine()) != null; )
       {
         currentLine = currentLine.trim();
@@ -648,18 +648,18 @@ public class BatchRunner
         {
           continue;
         }
-        System.out.format(" - FEATURE ID: %s%n", currentLine);
+        logger.info(String.format(" - FEATURE ID: %s%n", currentLine));
         featureIdSet.add(currentLine);
       }
-      System.out.println("=== FEATURE IDS END ===");
+      logger.info("=== FEATURE IDS END ===");
 
-      System.out.println("+++ FEATURE ID SET BEGIN +++");
-      System.out.format("feature id set size: %d%n", featureIdSet.size());
+      logger.info("+++ FEATURE ID SET BEGIN +++");
+      logger.info(String.format("feature id set size: %d%n", featureIdSet.size()));
       for (String currentFeatureId : featureIdSet)
       {
-        System.out.format(" feature id: \"%s\"%n", currentFeatureId);
+        logger.info(String.format(" feature id: \"%s\"%n", currentFeatureId));
       }
-      System.out.println("+++ FEATURE ID SET END +++");
+      logger.info("+++ FEATURE ID SET END +++");
 
       return featureIdSet;
     } catch (IOException ex)
@@ -733,7 +733,7 @@ public class BatchRunner
 
       String newFileName = oldFileNameMatcher.replaceFirst(".ast.output");
 
-      System.out.format("assertion output filename: %s%n", newFileName);
+      logger.info(String.format("assertion output filename: %s%n", newFileName));
 
       FileWriter fileWriter = null;
       BufferedWriter bw = null;

@@ -106,7 +106,7 @@ public class MedFactsRunner
     int count = args.length;
     if (count < 2)
     {
-      System.out.println("syntax: MedFactRunner text_file annotation_file_1 annotation_file_2 ...");
+      logger.info("syntax: MedFactRunner text_file annotation_file_1 annotation_file_2 ...");
     }
 
     MedFactsRunner runner = new MedFactsRunner();
@@ -245,7 +245,7 @@ public class MedFactsRunner
           // todo fix logic here
           if (i >= textLookup.length)
           {
-            System.out.println("This should not be happening, fix me... (can be ignored for now)");
+            logger.info("This should not be happening, fix me... (can be ignored for now)");
             continue;
           }
           endToken = textLookup[i].length - 1;
@@ -307,11 +307,11 @@ public class MedFactsRunner
   {
     ClassLoader classLoader = MedFactsRunner.class.getClassLoader();
 //    URL cueFileUrl = classLoader.getResource(cueListFilename);
-//    System.out.format("cue list url: %s%n", cueFileUrl);
+//    logger.info(String.format("cue list url: %s%n", cueFileUrl);
 //    URI cueFileUri = cueFileUrl.toURI();
-//    System.out.format("cue list uri: %s%n", cueFileUri);
+//    logger.info(String.format("cue list uri: %s%n", cueFileUri);
 //    File cueFile = new File(cueFileUri);
-//    System.out.format("cue file: %s%n", cueFile);
+//    logger.info(String.format("cue file: %s%n", cueFile);
 
     List<Annotation> annotationList = null;
 
@@ -368,24 +368,24 @@ public class MedFactsRunner
 
   public void validateAnnotations()
   {
-    System.out.println("#####");
-    System.out.println("#####");
+    logger.info("#####");
+    logger.info("#####");
     for (Annotation currentAnnotation : getAllAnnotationList())
     {
-      System.out.format(" - %s%n", currentAnnotation);
+      logger.info(String.format(" - %s%n", currentAnnotation));
       Location begin = currentAnnotation.getBegin();
       Location end = currentAnnotation.getEnd();
-      System.out.format("==%n  begin: %s%n  end: %s%n==%n", begin, end);
+      logger.info(String.format("==%n  begin: %s%n  end: %s%n==%n", begin, end));
 
       String targetText = extractTargetText(getTextLookup(), begin, end);
 
-      System.out.format("    ANNOT: %s%n", currentAnnotation);
-      System.out.format("      TARGET: %s%n", targetText);
-      System.out.println("---");
+      logger.info(String.format("    ANNOT: %s%n", currentAnnotation));
+      logger.info(String.format("      TARGET: %s%n", targetText));
+      logger.info("---");
 
     }
-    System.out.println("#####");
-    System.out.println("#####");
+    logger.info("#####");
+    logger.info("#####");
   }
 
   public String getTextFilename()
@@ -416,7 +416,7 @@ public class MedFactsRunner
 //  public String[][] processTextString(String input)
 //    throws FileNotFoundException, IOException
 //  {
-//    System.out.format("processing text string ...%n");
+//    logger.info(String.format("processing text string ...%n");
 //
 //    StringReader sr = new StringReader(input);
 //    BufferedReader br = new BufferedReader(sr);
@@ -429,15 +429,15 @@ public class MedFactsRunner
 //    br.close();
 //    sr.close();
 //
-//    System.out.println("=====");
+//    logger.info("=====");
 //
-//    System.out.format("done processing text string.%n");
+//    logger.info(String.format("done processing text string.%n");
 //    return text2dArray;
 //  }
 
   private void processTextFile() throws FileNotFoundException, IOException
   {
-    System.out.format("processing text file \"%s\"...%n", textFilename);
+    logger.info(String.format("processing text file \"%s\"...%n", textFilename));
 
     FileReader fr = new FileReader(getTextFilename());
     BufferedReader br = new BufferedReader(fr);
@@ -451,9 +451,9 @@ public class MedFactsRunner
     br.close();
     fr.close();
 
-    System.out.println("=====");
+    logger.info("=====");
 
-    System.out.format("done processing text file \"%s\".%n", textFilename);
+    logger.info(String.format("done processing text file \"%s\".%n", textFilename));
   }
 
   private void processAnnotationFiles() throws IOException
@@ -468,9 +468,9 @@ public class MedFactsRunner
 
     for (String currentFilename : getAnnotationFilenameList())
     {
-      System.out.format("processing annotation file \"%s\"...%n", currentFilename);
+      logger.info(String.format("processing annotation file \"%s\"...%n", currentFilename));
       AnnotationType currentAnnotationType = getAnnotationTypeFromFilename(currentFilename);
-      //System.out.format(" - annotationType of file \"%s\" is %s%n", currentFilename, currentAnnotationType);
+      //logger.info(String.format(" - annotationType of file \"%s\" is %s%n", currentFilename, currentAnnotationType);
 
       List<Annotation> currentAnnotationList = null;
       switch (currentAnnotationType)
@@ -481,7 +481,7 @@ public class MedFactsRunner
           annotationsByType.put(AnnotationType.CONCEPT, currentAnnotationList);
           if (mode == Mode.DECODE)
           {
-            System.out.println(">>>processed concept file in decode mode; building assertions from concepts...");
+            logger.info(">>>processed concept file in decode mode; building assertions from concepts...");
             List<Annotation> assertionAnnotationList =
               buildAssertionsFromConcepts(currentAnnotationList);
             annotationsByType.put(AnnotationType.ASSERTION, assertionAnnotationList);
@@ -494,7 +494,7 @@ public class MedFactsRunner
         case ASSERTION:
           if (mode == Mode.EVAL || mode == Mode.TRAIN)
           {
-            System.out.println(">>>in eval mode, reading assertions file");
+            logger.info(">>>in eval mode, reading assertions file");
             currentAnnotationList = getAssertionFileProcessor().processAnnotationFile(currentFilename);
             annotationsByType.put(AnnotationType.ASSERTION, currentAnnotationList);
           }
@@ -509,12 +509,12 @@ public class MedFactsRunner
 
           List<Annotation> scopeOrCueAnnotationList = annotationsByType.get(AnnotationType.SCOPE);
 
-          System.out.format("=== BEGIN SCOPE AND CUE ANNOTATIONS === %n");
+          logger.info(String.format("=== BEGIN SCOPE AND CUE ANNOTATIONS === %n"));
           for (Annotation a : scopeOrCueAnnotationList)
           {
-            System.out.format(" - scope or cue annotation: (%s) %s%n", a.getClass().getName().toString(), a.toString());
+            logger.info(String.format(" - scope or cue annotation: (%s) %s%n", a.getClass().getName().toString(), a.toString()));
           }
-          System.out.format("=== END SCOPE AND CUE ANNOTATIONS === %n");
+          logger.info(String.format("=== END SCOPE AND CUE ANNOTATIONS === %n"));
           break;
       }
 
@@ -523,7 +523,7 @@ public class MedFactsRunner
         allAnnotationList.addAll(currentAnnotationList);
       }
 
-      System.out.format("done processing annotation file \"%s\".%n", currentFilename);
+      logger.info(String.format("done processing annotation file \"%s\".%n", currentFilename));
     }
     MedFactsRunner.processScopeInProcess(annotationsByType, allAnnotationList, textLookup, scopeParser);
 
@@ -616,15 +616,15 @@ public class MedFactsRunner
     String featuresFilename = Constants.TEXT_FILE_EXTENSTION_PATTERN.matcher(getTextFilename()).replaceFirst(".features");
     File featuresFile = new File(featuresFilename);
 
-    System.out.format("output filename: %s%n", featuresFilename);
+    logger.info(String.format("output filename: %s%n", featuresFilename));
 
     Writer featuresFileWriter = new FileWriter(featuresFile);
     BufferedWriter featuresBufferedWriter = new BufferedWriter(featuresFileWriter);
     PrintWriter featuresPrinter = new PrintWriter(featuresBufferedWriter);
 
     Pattern conceptHeadPattern = Pattern.compile(" ([^ ]+)$");
-    //System.out.println("$$$$$");
-    //System.out.println("$$$$$");
+    //logger.info("$$$$$");
+    //logger.info("$$$$$");
 
     //int lineNumber = 1;
     for (Annotation currentAnnotation : getAnnotationsByType().get(AnnotationType.ASSERTION))
@@ -770,7 +770,7 @@ public class MedFactsRunner
 	  }
       }
 
-      //System.out.format("lineNumber: %d%n", lineNumber);
+      //logger.info(String.format("lineNumber: %d%n", lineNumber);
       String tokensOnCurrentLine[] = textLookup[lineNumber-1];
       for (int currentTokenOffset=0; currentTokenOffset < tokensOnCurrentLine.length; currentTokenOffset++)
       {
@@ -968,7 +968,7 @@ public class MedFactsRunner
         CueSubType scopeType = cueForScope.getCueSubType();
         if (scopeType == CueSubType.NEGATION) enclosingNegationScopeCnt++;
         else if (scopeType == CueSubType.SPECULATION) enclosingSpeculationScopeCnt++;
-        else System.out.format("WARNING: CUE %s%n  FOR SCOPE %s%n ENCLOSING %s%n is neither a negation nor speculation cue%n", cueForScope, enclosingScope,assertForTI);
+        else logger.info(String.format("WARNING: CUE %s%n  FOR SCOPE %s%n ENCLOSING %s%n is neither a negation nor speculation cue%n", cueForScope, enclosingScope,assertForTI));
       }
       if (checkForEnabledFeature("statusRuleMixNMatchFeature"))
       {
@@ -1006,7 +1006,7 @@ public class MedFactsRunner
           default: trainingInstance.addFeature("status_rule_standAlone_unhandled_case");
         }
       }
-//      System.out.format("TI on line %s with value %s%n  => %s%n     has %s neg and %s spec enclosing scopes%n", trainingInstance.getLineNumber(), trainingInstance.toStringWithExpectedValue(), assertForTI.toString(), enclosingNegationScopeCnt, enclosingSpeculationScopeCnt); //For testing
+//      logger.info(String.format("TI on line %s with value %s%n  => %s%n     has %s neg and %s spec enclosing scopes%n", trainingInstance.getLineNumber(), trainingInstance.toStringWithExpectedValue(), assertForTI.toString(), enclosingNegationScopeCnt, enclosingSpeculationScopeCnt); //For testing
       
 
       String featureLine = trainingInstance.toStringWithExpectedValue();
@@ -1015,8 +1015,8 @@ public class MedFactsRunner
 
       //lineNumber++;
     }
-    //System.out.println("$$$$$");
-    //System.out.println("$$$$$");
+    //logger.info("$$$$$");
+    //logger.info("$$$$$");
 
     featuresPrinter.close();
     featuresBufferedWriter.close();
@@ -1249,24 +1249,24 @@ public class MedFactsRunner
 //
 //  public ConceptAnnotation processConceptAnnotationLine(String currentLine, Pattern conceptPattern)
 //  {
-//    System.out.format("CONCEPT PROCESSING: %s%n", currentLine);
+//    logger.info(String.format("CONCEPT PROCESSING: %s%n", currentLine);
 //    Matcher matcher = conceptPattern.matcher(currentLine);
-//    System.out.format("    matches? %b%n", matcher.matches());
+//    logger.info(String.format("    matches? %b%n", matcher.matches());
 //    String conceptText = matcher.group(1);
 //    String beginLine = matcher.group(2);
 //    String beginCharacter = matcher.group(3);
 //    String endLine = matcher.group(4);
 //    String endCharacter = matcher.group(5);
 //    String conceptTypeText = matcher.group(6);
-//    System.out.format("    concept text: %s%n", conceptText);
-//    System.out.format("    concept type text: %s%n", conceptTypeText);
+//    logger.info(String.format("    concept text: %s%n", conceptText);
+//    logger.info(String.format("    concept type text: %s%n", conceptTypeText);
 //    ConceptAnnotation c = new ConceptAnnotation();
 //    c.setConceptText(conceptText);
 //    c.setBegin(new Location(beginLine, beginCharacter));
 //    c.setEnd(new Location(endLine, endCharacter));
 //    c.setConceptType(ConceptType.valueOf(conceptTypeText.toUpperCase()));
-//    System.out.format("    CONCEPT ANNOTATION OBJECT: %s%n", c);
-//    System.out.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
+//    logger.info(String.format("    CONCEPT ANNOTATION OBJECT: %s%n", c);
+//    logger.info(String.format("    CONCEPT ANNOTATION OBJECT i2b2: %s%n", c.toI2B2String());
 //    return c;
 //  }
 
@@ -1288,8 +1288,8 @@ public class MedFactsRunner
     Map<Integer, CueAnnotation> cueForScopeIdMap = new TreeMap<Integer, CueAnnotation>();
 
     //For testing -Alex Yeh
-//    System.out.format("SCOPE ANNOTATIONS for FILE %s%n", textFilename);
-//    System.out.format("  LIST SIZE: %s%n", scopeFileAnnotationList.size());
+//    logger.info(String.format("SCOPE ANNOTATIONS for FILE %s%n", textFilename);
+//    logger.info(String.format("  LIST SIZE: %s%n", scopeFileAnnotationList.size());
 
     for (Annotation current : scopeFileAnnotationList)
     {
@@ -1315,19 +1315,19 @@ public class MedFactsRunner
         scope.setCueForScope(cue);
     }
     //For testing -Alex Yeh
-//    System.out.format("CUES for SCOPES in FILE %s%n", textFilename);
-//    System.out.format("  MAP size: %s.%n", scopeIdMap.entrySet().size());
+//    logger.info(String.format("CUES for SCOPES in FILE %s%n", textFilename);
+//    logger.info(String.format("  MAP size: %s.%n", scopeIdMap.entrySet().size());
 //    for (Entry<Integer, ScopeAnnotation> current : scopeIdMap.entrySet())
 //    {
 //        ScopeAnnotation scope = current.getValue();
-//        System.out.format("  Scope: %s%n    => Cue: %s%n", scope.toString(), scope.getCueForScope().toString());
+//        logger.info(String.format("  Scope: %s%n    => Cue: %s%n", scope.toString(), scope.getCueForScope().toString());
 //    }
 
     //Find enclosing scopes for each assertion annotation
     //List<Annotation> assertionFileAnnotationList = annotationsByType.get(AnnotationType.ASSERTION);
     List<Annotation> assertionFileAnnotationList = assertionList;
 
-//    System.out.format("ASSERTIONS for FILE %s%n", textFilename); //For testing
+//    logger.info(String.format("ASSERTIONS for FILE %s%n", textFilename); //For testing
     for (Annotation current : assertionFileAnnotationList)
     {
       Location annotationBegin = current.getBegin();
@@ -1340,7 +1340,7 @@ public class MedFactsRunner
       List<ScopeAnnotation> enclosingScopesFound = new ArrayList<ScopeAnnotation>();
       AssertionAnnotation assertion = (AssertionAnnotation)current;
 
-//      System.out.format("   ASRT: %s => %s annotations for 1st token%n", assertion.toString(), annotationsForFirstToken.size()); //for testing
+//      logger.info(String.format("   ASRT: %s => %s annotations for 1st token%n", assertion.toString(), annotationsForFirstToken.size()); //for testing
       for (Annotation annotationForFirstToken : annotationsForFirstToken)
       {
         if ((annotationForFirstToken instanceof ScopeAnnotation) &&
@@ -1359,11 +1359,11 @@ public class MedFactsRunner
 //    for (Annotation current : assertionFileAnnotationList)
 //    {
 //      AssertionAnnotation assertion = (AssertionAnnotation)current;
-//      System.out.format("   ASRT: %s => %s COVERING SCOPES%n", assertion.toString(), assertion.getEnclosingScopes().size());
+//      logger.info(String.format("   ASRT: %s => %s COVERING SCOPES%n", assertion.toString(), assertion.getEnclosingScopes().size());
 //      for (ScopeAnnotation scope: assertion.getEnclosingScopes())
 //      {
-//        System.out.format("      CVR SCP: %s%n", scope.toString());
-//        System.out.format("          => CUE IS: %s%n", scope.getCueForScope().toString());
+//        logger.info(String.format("      CVR SCP: %s%n", scope.toString());
+//        logger.info(String.format("          => CUE IS: %s%n", scope.getCueForScope().toString());
 //      }
 //    }
   }

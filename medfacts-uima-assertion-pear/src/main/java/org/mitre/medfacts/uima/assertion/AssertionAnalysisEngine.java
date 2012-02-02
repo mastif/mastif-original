@@ -165,12 +165,10 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    }
 
 	    logger.info("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
-	    System.out.println("(logging statement) AssertionAnalysisEngine.process() BEFORE CALLING p.processSingleDocument()");
 	    
 	    p.processSingleDocument();
       
 	    logger.info("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
-      System.out.println("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
 
       Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
 	    logger.info(String.format("    - done processing ..\"."));
@@ -192,7 +190,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    	
 	    }
 	    logger.info("(logging statement) AssertionAnalysisEngine.process() END");
-	    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
 	}
 
   public Map<Integer, Annotation> generateAnnotationMap(JCas jcas)

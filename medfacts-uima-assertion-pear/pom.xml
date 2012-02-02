@@ -9,7 +9,7 @@
   </parent>
   
   <artifactId>assertion-pear</artifactId>
-  <version>1.0.2</version>
+  <version>1.1</version>
   <name>Assertion Annotator: ${project.artifactId}</name>
   <description>classifies "problem" concepts into assertion classes</description>
   <url>${uimaWebsiteUrl}</url>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.mitre.medfacts.i2b2</groupId>
       <artifactId>med-facts-i2b2</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1</version>
     </dependency>
 
     <dependency>
@@ -89,7 +89,7 @@
     <dependency>
       <groupId>org.mitre.medfacts.zoner</groupId>
       <artifactId>med-facts-zoner</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1</version>
     </dependency>
 
     <dependency>

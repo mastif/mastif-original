@@ -6,23 +6,54 @@
   
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
+  
+  <style type="text/css">
+    ol > li { margin-top: 1.0em; }
+    .inlineReplacement { font-style: italic; }
+  </style>
 </head><body lang="EN-US">
 <div>
 <h1>Installing MASTIF</h1>
 <ol start="1" type="1">
   <li>Download
-the uima zip file or tar ball (from&nbsp;<a href="http://uima.apache.org/downloads.cgi">http://uima.apache.org/downloads.cgi</a>).
+the UIMA 2.3.1 zip file or tar ball (from&nbsp;<a href="http://uima.apache.org/downloads.cgi">http://uima.apache.org/downloads.cgi</a>).
 &nbsp;Extract this to a location on your machine, preferably one
 without spaces in the path. &nbsp;I usually extract the archive, which
 produces a folder "apache-uima" and then move this to /opt/uima (linux
-and mac) or c:\opt\uima (pc).</li>
+and mac) or c:\opt\uima (pc).<br>
+    <br>
+For windows:<br>
+mkdir c:\temp\extract<br>
+mkdir c:\opt<br>
+(unzip the downloaded zip file to c:\temp\extract)<br>
+move c:\temp\extract\apache-uima c:\opt\uima<br>
+    <br>
+For mac/linux:<br>
+mkdir /opt /tmp/extract<br>
+tar -xvzf /path/to/uimaj.tar.gz<br>
+mv /opt/tmp/extract/apache-uima /opt/uima<br>
+    <br>
+  </li>
   <li>In
 your environment, set UIMA_HOME to be the directory where you installed
-uima.</li>
+UIMA.</li>
+  <li>Also modifying your environment, add the bin directory below the
+UIMA installation directory ("c:\opt\uima\bin" on windows or
+"/opt/uima/bin" on mac/linux) to your PATH environment variable. <br>
+    <br>
+On windows your new PATH variable should look like:<br>
+    <br>
+c:\opt\uima\bin;<span class="inlineReplacement">(YOUR OLD PATH)</span><br>
+    <br>
+On linux/mac, your new PATH variable should look like:<br>
+    <br>
+/opt/uima/bin:<span class="inlineReplacement">(YOU OLD PATH)</span><br>
+    </li>
+  <br>
   <li>Create
 a directory on your system to host the installed pear files, the input
 files directory, and the output files directory. &nbsp;For me, I did
-this under /mastif (on a mac or linux box — on windows this would be
+this under /mastif (on a mac or linux box â€” on windows this would be
 c:\mastif)<br>
     <br>
 My directory structure looks like:</li>
@@ -47,36 +78,46 @@ created in step 3 above.</li>
   <li>For each of the following
 (in order) choose the pear file (inside the "pear-files" directory that
 was created when you extracted the zip file above), click install, and
-make sure it installs successfully (screen will be blue on success and
-red on error):</li>
-</ol>
-<ol start="7" type="1">
-  <ul type="circle">
-    <li>core</li>
-    <li>document preprocessor</li>
-    <li>POS tagger</li>
-    <li>chunker</li>
-    <li>context dependent
+make sure it installs successfully (screen text will be blue on success
+and
+red on error):
+    <div>
+    <ul type="circle">
+      <li>core</li>
+      <li>document preprocessor</li>
+      <li>POS tagger</li>
+      <li>chunker</li>
+      <li>context dependent
 tokenizer</li>
-    <li>dictionary lookup DB</li>
-    <li>LVG</li>
-    <li>NE contexts</li>
-    <li>assertion</li>
-    <li>clinical
+      <li>dictionary lookup DB</li>
+      <li>LVG</li>
+      <li>NE contexts</li>
+      <li>assertion</li>
+      <li>clinical
 documents pipeline</li>
-  </ul>
+    </ul>
+    </div>
+  </li>
   <li>To test successful
 install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
 commandline to start up the cas visual debugger.</li>
   <ul type="circle">
-    <li>Choose Run -&gt; Load
+    <li>Choose
+Run -&gt; Load
 AE. &nbsp;Then browse to your installed pear files directory, then open
 "clinical documents pipeline/clinical documents pipeline_pear.xml" and
 say ok. &nbsp;It'll take a few (5-10) seconds to load. &nbsp;Make sure
-this loads correctly. &nbsp;You'll get an error dialog and perhaps
-error message in the console window where you started this.</li>
+this loads correctly.&nbsp; If there's a problem, you'll get an error
+dialog and perhaps
+error message in the console window where you started this.&nbsp; If it
+loads successfully, you'll see a message in the status bar at the
+bottom of the window saying "Done loading AE
+AggregatePlainTextProcessor in <span style="font-style: italic;">n</span> seconds".<br>
+</li>
     <li>Open a sample text
-input document (I'd suggest the i2b2 eval data set 0001.txt, but you
+input document (You can use any clinical document.&nbsp; If you have
+access to the i2b2 data, I'd suggest the i2b2 eval data set 0001.txt,
+but you
 can use something else). &nbsp;Do this by going to File -&gt; Open Text
 File.</li>
     <li>Run
@@ -103,12 +144,12 @@ directories that you created above -- "/mastif" (linux/mac) or
 the following changes:</li>
     <ul type="square">
       <li>"import" statements
-pointing to uima components' xml configuration files</li>
+pointing to UIMA components' xml configuration files</li>
       <ul type="square">
         <li>Search for lines
 that start with "&lt;import". &nbsp;There are 3 in this file that are
-not commented out. &nbsp;The first and the third, need to be updated to
-point to your uima installation. &nbsp;The second, needs to point to
+not commented out. &nbsp;The first and the third need to be updated to
+point to your UIMA installation. &nbsp;The second needs to point to
 your "installed_pears" directory.</li>
         <li>The paths in the
 "import" elements should be "file:" urls. &nbsp;For mac/linux that
@@ -119,7 +160,7 @@ look like "file:/C:/some/directory/file.txt".</li>
 directories</li>
       <ul type="square">
         <li>Search for
-"InputDirectory" and "OutputDirectory". &nbsp;A couple lines down from
+"InputDirectory" and "OutputDirectory". &nbsp;A few lines down from
 each of these is a directory that should contain your input text files
 and (eventually) will contain your output xmi files. &nbsp;These are
 the directories you created beside the "installed_pears" directory.</li>
@@ -146,7 +187,7 @@ runCPE.sh cpe_mimic.xml 2&gt;&amp;1 | tee running_cpe.log</li>
     <li>After
 this completes, your output directory will contain an XMI file for each
 text input file. &nbsp;This will contain an xml representation of the
-cas, including the assertion annotations. &nbsp;You can look at these
+CAS, including the assertion annotations. &nbsp;You can look at these
 by hand, or run annotationViewer.sh to open these up.</li>
     <li>If
 you're viewing the text file by hand, you can search for ":Concept "

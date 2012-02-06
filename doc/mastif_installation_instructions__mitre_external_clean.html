@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <title>Installing MASTIF</title>
+  <title>Installing MASTIF (public, non-MITRE users)</title>
 
   
   
@@ -16,7 +16,8 @@
   </style>
 </head><body lang="EN-US">
 <div>
-<h1>Installing MASTIF</h1>
+<h1>Installing MASTIF (public, non-MITRE users)<br>
+</h1>
 <ol start="1" type="1">
   <li>Before you get started with MASTIF, you will need to have cTAKES
 1.1.2 and UIMA 2.3.1 installed and running.&nbsp; <br>
@@ -81,28 +82,33 @@ choose the pear file that you just extracted, click install, and
 make sure it installs successfully (screen text will be blue on success
 and
 red on error).</li>
-  <li>Next, we need to update the clinical documents pipeline to include the assertion module.&nbsp; Here are the steps:</li>
+  <li>Next, we need to update the clinical documents pipeline to
+include the assertion module.&nbsp; Here are the steps:</li>
   <ul>
     <li>Change directories to the cTAKES installed_pears directory<br>
 (mac/linux) cd /opt/ctakes/installed_pears<br>
 (windows) cd c:\opt\ctakes\installed_pears</li>
     <li>edit AggregatePlaintextProcessor.xml to add the assertion module<br>
-(mac/linux) vi 'clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml'<br>
-(windows) notepad "installed_pears\clinical documents pipeline\desc\analysis_engine\AggregatePlaintextProcessor.xml"</li>
+(mac/linux) vi 'clinical documents
+pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml'<br>
+(windows) notepad "installed_pears\clinical documents
+pipeline\desc\analysis_engine\AggregatePlaintextProcessor.xml"</li>
     <li>Find the closing tag for the delegateAnalysisEngineSpecifiers
 (search for "&lt;/delegateAnalysisEngineSpecifiers&gt;").&nbsp; Insert
 the following before this line:<br>
       <br>
-&nbsp;&nbsp;&nbsp; &lt;delegateAnalysisEngine key="AssertionAnnotator"&gt;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;import location="../../../assertion-pear/assertion-pear_pear.xml"/&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;delegateAnalysisEngine
+key="AssertionAnnotator"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;import
+location="../../../assertion-pear/assertion-pear_pear.xml"/&gt;<br>
 &nbsp;&nbsp;&nbsp; &lt;/delegateAnalysisEngine&gt;<br>
     </li>
-    <li>Next find the closing fixedFlow tag (search for "&lt;/fixedFlow&gt;") and add the following line before that:<br>
+    <li>Next find the closing fixedFlow tag (search for
+"&lt;/fixedFlow&gt;") and add the following line before that:<br>
       <br>
 &lt;node&gt;AssertionAnnotator&lt;/node&gt;<br>
     </li>
   </ul>
-
   <li>To test successful
 install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
 commandline to start up the CAS visual debugger.</li>
@@ -211,8 +217,9 @@ your home directory ($HOME on linux/mac; %USERPROFILE% on windows)<br>
     </li>
   </ul>
   <li>The end! &nbsp;Let me
-know if you need any help.&nbsp; Matt Coarr, mcoarr@mitre.org, 781-271-5308.<br>
-</li>
+know if you need any help.&nbsp; Matt Coarr, mcoarr@mitre.org,
+781-271-5308.<br>
+  </li>
 </ol>
 <div>
 <p class="MsoNormal">Matt</p>

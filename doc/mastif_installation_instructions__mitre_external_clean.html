@@ -1,0 +1,219 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  <title>Installing MASTIF</title>
+
+  
+  
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  
+  <style type="text/css">
+  
+    .compactList li { margin-top: 0.0em; }
+    li { margin-top: 1.0em; }
+    /* ol > li { margin-top: 1.0em; } */
+    .inlineReplacement { font-style: italic; }
+  </style>
+</head><body lang="EN-US">
+<div>
+<h1>Installing MASTIF</h1>
+<ol start="1" type="1">
+  <li>Download
+the UIMA 2.3.1 zip file or tar ball (from&nbsp;<a href="http://uima.apache.org/downloads.cgi">http://uima.apache.org/downloads.cgi</a>).
+&nbsp;Extract this to a location on your machine, preferably one
+without spaces in the path. &nbsp;I usually extract the archive, which
+produces a folder "apache-uima" and then move this to /opt/uima (linux
+and mac) or c:\opt\uima (pc).<br>
+    <br>
+For windows:<br>
+mkdir c:\temp\extract<br>
+mkdir c:\opt<br>
+(unzip the downloaded zip file to c:\temp\extract)<br>
+move c:\temp\extract\apache-uima c:\opt\uima<br>
+    <br>
+For mac/linux:<br>
+mkdir /opt /tmp/extract<br>
+tar -xvzf /path/to/uimaj.tar.gz<br>
+mv /opt/tmp/extract/apache-uima /opt/uima<br>
+    <br>
+  </li>
+  <li>In
+your environment, set UIMA_HOME to be the directory where you installed
+UIMA.</li>
+  <li>Also modifying your environment, add the bin directory below the
+UIMA installation directory ("c:\opt\uima\bin" on windows or
+"/opt/uima/bin" on mac/linux) to your PATH environment variable. <br>
+    <br>
+On windows your new PATH variable should look like:<br>
+    <br>
+c:\opt\uima\bin;<span class="inlineReplacement">(YOUR OLD PATH)</span><br>
+    <br>
+On linux/mac, your new PATH variable should look like:<br>
+    <br>
+/opt/uima/bin:<span class="inlineReplacement">(YOU OLD PATH)</span><br>
+  </li>
+  <br>
+  <li>Create
+a directory on your system to host the installed pear files, the input
+files directory, and the output files directory. &nbsp;For me, I did
+this under /mastif (on a mac or linux box — on windows this would be
+c:\mastif)<br>
+    <br>
+My directory structure looks like:</li>
+  <ul type="circle">
+    <li>/mastif</li>
+    <ul type="square">
+      <li>installed_pears</li>
+      <li>input</li>
+      <li>output</li>
+    </ul>
+  </ul>
+  <li>Grab
+the file "<a href="http://employeeshare.mitre.org/m/mcoarr/transfer/medfact/ctakes_and_assertion/MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip">MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip</a>"
+from my transfer folder. &nbsp;Extract this to a temporary location on
+your sytem. &nbsp;</li>
+  <li>Run
+$UIMA_HOME/bin/runPearInstaller.sh (linux/mac) or
+%UIMA_HOME%\bin\runPearInstaller.bat (win)</li>
+  <li>Set
+the installation directory to be the "installed_pears" directory you
+created in step 3 above.</li>
+  <li>For each of the following
+(in order) choose the pear file (inside the "pear-files" directory that
+was created when you extracted the zip file above), click install, and
+make sure it installs successfully (screen text will be blue on success
+and
+red on error):
+    <div>
+    <ul class="compactList" type="circle">
+      <li>core</li>
+      <li>document preprocessor</li>
+      <li>POS tagger</li>
+      <li>chunker</li>
+      <li>context dependent
+tokenizer</li>
+      <li>dictionary lookup DB</li>
+      <li>LVG</li>
+      <li>NE contexts</li>
+      <li>assertion</li>
+      <li>clinical
+documents pipeline</li>
+    </ul>
+    </div>
+  </li>
+  <li>To test successful
+install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
+commandline to start up the CAS visual debugger.</li>
+  <ul type="circle">
+    <li>Choose Run -&gt; Load
+AE. &nbsp;Then browse to your installed pear files directory, then open
+"clinical documents pipeline/clinical documents pipeline_pear.xml" and
+say ok. &nbsp;It'll take a few (5-10) seconds to load. &nbsp;Make sure
+this loads correctly.&nbsp; If there's a problem, you'll get an error
+dialog and perhaps
+error message in the console window where you started this.&nbsp; If it
+loads successfully, you'll see a message in the status bar at the
+bottom of the window saying "Done loading AE
+AggregatePlainTextProcessor in <span style="font-style: italic;">n</span>
+seconds".<br>
+    </li>
+    <li>Open a sample text
+input document (You can use any clinical document.&nbsp; If you have
+access to the i2b2 data, I'd suggest the i2b2 eval data set 0001.txt,
+but you
+can use something else). &nbsp;Do this by going to File -&gt; Open Text
+File.</li>
+    <li>Run
+the AE on the text file you just loaded by going to Run -&gt; (second
+option) "Run AggregatePlaintextProcessor". &nbsp;This will take a
+minute or so to complete. &nbsp;When it completes, there will be a tree
+of annotations in the top left pane ("CAS Index Repository").
+&nbsp;Expand this and you should see Annotation Index -&gt;
+uima.tcas.Annotation -&gt; org.mitre.medfacts.types.Assertion, and a
+count of that annotation will be in brackets. &nbsp;Click on that and
+you'll see the list of annotations in the bottom left pane.</li>
+  </ul>
+  <li>To
+run this over a batch of data, you want to use the CPE (collection
+processing engine). &nbsp;Do this by:</li>
+  <ul type="circle">
+    <li>Save
+one of the sample cpe xml configuration files (see attached) to a
+location on your system as cpe.xml. &nbsp;If you use another filename,
+update the commands below. &nbsp;For directories, I'd recommend the
+directories that you created above -- "/mastif" (linux/mac) or
+"c:\mastif" (windows).</li>
+    <li>Edit this file to make
+the following changes:</li>
+    <ul type="square">
+      <li>"import" statements
+pointing to UIMA components' xml configuration files</li>
+      <ul type="square">
+        <li>Search for lines
+that start with "&lt;import". &nbsp;There are 3 in this file that are
+not commented out. &nbsp;The first and the third need to be updated to
+point to your UIMA installation. &nbsp;The second needs to point to
+your "installed_pears" directory.</li>
+        <li>The paths in the
+"import" elements should be "file:" urls. &nbsp;For mac/linux that
+would look like "file:/some/directory/file.txt"; for windows that would
+look like "file:/C:/some/directory/file.txt".</li>
+      </ul>
+      <li>Input and output
+directories</li>
+      <ul type="square">
+        <li>Search for
+"InputDirectory" and "OutputDirectory". &nbsp;A few lines down from
+each of these is a directory that should contain your input text files
+and (eventually) will contain your output xmi files. &nbsp;These are
+the directories you created beside the "installed_pears" directory.</li>
+        <li>The
+input and output directories should be file paths, preferably absolute,
+though relative paths work too. &nbsp;For windows systems, forward or
+backslashes will work. &nbsp;For unix and mac systems, this must be a
+forward slash. &nbsp;Also note that this is a file path, not a "file:"
+url.</li>
+      </ul>
+    </ul>
+    <li>Place
+some files in the input directory.</li>
+    <li>Back
+on the command-line, go to the directory where you saved this cpe.xml
+file. &nbsp;Now run "runCPE.sh cpe.xml" (mac/linux) or "runCPE.bat
+cpe.xml" (windows). &nbsp;<br>
+      <br>
+If you're on a mac or linux box, I recommend capturing the output like
+using the following command, as this will capture std out and std err
+to file and still show it on the screen:<br>
+      <br>
+runCPE.sh cpe_mimic.xml 2&gt;&amp;1 | tee running_cpe.log</li>
+    <li>After
+this completes, your output directory will contain an XMI file for each
+text input file. &nbsp;This will contain an xml representation of the
+CAS, including the assertion annotations. &nbsp;You can look at these
+by hand, or run annotationViewer.sh to open these up.</li>
+    <li>If
+you're viewing the text file by hand, you can search for ":Concept "
+and ":Assertion " to find the generated annotations. &nbsp;The concepts
+are used internally to map named entity, ontology concept, and rxnorm
+concepts to an "i2b2-like" concept annotation used by our assertion
+engine. &nbsp;The assertion annotations are the real output of the
+MASTIF system. &nbsp;For every "Concept" annotations with a concept
+type of "PROBLEM", one Assertion will be generated.<br>
+      <br>If
+you don't see this output, either no appropriate concepts were found
+to markup or there was a problem, and you should look at the log output
+and get in touch with us.&nbsp; For the log output, you should look at
+both the console where you executed runCPE and the file uima.log in
+your home directory ($HOME on linux/mac; %USERPROFILE% on windows)<br>
+</li>
+  </ul>
+  <li>The end! &nbsp;Let me
+know if you need any help.</li>
+</ol>
+<div>
+<p class="MsoNormal">Matt</p>
+</div>
+</div>
+
+</body></html>

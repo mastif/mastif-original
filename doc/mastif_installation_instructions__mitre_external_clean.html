@@ -18,24 +18,16 @@
 <div>
 <h1>Installing MASTIF</h1>
 <ol start="1" type="1">
-  <li>Download
-the UIMA 2.3.1 zip file or tar ball (from&nbsp;<a href="http://uima.apache.org/downloads.cgi">http://uima.apache.org/downloads.cgi</a>).
-&nbsp;Extract this to a location on your machine, preferably one
-without spaces in the path. &nbsp;I usually extract the archive, which
-produces a folder "apache-uima" and then move this to /opt/uima (linux
-and mac) or c:\opt\uima (pc).<br>
+  <li>Before you get started with MASTIF, you will need to have cTAKES
+1.1.2 and UIMA 2.3.1 installed and running.&nbsp; <br>
     <br>
-For windows:<br>
-mkdir c:\temp\extract<br>
-mkdir c:\opt<br>
-(unzip the downloaded zip file to c:\temp\extract)<br>
-move c:\temp\extract\apache-uima c:\opt\uima<br>
-    <br>
-For mac/linux:<br>
-mkdir /opt /tmp/extract<br>
-tar -xvzf /path/to/uimaj.tar.gz<br>
-mv /opt/tmp/extract/apache-uima /opt/uima<br>
-    <br>
+These instructions assume that you have UIMA installed (we'll use the
+mac/linux path "/opt/uima" and the windows path "c:\opt\uima" in these
+examples.&nbsp; Additionally, the bin directory below uima should be in
+your system path (that's "/opt/uima/bin" (mac/linux) or
+"c:\opt\uima\bin" (windows)].&nbsp; And for cTAKES, we'll assume they
+are installed in /opt/ctakes/installed_pears (mac/linux) or
+"c:\opt\ctakes\installed_pears" (windows).<br>
   </li>
   <li>In
 your environment, set UIMA_HOME to be the directory where you installed
@@ -54,8 +46,8 @@ On linux/mac, your new PATH variable should look like:<br>
   </li>
   <br>
   <li>Create
-a directory on your system to host the installed pear files, the input
-files directory, and the output files directory. &nbsp;For me, I did
+a directory on your system to host the input
+files directory and the output files directory. &nbsp;For me, I did
 this under /mastif (on a mac or linux box — on windows this would be
 c:\mastif)<br>
     <br>
@@ -63,44 +55,54 @@ My directory structure looks like:</li>
   <ul type="circle">
     <li>/mastif</li>
     <ul type="square">
-      <li>installed_pears</li>
       <li>input</li>
       <li>output</li>
     </ul>
   </ul>
   <li>Grab
-the file "<a href="http://employeeshare.mitre.org/m/mcoarr/transfer/medfact/ctakes_and_assertion/MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip">MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip</a>"
-from my transfer folder. &nbsp;Extract this to a temporary location on
-your sytem. &nbsp;</li>
+the file MASTIF.zip
+from the distribution location (ADD LINK HERE).&nbsp; Extract this and
+find the file assertion-pear-1.1.pear.&nbsp; <br>
+  </li>
   <li>Run
 $UIMA_HOME/bin/runPearInstaller.sh (linux/mac) or
 %UIMA_HOME%\bin\runPearInstaller.bat (win)</li>
   <li>Set
 the installation directory to be the "installed_pears" directory you
-created in step 3 above.</li>
-  <li>For each of the following
-(in order) choose the pear file (inside the "pear-files" directory that
-was created when you extracted the zip file above), click install, and
+used when you setup cTAKES. In our example, that would be
+/opt/ctakes/installed_pears (mac/linux) or
+c:\opt\ctakes\installed_pears (windows).<br>
+    <br>
+(We will only be installing the MASTIF assertion module, you must have
+ctakes up and running already.)<br>
+  </li>
+  <li>Install the file assertion.pear.&nbsp; Within the pear installer,
+choose the pear file that you just extracted, click install, and
 make sure it installs successfully (screen text will be blue on success
 and
-red on error):
-    <div>
-    <ul class="compactList" type="circle">
-      <li>core</li>
-      <li>document preprocessor</li>
-      <li>POS tagger</li>
-      <li>chunker</li>
-      <li>context dependent
-tokenizer</li>
-      <li>dictionary lookup DB</li>
-      <li>LVG</li>
-      <li>NE contexts</li>
-      <li>assertion</li>
-      <li>clinical
-documents pipeline</li>
-    </ul>
-    </div>
-  </li>
+red on error).</li>
+  <li>Next, we need to update the clinical documents pipeline to include the assertion module.&nbsp; Here are the steps:</li>
+  <ul>
+    <li>Change directories to the cTAKES installed_pears directory<br>
+(mac/linux) cd /opt/ctakes/installed_pears<br>
+(windows) cd c:\opt\ctakes\installed_pears</li>
+    <li>edit AggregatePlaintextProcessor.xml to add the assertion module<br>
+(mac/linux) vi 'clinical documents pipeline/desc/analysis_engine/AggregatePlaintextProcessor.xml'<br>
+(windows) notepad "installed_pears\clinical documents pipeline\desc\analysis_engine\AggregatePlaintextProcessor.xml"</li>
+    <li>Find the closing tag for the delegateAnalysisEngineSpecifiers
+(search for "&lt;/delegateAnalysisEngineSpecifiers&gt;").&nbsp; Insert
+the following before this line:<br>
+      <br>
+&nbsp;&nbsp;&nbsp; &lt;delegateAnalysisEngine key="AssertionAnnotator"&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;import location="../../../assertion-pear/assertion-pear_pear.xml"/&gt;<br>
+&nbsp;&nbsp;&nbsp; &lt;/delegateAnalysisEngine&gt;<br>
+    </li>
+    <li>Next find the closing fixedFlow tag (search for "&lt;/fixedFlow&gt;") and add the following line before that:<br>
+      <br>
+&lt;node&gt;AssertionAnnotator&lt;/node&gt;<br>
+    </li>
+  </ul>
+
   <li>To test successful
 install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
 commandline to start up the CAS visual debugger.</li>
@@ -200,16 +202,17 @@ concepts to an "i2b2-like" concept annotation used by our assertion
 engine. &nbsp;The assertion annotations are the real output of the
 MASTIF system. &nbsp;For every "Concept" annotations with a concept
 type of "PROBLEM", one Assertion will be generated.<br>
-      <br>If
-you don't see this output, either no appropriate concepts were found
+      <br>
+If you don't see this output, either no appropriate concepts were found
 to markup or there was a problem, and you should look at the log output
 and get in touch with us.&nbsp; For the log output, you should look at
 both the console where you executed runCPE and the file uima.log in
 your home directory ($HOME on linux/mac; %USERPROFILE% on windows)<br>
-</li>
+    </li>
   </ul>
   <li>The end! &nbsp;Let me
-know if you need any help.</li>
+know if you need any help.&nbsp; Matt Coarr, mcoarr@mitre.org, 781-271-5308.<br>
+</li>
 </ol>
 <div>
 <p class="MsoNormal">Matt</p>

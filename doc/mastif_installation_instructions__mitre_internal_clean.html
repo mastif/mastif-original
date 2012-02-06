@@ -8,7 +8,10 @@
 
   
   <style type="text/css">
-    ol > li { margin-top: 1.0em; }
+  
+    .compactList li { margin-top: 0.0em; }
+    li { margin-top: 1.0em; }
+    /* ol > li { margin-top: 1.0em; } */
     .inlineReplacement { font-style: italic; }
   </style>
 </head><body lang="EN-US">
@@ -48,7 +51,7 @@ c:\opt\uima\bin;<span class="inlineReplacement">(YOUR OLD PATH)</span><br>
 On linux/mac, your new PATH variable should look like:<br>
     <br>
 /opt/uima/bin:<span class="inlineReplacement">(YOU OLD PATH)</span><br>
-    </li>
+  </li>
   <br>
   <li>Create
 a directory on your system to host the installed pear files, the input
@@ -82,7 +85,7 @@ make sure it installs successfully (screen text will be blue on success
 and
 red on error):
     <div>
-    <ul type="circle">
+    <ul class="compactList" type="circle">
       <li>core</li>
       <li>document preprocessor</li>
       <li>POS tagger</li>
@@ -100,10 +103,9 @@ documents pipeline</li>
   </li>
   <li>To test successful
 install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
-commandline to start up the cas visual debugger.</li>
+commandline to start up the CAS visual debugger.</li>
   <ul type="circle">
-    <li>Choose
-Run -&gt; Load
+    <li>Choose Run -&gt; Load
 AE. &nbsp;Then browse to your installed pear files directory, then open
 "clinical documents pipeline/clinical documents pipeline_pear.xml" and
 say ok. &nbsp;It'll take a few (5-10) seconds to load. &nbsp;Make sure
@@ -112,8 +114,9 @@ dialog and perhaps
 error message in the console window where you started this.&nbsp; If it
 loads successfully, you'll see a message in the status bar at the
 bottom of the window saying "Done loading AE
-AggregatePlainTextProcessor in <span style="font-style: italic;">n</span> seconds".<br>
-</li>
+AggregatePlainTextProcessor in <span style="font-style: italic;">n</span>
+seconds".<br>
+    </li>
     <li>Open a sample text
 input document (You can use any clinical document.&nbsp; If you have
 access to the i2b2 data, I'd suggest the i2b2 eval data set 0001.txt,
@@ -197,10 +200,13 @@ concepts to an "i2b2-like" concept annotation used by our assertion
 engine. &nbsp;The assertion annotations are the real output of the
 MASTIF system. &nbsp;For every "Concept" annotations with a concept
 type of "PROBLEM", one Assertion will be generated.<br>
-      <br>
-If you don't see this output, either no appropriate concepts were found
+      <br>If
+you don't see this output, either no appropriate concepts were found
 to markup or there was a problem, and you should look at the log output
-and get in touch with us.</li>
+and get in touch with us.&nbsp; For the log output, you should look at
+both the console where you executed runCPE and the file uima.log in
+your home directory ($HOME on linux/mac; %USERPROFILE% on windows)<br>
+</li>
   </ul>
   <li>The end! &nbsp;Let me
 know if you need any help.</li>

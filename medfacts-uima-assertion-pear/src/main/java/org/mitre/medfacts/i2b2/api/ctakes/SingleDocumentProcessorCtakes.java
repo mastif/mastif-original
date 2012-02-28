@@ -23,14 +23,14 @@ import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.Sentence_Type;
-import edu.mayo.bmi.uima.core.type.WordToken;
-import edu.mayo.bmi.uima.core.type.NumToken;
-import edu.mayo.bmi.uima.core.type.NewlineToken;
-import edu.mayo.bmi.uima.core.type.SymbolToken;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.syntax.PunctuationToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence_Type;
+import edu.mayo.bmi.uima.core.type.syntax.WordToken;
+import edu.mayo.bmi.uima.core.type.syntax.NumToken;
+import edu.mayo.bmi.uima.core.type.syntax.NewlineToken;
+import edu.mayo.bmi.uima.core.type.syntax.SymbolToken;
 
 public class SingleDocumentProcessorCtakes extends SingleDocumentProcessor
 {

@@ -15,8 +15,8 @@ import org.mitre.medfacts.i2b2.api.ApiConcept;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineAndTokenPosition;
 
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
+import edu.mayo.bmi.uima.core.type.syntax.BaseToken;
+import edu.mayo.bmi.uima.core.type.textspan.Sentence;
 
 public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterOffsetToLineTokenConverter
 {

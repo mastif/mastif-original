@@ -11,8 +11,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
- * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
+ * Updated by JCasGen Tue Feb 28 11:18:13 EST 2012
+ * XML source: /work/medfacts/sandbox/svn/medfact_branch/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
  * @generated */
 public class Concept extends Annotation {
   /** @generated
@@ -111,6 +111,24 @@ public class Concept extends Annotation {
     if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_externalId == null)
       jcasType.jcas.throwFeatMissing("externalId", "org.mitre.medfacts.types.Concept");
     jcasType.ll_cas.ll_setIntValue(addr, ((Concept_Type)jcasType).casFeatCode_externalId, v);}    
+   
+    
+  //*--------------*
+  //* Feature: originalEntityExternalId
+
+  /** getter for originalEntityExternalId - gets 
+   * @generated */
+  public int getOriginalEntityExternalId() {
+    if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_originalEntityExternalId == null)
+      jcasType.jcas.throwFeatMissing("originalEntityExternalId", "org.mitre.medfacts.types.Concept");
+    return jcasType.ll_cas.ll_getIntValue(addr, ((Concept_Type)jcasType).casFeatCode_originalEntityExternalId);}
+    
+  /** setter for originalEntityExternalId - sets  
+   * @generated */
+  public void setOriginalEntityExternalId(int v) {
+    if (Concept_Type.featOkTst && ((Concept_Type)jcasType).casFeat_originalEntityExternalId == null)
+      jcasType.jcas.throwFeatMissing("originalEntityExternalId", "org.mitre.medfacts.types.Concept");
+    jcasType.ll_cas.ll_setIntValue(addr, ((Concept_Type)jcasType).casFeatCode_originalEntityExternalId, v);}    
   }
 
     

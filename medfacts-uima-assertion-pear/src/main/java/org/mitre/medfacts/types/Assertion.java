@@ -13,8 +13,8 @@ import org.apache.uima.jcas.tcas.Annotation;
 
 
 /** 
- * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
- * XML source: /work/medfacts/eclipse-medfacts-uima/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
+ * Updated by JCasGen Tue Feb 28 11:18:13 EST 2012
+ * XML source: /work/medfacts/sandbox/svn/medfact_branch/medfacts-uima-assertion-pear/desc/medfactsTypeSystem.xml
  * @generated */
 public class Assertion extends Annotation {
   /** @generated

@@ -25,6 +25,11 @@
           <description/>
           <rangeTypeName>uima.cas.Integer</rangeTypeName>
         </featureDescription>
+        <featureDescription>
+          <name>originalEntityExternalId</name>
+          <description/>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
       </features>
     </typeDescription>
     <typeDescription>

@@ -15,7 +15,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
+ * Updated by JCasGen Tue Feb 28 11:18:13 EST 2012
  * @generated */
 public class Assertion_Type extends Annotation_Type {
   /** @generated */

@@ -8,8 +8,8 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.jcas.cas.FSArray;
 import org.mitre.medfacts.i2b2.annotation.ConceptType;
 
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
 
 public class ConceptLookup
 {

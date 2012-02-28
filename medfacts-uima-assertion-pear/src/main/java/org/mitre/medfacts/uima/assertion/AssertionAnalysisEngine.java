@@ -19,6 +19,7 @@ import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceAccessException;
+import org.jfree.util.Log;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
@@ -35,10 +36,7 @@ import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
-import edu.mayo.bmi.uima.core.type.BaseToken;
-import edu.mayo.bmi.uima.core.type.PunctuationToken;
-import edu.mayo.bmi.uima.core.type.Sentence;
-import edu.mayo.bmi.uima.core.type.WordToken;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
@@ -173,7 +171,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
       Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
 	    logger.info(String.format("    - done processing ..\"."));
 	    
-	    Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
+	    //Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
+	    CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas);
 	    
 	    for (Entry<Integer, String>  current : assertionTypeMap.entrySet())
 	    {
@@ -181,11 +180,96 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    	Integer currentIndex = current.getKey();
 	    	ApiConcept originalConcept = apiConceptList.get(currentIndex);
 	    	
-	    	Assertion assertion = new Assertion(jcas, originalConcept.getBegin(), originalConcept.getEnd());
-	    	assertion.setAssertionType(currentAssertionType);
-	    	Concept associatedConcept = (Concept) annotationMap.get(originalConcept.getExternalId());
-	      assertion.setAssociatedConcept(associatedConcept);
-	    	assertion.addToIndexes();
+	    	Concept associatedConcept = (Concept) indexer.lookupByAddress(originalConcept.getExternalId());
+	      int entityAddress = associatedConcept.getOriginalEntityExternalId();
+	      EntityMention entityMention = (EntityMention) indexer.lookupByAddress(entityAddress);
+	      
+	      // possible values for currentAssertionType:
+        // present
+	      // absent
+	      // associated_with_someone_else
+	      // conditional
+	      // hypothetical
+	      // possible
+	      
+	      if (currentAssertionType == null)
+	      {
+	        String message = "current assertion type is null; this is a problem!!";
+	        Log.error(message);
+//	        Exception runtimeException = new RuntimeException(message);
+//	        throw new AnalysisEngineProcessException(runtimeException);
+        } else if (currentAssertionType.equals("present"))
+        // PRESENT (mastif value)
+        {
+          // ALL DEFAULT VALUES!! (since this is present)
+          entityMention.setSubject("patient");
+          entityMention.setPolarity(1);
+          entityMention.setConfidence(1.0f);
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(false);
+          entityMention.setGeneric(false);
+          
+        } else if (currentAssertionType.equals("absent"))
+        // ABSENT (mastif value)
+        {
+          entityMention.setSubject("patient");
+          entityMention.setPolarity(-1); // NOT DEFAULT VALUE
+          entityMention.setConfidence(1.0f);
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(false);
+          entityMention.setGeneric(false);
+          
+        } else if (currentAssertionType.equals("associated_with_someone_else"))
+        // ASSOCIATED WITH SOMEONE ELSE (mastif value)
+        {
+          entityMention.setSubject("other"); // NOT DEFAULT VALUE
+          entityMention.setPolarity(1);
+          entityMention.setConfidence(1.0f);
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(false);
+          entityMention.setGeneric(false);
+          
+        } else if (currentAssertionType.equals("conditional"))
+        // CONDITIONAL (mastif value)
+        {
+          entityMention.setSubject("patient");
+          entityMention.setPolarity(1);
+          entityMention.setConfidence(1.0f);
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(false);
+          entityMention.setGeneric(false);
+          
+        } else if (currentAssertionType.equals("hypothetical"))
+        // HYPOTHETICAL (mastif value)
+        {
+          entityMention.setSubject("patient");
+          entityMention.setPolarity(1);
+          entityMention.setConfidence(1.0f);
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(true); // NOT DEFAULT VALUE
+          entityMention.setGeneric(false);
+          
+        } else if (currentAssertionType.equals("posible"))
+        // POSSIBLE (mastif value)
+        {
+          entityMention.setSubject("patient");
+          entityMention.setPolarity(1);
+          entityMention.setConfidence(0.5f); // NOT DEFAULT VALUE
+          entityMention.setUncertainty(0);
+          entityMention.setConditional(false);
+          entityMention.setGeneric(false);
+        } else
+        {
+          String message = String.format("unexpected assertion value returned!! \"%s\"", currentAssertionType);
+          Exception runtimeException = new RuntimeException(message);
+          throw new AnalysisEngineProcessException(runtimeException);
+	      }
+	    	
+//	    	Assertion assertion = new Assertion(jcas, originalConcept.getBegin(), originalConcept.getEnd());
+//	    	assertion.setAssertionType(currentAssertionType);
+//	    	Concept associatedConcept = (Concept) annotationMap.get(originalConcept.getExternalId());
+//	      assertion.setAssociatedConcept(associatedConcept);
+//	    	assertion.addToIndexes();
 	    	
 	    	
 	    }

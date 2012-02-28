@@ -14,7 +14,7 @@ import org.apache.uima.cas.Feature;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 
 /** 
- * Updated by JCasGen Wed Oct 12 08:56:26 EDT 2011
+ * Updated by JCasGen Tue Feb 28 11:18:13 EST 2012
  * @generated */
 public class Concept_Type extends Annotation_Type {
   /** @generated */
@@ -94,6 +94,24 @@ public class Concept_Type extends Annotation_Type {
     ll_cas.ll_setIntValue(addr, casFeatCode_externalId, v);}
     
   
+ 
+  /** @generated */
+  final Feature casFeat_originalEntityExternalId;
+  /** @generated */
+  final int     casFeatCode_originalEntityExternalId;
+  /** @generated */ 
+  public int getOriginalEntityExternalId(int addr) {
+        if (featOkTst && casFeat_originalEntityExternalId == null)
+      jcas.throwFeatMissing("originalEntityExternalId", "org.mitre.medfacts.types.Concept");
+    return ll_cas.ll_getIntValue(addr, casFeatCode_originalEntityExternalId);
+  }
+  /** @generated */    
+  public void setOriginalEntityExternalId(int addr, int v) {
+        if (featOkTst && casFeat_originalEntityExternalId == null)
+      jcas.throwFeatMissing("originalEntityExternalId", "org.mitre.medfacts.types.Concept");
+    ll_cas.ll_setIntValue(addr, casFeatCode_originalEntityExternalId, v);}
+    
+  
 
 
 
@@ -114,6 +132,10 @@ public class Concept_Type extends Annotation_Type {
  
     casFeat_externalId = jcas.getRequiredFeatureDE(casType, "externalId", "uima.cas.Integer", featOkTst);
     casFeatCode_externalId  = (null == casFeat_externalId) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_externalId).getCode();
+
+ 
+    casFeat_originalEntityExternalId = jcas.getRequiredFeatureDE(casType, "originalEntityExternalId", "uima.cas.Integer", featOkTst);
+    casFeatCode_originalEntityExternalId  = (null == casFeat_originalEntityExternalId) ? JCas.INVALID_FEATURE_CODE : ((FeatureImpl)casFeat_originalEntityExternalId).getCode();
 
   }
 }

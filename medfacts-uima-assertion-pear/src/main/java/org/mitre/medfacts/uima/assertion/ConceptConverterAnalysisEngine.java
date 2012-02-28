@@ -34,10 +34,9 @@ import org.mitre.medfacts.types.Concept;
 import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
-import edu.mayo.bmi.uima.core.type.NamedEntity;
-import edu.mayo.bmi.uima.core.type.OntologyConcept;
-import edu.mayo.bmi.uima.core.type.UmlsConcept;
-import edu.mayo.bmi.uima.core.util.TypeSystemConst;
+import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
+import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
+import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
 
 public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 	public static final Logger logger = Logger.getLogger(ConceptConverterAnalysisEngine.class.getName());
@@ -59,27 +58,27 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 		
 		Map<Integer, UmlsConcept> idToConceptMap = new HashMap<Integer, UmlsConcept>();
 		Map<Integer, Set<Integer>> idToConceptMapForEntity = new HashMap<Integer, Set<Integer>>();
-		Map<Integer, Set<NamedEntity>> idToNamedEntityMap = new HashMap<Integer, Set<NamedEntity>>();
+		Map<Integer, Set<EntityMention>> idToNamedEntityMap = new HashMap<Integer, Set<EntityMention>>();
 		
-		int namedEntityType = NamedEntity.type;
-		AnnotationIndex<Annotation> namedEntityAnnotationIndex =
-			jcas.getAnnotationIndex(namedEntityType);
+		int entityMentionType = EntityMention.type;
+		AnnotationIndex<Annotation> entityMentionAnnotationIndex =
+			jcas.getAnnotationIndex(entityMentionType);
 		
 		int totalAnnotationCount = jcas.getAnnotationIndex().size();
-		int namedEntityAnnotationCount = namedEntityAnnotationIndex.size();
+		int entityMentionAnnotationCount = entityMentionAnnotationIndex.size();
 		
 		logger.info(String.format("    total annotation count %d", totalAnnotationCount));
-		logger.info(String.format("    named entity annotation count %d", namedEntityAnnotationCount));
+		logger.info(String.format("    named entity annotation count %d", entityMentionAnnotationCount));
 		
 		logger.info("    before iterating over named entities...");
-		for (FeatureStructure featureStructure : namedEntityAnnotationIndex)
+		for (FeatureStructure featureStructure : entityMentionAnnotationIndex)
 		{
 			logger.info("    begin single named entity");
-			NamedEntity namedEntityAnnotation  = (NamedEntity)featureStructure;
+			EntityMention entityMentionAnnotation  = (EntityMention)featureStructure;
 			
-			int begin = namedEntityAnnotation.getBegin();
-			int end = namedEntityAnnotation.getEnd();
-			String conceptText = namedEntityAnnotation.getCoveredText();
+			int begin = entityMentionAnnotation.getBegin();
+			int end = entityMentionAnnotation.getEnd();
+			String conceptText = entityMentionAnnotation.getCoveredText();
 			
 			logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText, begin, end));
 			
@@ -87,7 +86,9 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase {
 			concept.setConceptText(conceptText);
 			concept.setConceptType(null);
 			
-			FSArray ontologyConceptArray = namedEntityAnnotation.getOntologyConceptArr();
+			concept.setOriginalEntityExternalId(entityMentionAnnotation.getAddress());
+			
+			FSArray ontologyConceptArray = entityMentionAnnotation.getOntologyConceptArr();
 
 			
 			ConceptType conceptType = ConceptLookup.lookupConceptType(ontologyConceptArray);

@@ -127,8 +127,8 @@
     </dependency>
     <dependency>
       <groupId>org.mitre</groupId>
-      <artifactId>jcarafe-ext_2.9.0</artifactId>
-      <version>0.9.8.2.RC5</version>
+      <artifactId>jcarafe-ext_2.9.1</artifactId>
+      <version>0.9.8.3.RC4</version>
     </dependency>
     <dependency>
         <groupId>commons-cli</groupId>

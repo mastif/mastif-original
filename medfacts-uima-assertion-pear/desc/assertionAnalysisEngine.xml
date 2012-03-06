@@ -13,14 +13,21 @@
     <typeSystemDescription>
       <imports>
         <import location="medfactsTypeSystem.xml"/>
+        <import location="/work/medfacts/svn_ctakes_with_cts/SHARPn-cTAKES/common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
     <fsIndexCollection/>
     <capabilities>
       <capability>
-        <inputs/>
-        <outputs/>
+        <inputs>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.EntityMention</type>
+          <type allAnnotatorFeatures="true">org.mitre.medfacts.types.Concept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+        </inputs>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.EntityMention</type>
+        </outputs>
         <languagesSupported/>
       </capability>
     </capabilities>

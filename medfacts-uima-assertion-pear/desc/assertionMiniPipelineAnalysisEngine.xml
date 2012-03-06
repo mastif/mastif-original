@@ -26,8 +26,15 @@
     <fsIndexCollection/>
     <capabilities>
       <capability>
-        <inputs/>
-        <outputs/>
+        <inputs>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.refsem.UmlsConcept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.refsem.OntologyConcept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.EntityMention</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
+        </inputs>
+        <outputs>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.EntityMention</type>
+        </outputs>
         <languagesSupported/>
       </capability>
     </capabilities>

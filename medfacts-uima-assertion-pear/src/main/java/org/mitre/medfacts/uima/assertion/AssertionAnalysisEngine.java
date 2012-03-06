@@ -174,9 +174,12 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	    //Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas, Concept.type);
 	    CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas);
 	    
+      logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
 	    for (Entry<Integer, String>  current : assertionTypeMap.entrySet())
 	    {
+	      logger.info("    assertionTypeMap loop INSIDE BEGIN");
 	    	String currentAssertionType = current.getValue();
+	    	logger.info(String.format("  currentAssertionType: %s", currentAssertionType));
 	    	Integer currentIndex = current.getKey();
 	    	ApiConcept originalConcept = apiConceptList.get(currentIndex);
 	    	
@@ -192,9 +195,12 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 	      // hypothetical
 	      // possible
 	      
+	      logger.info(String.format("removed entityMention (%s) from indexes", entityMention.toString()));
+	      entityMention.removeFromIndexes();
 	      if (currentAssertionType == null)
 	      {
 	        String message = "current assertion type is null; this is a problem!!";
+	        System.err.println(message);
 	        Log.error(message);
 //	        Exception runtimeException = new RuntimeException(message);
 //	        throw new AnalysisEngineProcessException(runtimeException);
@@ -249,7 +255,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
           entityMention.setConditional(true); // NOT DEFAULT VALUE
           entityMention.setGeneric(false);
           
-        } else if (currentAssertionType.equals("posible"))
+        } else if (currentAssertionType.equals("possible"))
         // POSSIBLE (mastif value)
         {
           entityMention.setSubject("patient");
@@ -261,9 +267,13 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
         } else
         {
           String message = String.format("unexpected assertion value returned!! \"%s\"", currentAssertionType);
+          logger.severe(message);
+          System.err.println(message);
           Exception runtimeException = new RuntimeException(message);
           throw new AnalysisEngineProcessException(runtimeException);
 	      }
+	      entityMention.addToIndexes();
+        logger.info(String.format("added back entityMention (%s) to indexes", entityMention.toString()));
 	    	
 //	    	Assertion assertion = new Assertion(jcas, originalConcept.getBegin(), originalConcept.getEnd());
 //	    	assertion.setAssertionType(currentAssertionType);
@@ -272,7 +282,9 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase {
 //	    	assertion.addToIndexes();
 	    	
 	    	
+        logger.info("    assertionTypeMap loop INSIDE END");
 	    }
+      logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
 	    logger.info("(logging statement) AssertionAnalysisEngine.process() END");
 	}
 

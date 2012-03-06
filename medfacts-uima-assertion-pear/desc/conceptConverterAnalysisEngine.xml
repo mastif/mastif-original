@@ -13,19 +13,7 @@
     <typeSystemDescription>
       <imports>
         <import location="medfactsTypeSystem.xml"/>
-	<import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
-        <import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
-        <import location="file:/home/wellner/Devel/cTAKES/core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
-	<!--
-        <import location="../../core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
-        <import location="../../core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
-        <import location="../../core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
-	-->
-        <!--
-        <import location="file:/tmp/pear/svn/cTAKES/core/src/edu/mayo/bmi/uima/core/type/OntologyConcept.xml"/>
-        <import location="file:/tmp/pear/svn/cTAKES/core/src/edu/mayo/bmi/uima/core/type/UmlsConcept.xml"/>
-        <import location="file:/tmp/pear/svn/cTAKES/core/src/edu/mayo/bmi/uima/core/type/NamedEntity.xml"/>
-        -->
+        <import location="../../../../../svn_ctakes_with_cts/SHARPn-cTAKES/common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>
@@ -33,9 +21,10 @@
     <capabilities>
       <capability>
         <inputs>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.UmlsConcept</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.NamedEntity</type>
-          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.OntologyConcept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.refsem.UmlsConcept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.refsem.OntologyConcept</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.textsem.EntityMention</type>
+          <type allAnnotatorFeatures="true">edu.mayo.bmi.uima.core.type.syntax.BaseToken</type>
         </inputs>
         <outputs>
           <type allAnnotatorFeatures="true">org.mitre.medfacts.types.Concept</type>

@@ -18,6 +18,7 @@ import org.apache.uima.cas.Type;
 import org.apache.uima.cas.text.AnnotationIndex;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
+import org.apache.uima.jcas.tcas.Annotation_Type;
 import org.apache.uima.resource.ResourceAccessException;
 import org.jfree.util.Log;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
@@ -180,7 +181,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 
     // Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas,
     // Concept.type);
-    CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas);
+    CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas, null);
 
     logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
     for (Entry<Integer, String> current : assertionTypeMap.entrySet())
@@ -206,9 +207,9 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       // hypothetical
       // possible
 
-      logger.info(String.format("removed entityMention (%s) from indexes",
-          entityMention.toString()));
-      entityMention.removeFromIndexes();
+//      logger.info(String.format("removed entityMention (%s) from indexes",
+//          entityMention.toString()));
+//      entityMention.removeFromIndexes();
       if (currentAssertionType == null)
       {
         String message = "current assertion type is null; this is a problem!!";
@@ -216,9 +217,19 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         Log.error(message);
         // Exception runtimeException = new RuntimeException(message);
         // throw new AnalysisEngineProcessException(runtimeException);
+      
+        // ALL OBVIOUS ERROR VALUES!!
+        entityMention.setSubject("skipped");
+        entityMention.setPolarity(-2);
+        entityMention.setConfidence(-2.0f);
+        entityMention.setUncertainty(-2);
+        entityMention.setConditional(false);
+        entityMention.setGeneric(false);
+
       } else if (currentAssertionType.equals("present"))
       // PRESENT (mastif value)
       {
+        debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
         entityMention.setSubject("patient");
         entityMention.setPolarity(1);
@@ -227,6 +238,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         entityMention.setConditional(false);
         entityMention.setGeneric(false);
 
+        debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
@@ -286,9 +298,9 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         Exception runtimeException = new RuntimeException(message);
         throw new AnalysisEngineProcessException(runtimeException);
       }
-      entityMention.addToIndexes();
-      logger.info(String.format("added back entityMention (%s) to indexes",
-          entityMention.toString()));
+//      entityMention.addToIndexes();
+//      logger.info(String.format("added back entityMention (%s) to indexes",
+//          entityMention.toString()));
 
       // Assertion assertion = new Assertion(jcas, originalConcept.getBegin(),
       // originalConcept.getEnd());
@@ -302,6 +314,22 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     }
     logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
     logger.info("(logging statement) AssertionAnalysisEngine.process() END");
+  }
+
+  public void debugAnnotationsInCas(JCas jcas, EntityMention entityMention,
+      String label)
+  {
+    CasIndexer<EntityMention> i = new CasIndexer<EntityMention>(jcas, entityMention.getType());
+    
+    StringBuilder b = new StringBuilder();
+    b.append(String.format("<<<<<%n### TARGET ###%nclass: %s%naddress: %d%nvalue: %s%n### END TARGET ###%n>>>>>%n%n", entityMention.getClass().getName(), entityMention.getAddress(), entityMention.toString()));
+    
+    String debugOutput = i.convertToDebugOutput(label, entityMention);
+    
+    b.append(debugOutput);
+    
+    logger.info(b.toString());
+    
   }
 
   public Map<Integer, Annotation> generateAnnotationMap(JCas jcas)

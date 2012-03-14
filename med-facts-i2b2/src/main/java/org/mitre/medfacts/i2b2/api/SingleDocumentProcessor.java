@@ -183,10 +183,11 @@ public class SingleDocumentProcessor
     int i = 0;
     for (ApiConcept currentConcept : apiConceptList)
     {
-      if ("PROBLEM".equalsIgnoreCase(currentConcept.getType()))
-      {
-        problemMap.put(i, currentConcept);
-      }
+      problemMap.put(i, currentConcept);
+//      if ("PROBLEM".equalsIgnoreCase(currentConcept.getType()))
+//      {
+//        problemMap.put(i, currentConcept);
+//      }
       i++;
     }
     

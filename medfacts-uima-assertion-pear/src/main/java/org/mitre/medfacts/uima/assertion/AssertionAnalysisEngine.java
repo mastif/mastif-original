@@ -20,7 +20,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 import org.apache.uima.resource.ResourceAccessException;
-import org.jfree.util.Log;
+//import org.jfree.util.Log;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
 import org.mitre.medfacts.i2b2.annotation.ScopeParser;
@@ -214,7 +214,7 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       {
         String message = "current assertion type is null; this is a problem!!";
         System.err.println(message);
-        Log.error(message);
+        logger.severe(message);
         // Exception runtimeException = new RuntimeException(message);
         // throw new AnalysisEngineProcessException(runtimeException);
       

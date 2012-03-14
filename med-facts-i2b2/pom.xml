@@ -4,7 +4,7 @@
   <groupId>org.mitre.medfacts.i2b2</groupId>
   <artifactId>med-facts-i2b2</artifactId>
   <packaging>jar</packaging>
-  <version>1.1</version>
+  <version>1.2-SNAPSHOT</version>
   <name>med-facts-i2b2</name>
   <url>http://maven.apache.org</url>
 

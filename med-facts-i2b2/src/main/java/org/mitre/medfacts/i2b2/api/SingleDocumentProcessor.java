@@ -89,23 +89,23 @@ public class SingleDocumentProcessor
   public void processSingleDocument()
   {
     logger.info("(logging statement) SingleDocumentProcessor.processSingleDocument() BEGIN");
-    System.out.println("(logging statement) SingleDocumentProcessor.processSingleDocument() BEGIN");
+    System.out.println("(stdout statement) SingleDocumentProcessor.processSingleDocument() BEGIN");
 
     preExecutionTest();
     preprocess();
-    System.out.println("(logging statement) generateAnnotations() BEGIN");
+    System.out.println("(stdout statement) generateAnnotations() BEGIN");
     generateAnnotations();
-    System.out.println("(logging statement) generateAnnotations() END");
+    System.out.println("(stdout statement) generateAnnotations() END");
     indexer.indexAnnotations(allAnnotationList);
     //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
-    System.out.println("(logging statement) generateFeatures() BEGIN");
+    System.out.println("(stdout statement) generateFeatures() BEGIN");
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
-    System.out.println("(logging statement) generateFeatures() END");
+    System.out.println("(stdout statement) generateFeatures() END");
     assertionTypeMap = decode(trainingInstanceMap);
     postprocess();
 
     logger.info("(logging statement) SingleDocumentProcessor.processSingleDocument() END");
-    System.out.println("(logging statement) SingleDocumentProcessor.processSingleDocument() END");
+    System.out.println("(stdout statement) SingleDocumentProcessor.processSingleDocument() END");
   }
 
   public void postprocess()

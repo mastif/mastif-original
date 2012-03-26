@@ -13,7 +13,7 @@
     <typeSystemDescription>
       <imports>
         <import location="medfactsTypeSystem.xml"/>
-        <import location="../../../../../svn_ctakes_with_cts/SHARPn-cTAKES/common-type-system/desc/common_type_system.xml"/>
+        <import location="../../common-type-system/desc/common_type_system.xml"/>
       </imports>
     </typeSystemDescription>
     <typePriorities/>

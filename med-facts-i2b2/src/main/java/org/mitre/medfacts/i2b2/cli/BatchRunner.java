@@ -55,7 +55,7 @@ public class BatchRunner
 {
   public static final float TRAINING_RATIO = 0.8f;
   public static final Pattern FILE_EXTENSION_PATTERN = Pattern.compile("\\.[a-zA-Z0-9]*$");
-  //protected String baseDirectoryString;
+  protected String baseDirectory;
   protected String trainingDirectory;
   protected String decodeDirectory;
 
@@ -212,7 +212,7 @@ public class BatchRunner
 //    System.out.format("base directory: %s%n", baseDirectory);
 
     BatchRunner batchRunner = new BatchRunner();
-    //batchRunner.setBaseDirectoryString(baseDirectory);
+    batchRunner.setBaseDirectory(baseDir);
     batchRunner.setTrainingDirectory(trainDir);
     batchRunner.setDecodeDirectory(decodeDir);
     batchRunner.setMode(mode);
@@ -386,6 +386,13 @@ public class BatchRunner
     //For testing: print out the model as a string -Alex Yeh
 
     // decoding
+
+    AssertionXmlOutputLogger xmlOutputLogger = new AssertionXmlOutputLogger();
+
+    xmlOutputLogger.setBaseDirectory(baseDirectory);
+    xmlOutputLogger.init();
+    xmlOutputLogger.startDocument();
+
     JarafeMEDecoder decoder = new JarafeMEDecoder(model);
     int matchCount = 0;
     int notMatchCount = 0;
@@ -430,8 +437,7 @@ public class BatchRunner
         boolean actualMatchesExpected = actualAssertionValueString.equalsIgnoreCase(expectedValue);
         if (actualMatchesExpected)
         {
-          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d] [assertion line: %d]", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber());
-          System.out.format("  ###BEGIN FEATURES###%s###END FEATURES###%n", currentEvalInstance.getFeatureSet().toString());
+          System.out.format("MATCHES (actual/expected) %s/%s [%s:%d] [assertion line: %d] %s ###BEGIN FEATURES###%s###END FEATURES###%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
           matchCount++;
         } else
         {
@@ -439,7 +445,8 @@ public class BatchRunner
           //Keep everyhing on one line so it will be easier to pull out using 'grep', etc.
           //Features are separated by ', ', but only the space is reliable as many features have a comma as part of their name.
           //-Alex Yeh
-          System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d] %s Features: %s%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
+          //System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d] %s Features: %s%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
+          System.err.format("DOES NOT MATCH (actual/expected) %s/%s [%s:%d] [assertion line: %d] %s ###BEGIN FEATURES###%s###END FEATURES###%n", actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber(), currentEvalInstance.getAssertAnnotateForTI(), currentEvalInstance.getFeatureSet().toString());
           notMatchCount++;
           //Print out string tokens and annotations for the line of this instance with a mismatch in value -Alex Yeh
           //  Side note: because this prints out in the "err stream" and "matches" prints out in the "out stream", this line may end-up appearing inbetween some of the "matches" line print outs
@@ -456,11 +463,14 @@ public class BatchRunner
             System.err.format("  LnAn=> %s%n", annotationInLine.toString());
           }
         }
+        xmlOutputLogger.addAssertion(actualMatchesExpected, actualAssertionValueString, expectedValue, currentEvalInstance.getFilename(), currentEvalInstance.getLineNumber(), currentEvalInstance.getAssertAnnotateForTI().getAnnotationFileLineNumber(), currentEvalInstance.getFeatureSet());
       } else if (mode == Mode.DECODE)
       {
 
       }
     }
+
+    xmlOutputLogger.finishDocument();
 
     printOutResultFiles();
 
@@ -682,6 +692,16 @@ public class BatchRunner
       }
 
     }
+  }
+
+  public String getBaseDirectory()
+  {
+    return baseDirectory;
+  }
+
+  public void setBaseDirectory(String baseDirectory)
+  {
+    this.baseDirectory = baseDirectory;
   }
 
 

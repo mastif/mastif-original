@@ -172,7 +172,8 @@ public class MedFactsRunner
     
     StringWriter w = new StringWriter();
     PrintWriter pw = new PrintWriter(w);
-    
+   
+    /*
     pw.println("=== ZONE ANNOTATIONS begin ===");
     if (zoneList == null)
     {
@@ -187,6 +188,7 @@ public class MedFactsRunner
     }
     pw.println("=== ZONE ANNOTATIONS end ===");
     logger.info(w.toString());
+    */
 
     allAnnotationList.addAll(zoneList);
 
@@ -317,7 +319,7 @@ public class MedFactsRunner
 
     try
     {
-      logger.info(String.format("inside processCueList working with cue file: %s", cueListFilename));
+      logger.fine(String.format("inside processCueList working with cue file: %s", cueListFilename));
       InputStream cueFileInputStream = classLoader.getResourceAsStream(cueListFilename);
       InputStreamReader inputStreamReader = new InputStreamReader(cueFileInputStream);
       BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
@@ -368,24 +370,24 @@ public class MedFactsRunner
 
   public void validateAnnotations()
   {
-    logger.info("#####");
-    logger.info("#####");
+    //logger.info("#####");
+    //logger.info("#####");
     for (Annotation currentAnnotation : getAllAnnotationList())
     {
-      logger.info(String.format(" - %s%n", currentAnnotation));
+      //logger.info(String.format(" - %s%n", currentAnnotation));
       Location begin = currentAnnotation.getBegin();
       Location end = currentAnnotation.getEnd();
-      logger.info(String.format("==%n  begin: %s%n  end: %s%n==%n", begin, end));
+      //logger.info(String.format("==%n  begin: %s%n  end: %s%n==%n", begin, end));
 
       String targetText = extractTargetText(getTextLookup(), begin, end);
 
-      logger.info(String.format("    ANNOT: %s%n", currentAnnotation));
-      logger.info(String.format("      TARGET: %s%n", targetText));
-      logger.info("---");
+//      logger.info(String.format("    ANNOT: %s%n", currentAnnotation));
+//      logger.info(String.format("      TARGET: %s%n", targetText));
+//      logger.info("---");
 
     }
-    logger.info("#####");
-    logger.info("#####");
+//    logger.info("#####");
+//    logger.info("#####");
   }
 
   public String getTextFilename()
@@ -451,7 +453,7 @@ public class MedFactsRunner
     br.close();
     fr.close();
 
-    logger.info("=====");
+    //logger.info("=====");
 
     logger.info(String.format("done processing text file \"%s\".%n", textFilename));
   }
@@ -509,12 +511,12 @@ public class MedFactsRunner
 
           List<Annotation> scopeOrCueAnnotationList = annotationsByType.get(AnnotationType.SCOPE);
 
-          logger.info(String.format("=== BEGIN SCOPE AND CUE ANNOTATIONS === %n"));
-          for (Annotation a : scopeOrCueAnnotationList)
-          {
-            logger.info(String.format(" - scope or cue annotation: (%s) %s%n", a.getClass().getName().toString(), a.toString()));
-          }
-          logger.info(String.format("=== END SCOPE AND CUE ANNOTATIONS === %n"));
+//          logger.info(String.format("=== BEGIN SCOPE AND CUE ANNOTATIONS === %n"));
+//          for (Annotation a : scopeOrCueAnnotationList)
+//          {
+//            logger.info(String.format(" - scope or cue annotation: (%s) %s%n", a.getClass().getName().toString(), a.toString()));
+//          }
+//          logger.info(String.format("=== END SCOPE AND CUE ANNOTATIONS === %n"));
           break;
       }
 
@@ -660,10 +662,10 @@ public class MedFactsRunner
       {
           int ln = currentAssertionAnnotation.getEnd().getLine();
           int pos = currentAssertionAnnotation.getEnd().getTokenOffset();
-          logger.finest(String.format("conceptPseudoHeadFeature:: ln == %d; pos == %d", ln, pos));
-          logger.finest(String.format("textLookup's size: %d", textLookup.length));
-          logger.finest(String.format("textLookup[ln-1]'s size: %d", textLookup[ln-1].length));
-          logger.finest(ZonerCli.printOutLineOfTokens(textLookup[ln-1]));
+//          logger.finest(String.format("conceptPseudoHeadFeature:: ln == %d; pos == %d", ln, pos));
+//          logger.finest(String.format("textLookup's size: %d", textLookup.length));
+//          logger.finest(String.format("textLookup[ln-1]'s size: %d", textLookup[ln-1].length));
+//          logger.finest(ZonerCli.printOutLineOfTokens(textLookup[ln-1]));
 
           String conceptHead = textLookup[ln-1][pos];
           trainingInstance.addFeature(constructConceptHeadFeature(conceptHead));
@@ -938,7 +940,7 @@ public class MedFactsRunner
             {
               ZoneAnnotation zone = (ZoneAnnotation)a;
               final String zoneFeatureName = "zone_" + escapeFeatureName(zone.getZoneName());
-              logger.info("### zone feature: " + zoneFeatureName);
+              //logger.info("### zone feature: " + zoneFeatureName);
               trainingInstance.addFeature(zoneFeatureName);
             }
           }

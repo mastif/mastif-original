@@ -539,9 +539,9 @@ public class ZonerCli {
         // TODO replace converter with overrideable conversion (standard vs ctakes)
 //        CharacterOffsetToLineTokenConverter c =
 //                new CharacterOffsetToLineTokenConverterDefaultImpl(getEntireContents());
-        logger.info("ZonerCli: calling converter on 'begin': " + begin);
+        logger.fine("ZonerCli: calling converter on 'begin': " + begin);
         LineAndTokenPosition beginLineAndTokenPosition = converter.convert(begin);
-        logger.info("ZonerCli: calling converter on 'realSectionEnd': " + realSectionEnd);
+        logger.fine("ZonerCli: calling converter on 'realSectionEnd': " + realSectionEnd);
         LineAndTokenPosition endLineAndTokenPosition = converter.convert(realSectionEnd);
 
         logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) %s to %s ",

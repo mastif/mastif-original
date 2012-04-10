@@ -639,7 +639,7 @@ public class BatchRunner
       fileReader = new FileReader(enabledFeaturesFile);
       BufferedReader br = new BufferedReader(fileReader);
 
-      logger.info("=== FEATURE IDS BEGIN ===");
+      logger.fine("=== FEATURE IDS BEGIN ===");
       for (String currentLine = null; (currentLine = br.readLine()) != null; )
       {
         currentLine = currentLine.trim();
@@ -648,18 +648,18 @@ public class BatchRunner
         {
           continue;
         }
-        logger.info(String.format(" - FEATURE ID: %s%n", currentLine));
+        logger.fine(String.format(" - FEATURE ID: %s%n", currentLine));
         featureIdSet.add(currentLine);
       }
-      logger.info("=== FEATURE IDS END ===");
+      logger.fine("=== FEATURE IDS END ===");
 
-      logger.info("+++ FEATURE ID SET BEGIN +++");
-      logger.info(String.format("feature id set size: %d%n", featureIdSet.size()));
+      logger.fine("+++ FEATURE ID SET BEGIN +++");
+      logger.fine(String.format("feature id set size: %d%n", featureIdSet.size()));
       for (String currentFeatureId : featureIdSet)
       {
-        logger.info(String.format(" feature id: \"%s\"%n", currentFeatureId));
+        logger.fine(String.format(" feature id: \"%s\"%n", currentFeatureId));
       }
-      logger.info("+++ FEATURE ID SET END +++");
+      logger.fine("+++ FEATURE ID SET END +++");
 
       return featureIdSet;
     } catch (IOException ex)

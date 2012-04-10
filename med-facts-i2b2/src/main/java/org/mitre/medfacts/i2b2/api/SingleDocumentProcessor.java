@@ -93,14 +93,14 @@ public class SingleDocumentProcessor
 
     preExecutionTest();
     preprocess();
-    System.out.println("(stdout statement) generateAnnotations() BEGIN");
+    //System.out.println("(stdout statement) generateAnnotations() BEGIN");
     generateAnnotations();
-    System.out.println("(stdout statement) generateAnnotations() END");
+    //System.out.println("(stdout statement) generateAnnotations() END");
     indexer.indexAnnotations(allAnnotationList);
     //MedFactsRunner.linkAnnotations(annotationsByType, /*annotationsByType.get(AnnotationType.ASSERTION)*/, indexer);
-    System.out.println("(stdout statement) generateFeatures() BEGIN");
+    //System.out.println("(stdout statement) generateFeatures() BEGIN");
     Map<Integer, TrainingInstance> trainingInstanceMap = generateFeatures();
-    System.out.println("(stdout statement) generateFeatures() END");
+    //System.out.println("(stdout statement) generateFeatures() END");
     assertionTypeMap = decode(trainingInstanceMap);
     postprocess();
 
@@ -204,7 +204,7 @@ public class SingleDocumentProcessor
       List<LineAndTokenPosition> beginAndEndOfConcept = calculateBeginAndEndOfConcept(problem);
       LineAndTokenPosition problemBegin = beginAndEndOfConcept.get(0);
       LineAndTokenPosition problemEnd = beginAndEndOfConcept.get(1);
-      logger.info(String.format("<<PROB>> %s", problem));
+      //logger.info(String.format("<<PROB>> %s", problem));
       
 //      LineAndTokenPosition problemBegin = converter.convertReverse(problem.getBegin());
 //      LineAndTokenPosition problemEnd = converter.convertReverse(problem.getEnd());
@@ -225,7 +225,7 @@ public class SingleDocumentProcessor
         logger.severe("enabled feature id set is null!!!  using all features");
       } else
       {
-        logger.info("enabled feature id set is set; using selected feature set");
+        logger.fine("enabled feature id set is set; using selected feature set");
       }
 
       TrainingInstance trainingInstance = new TrainingInstance();
@@ -270,7 +270,7 @@ public class SingleDocumentProcessor
       if (checkForEnabledFeature("conceptPseudoHeadFeature"))
       {
           int tokenOffset = problemEnd.getTokenOffset();
-          logger.info(String.format("before creating pseudo head; token offset: %d; # tokens on line: %d, tokens: %s", tokenOffset, currentLine.length, Arrays.toString(currentLine)));
+          //logger.info(String.format("before creating pseudo head; token offset: %d; # tokens on line: %d, tokens: %s", tokenOffset, currentLine.length, Arrays.toString(currentLine)));
           String conceptHead = currentLine[tokenOffset];
           trainingInstance.addFeature(MedFactsRunner.constructConceptHeadFeature(conceptHead));
       }
@@ -317,8 +317,8 @@ public class SingleDocumentProcessor
             if (a instanceof ConceptAnnotation) {
                 ConceptAnnotation concept = (ConceptAnnotation) a;
                 if ((concept.getConceptType() != null) && (concept.getConceptText() != null)) {
-                System.err.println("concept: " + concept);
-                System.err.println("concept type = " + concept.getConceptType());
+                //System.err.println("concept: " + concept);
+                //System.err.println("concept type = " + concept.getConceptType());
                 String conceptType = concept.getConceptType().toString();
                 int thisConceptBegin = concept.getBegin().getTokenOffset();
                 int thisConceptEnd = concept.getEnd().getTokenOffset();
@@ -398,7 +398,7 @@ public class SingleDocumentProcessor
       }
       /////
 
-      logger.info(String.format("TRAINING INSTANCE (%d): %s", index, trainingInstance.toString()));
+      logger.fine(String.format("TRAINING INSTANCE (%d): %s", index, trainingInstance.toString()));
     }
 
     return trainingInstanceMap;
@@ -433,7 +433,7 @@ public class SingleDocumentProcessor
 
       JarafeMEDecoder assertionDecoder = assertionDecoderConfiguration.getAssertionDecoder();
       String assertionType = assertionDecoder.classifyInstance(featureList);
-      logger.info(String.format("ASSERTION OUTPUT: %d/%s [%s]", index, assertionType, apiConceptList.get(index)));
+      logger.fine(String.format("ASSERTION OUTPUT: %d/%s [%s]", index, assertionType, apiConceptList.get(index)));
 
       assertionMap.put(index, assertionType);
     }

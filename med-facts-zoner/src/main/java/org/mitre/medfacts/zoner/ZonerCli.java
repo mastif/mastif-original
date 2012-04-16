@@ -309,6 +309,7 @@ public class ZonerCli {
     logger.severe("severe logging");
     System.out.println("runnning stdout...");
     String inputFile = args[0];
+    System.out.println("inputFile: " + inputFile);
 
     //Pattern filenamePattern = Pattern.compile("(([a-z,A-Z]:\\)?[");
 
@@ -327,6 +328,7 @@ public class ZonerCli {
 //        passZero(inputFilename, outputFile);
 //        passOneB(outputFile, outputFile2);
     clearRangeLists();
+    clearHeadings();
     findHeadings();
     pruneRanges();
   }
@@ -592,6 +594,10 @@ public class ZonerCli {
   public void clearRangeLists() {
     getRangeList().clear();
     getFullRangeList().clear();
+  }
+  
+  public void clearHeadings() {
+      getHeadings().clear();
   }
 
   /**

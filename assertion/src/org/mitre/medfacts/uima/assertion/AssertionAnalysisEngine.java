@@ -1,3 +1,25 @@
+/*
+ * Copyright: (c) 2012   The MITRE Corporation. All rights reserved.
+ *
+ * Except as contained in the copyright notice above, or as used to identify 
+ * MITRE  as the author of this software, the trade names, trademarks, service
+ * marks, or product names of the copyright holder shall not be used in
+ * advertising, promotion or otherwise in connection with this software without
+ * prior written authorization of the copyright holder.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and 
+ * limitations under the License. 
+ */
+
 package org.mitre.medfacts.uima.assertion;
 
 import java.io.File;
@@ -11,6 +33,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FSIterator;
@@ -20,6 +43,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.jcas.tcas.Annotation_Type;
 import org.apache.uima.resource.ResourceAccessException;
+import org.apache.uima.resource.ResourceInitializationException;
 //import org.jfree.util.Log;
 import org.mitre.jcarafe.jarafe.JarafeMEDecoder;
 import org.mitre.medfacts.i2b2.annotation.PartOfSpeechTagger;
@@ -37,14 +61,83 @@ import org.mitre.medfacts.types.Concept_Type;
 import org.mitre.medfacts.zoner.CharacterOffsetToLineTokenConverter;
 import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 
-import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.attributes.generic.GenericAttributeClassifier;
+import edu.mayo.bmi.attributes.subject.SubjectAttributeClassifier;
+import edu.mayo.bmi.uima.core.type.constants.CONST;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
 {
   Logger logger = Logger.getLogger(AssertionAnalysisEngine.class.getName());
+  
+  AssertionDecoderConfiguration assertionDecoderConfiguration;
 
   public AssertionAnalysisEngine()
   {
+  }
+  
+  @Override
+  public void initialize(UimaContext uimaContext)
+    throws ResourceInitializationException
+  {
+      super.initialize(uimaContext);
+    
+      // byte assertionModelContents[];
+      String scopeModelFilePath;
+      String cueModelFilePath;
+      String posModelFilePath;
+      File enabledFeaturesFile;
+
+      File assertionModelFile = null;
+      try
+      {
+        String assertionModelResourceKey = "assertionModelResource";
+        String assertionModelFilePath = getContext().getResourceFilePath(
+            assertionModelResourceKey);
+        assertionModelFile = new File(assertionModelFilePath);
+        // assertionModelContents = StringHandling
+        // .readEntireContentsBinary(assertionModelFile);
+        String scopeModelResourceKey = "scopeModelResource";
+        scopeModelFilePath = getContext().getResourceFilePath(
+            scopeModelResourceKey);
+        String cueModelResourceKey = "cueModelResource";
+        cueModelFilePath = getContext().getResourceFilePath(cueModelResourceKey);
+
+        String posModelResourceKey = "posModelResource";
+        posModelFilePath = getContext().getResourceFilePath(posModelResourceKey);
+
+        String enabledFeaturesResourceKey = "enabledFeaturesResource";
+        String enabledFeaturesFilePath = getContext().getResourceFilePath(
+            enabledFeaturesResourceKey);
+        enabledFeaturesFile = new File(enabledFeaturesFilePath);
+      } catch (ResourceAccessException e)
+      {
+        String message = String.format("problem accessing resource");
+        throw new RuntimeException(message, e);
+      }
+
+      AssertionDecoderConfiguration assertionDecoderConfiguration = new AssertionDecoderConfiguration();
+
+      logger.info(String.format("scope model file: %s", scopeModelFilePath));
+      logger.info(String.format("cue model file: %s", cueModelFilePath));
+      ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
+          cueModelFilePath);
+      assertionDecoderConfiguration.setScopeParser(scopeParser);
+
+      logger.info(String.format("pos model file: %s", posModelFilePath));
+      PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
+      assertionDecoderConfiguration.setPosTagger(posTagger);
+
+      Set<String> enabledFeatureIdSet = null;
+      enabledFeatureIdSet = BatchRunner
+          .loadEnabledFeaturesFromFile(enabledFeaturesFile);
+      assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
+
+      JarafeMEDecoder assertionDecoder = null;
+      assertionDecoder = new JarafeMEDecoder(assertionModelFile);
+      assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
+
+      this.assertionDecoderConfiguration = assertionDecoderConfiguration;
   }
 
   @Override
@@ -79,40 +172,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       apiConceptList.add(apiConcept);
     }
 
-    // byte assertionModelContents[];
-    String scopeModelFilePath;
-    String cueModelFilePath;
-    String posModelFilePath;
-    File enabledFeaturesFile;
-
-    File assertionModelFile = null;
-    try
-    {
-      String assertionModelResourceKey = "assertionModelResource";
-      String assertionModelFilePath = getContext().getResourceFilePath(
-          assertionModelResourceKey);
-      assertionModelFile = new File(assertionModelFilePath);
-      // assertionModelContents = StringHandling
-      // .readEntireContentsBinary(assertionModelFile);
-      String scopeModelResourceKey = "scopeModelResource";
-      scopeModelFilePath = getContext().getResourceFilePath(
-          scopeModelResourceKey);
-      String cueModelResourceKey = "cueModelResource";
-      cueModelFilePath = getContext().getResourceFilePath(cueModelResourceKey);
-
-      String posModelResourceKey = "posModelResource";
-      posModelFilePath = getContext().getResourceFilePath(posModelResourceKey);
-
-      String enabledFeaturesResourceKey = "enabledFeaturesResource";
-      String enabledFeaturesFilePath = getContext().getResourceFilePath(
-          enabledFeaturesResourceKey);
-      enabledFeaturesFile = new File(enabledFeaturesFilePath);
-    } catch (ResourceAccessException e)
-    {
-      String message = String.format("problem accessing resource");
-      throw new RuntimeException(message, e);
-    }
-
     // String conceptFilePath =
     // currentTextFile.getAbsolutePath().replaceFirst("\\.txt$", ".con");
     // File conceptFile = new File(conceptFilePath);
@@ -131,26 +190,6 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     // LineTokenToCharacterOffsetConverter converter =
     // new LineTokenToCharacterOffsetConverter(contents);
 
-    AssertionDecoderConfiguration assertionDecoderConfiguration = new AssertionDecoderConfiguration();
-
-    logger.info(String.format("scope model file: %s", scopeModelFilePath));
-    logger.info(String.format("cue model file: %s", cueModelFilePath));
-    ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
-        cueModelFilePath);
-    assertionDecoderConfiguration.setScopeParser(scopeParser);
-
-    logger.info(String.format("pos model file: %s", posModelFilePath));
-    PartOfSpeechTagger posTagger = new PartOfSpeechTagger(posModelFilePath);
-    assertionDecoderConfiguration.setPosTagger(posTagger);
-
-    Set<String> enabledFeatureIdSet = null;
-    enabledFeatureIdSet = BatchRunner
-        .loadEnabledFeaturesFromFile(enabledFeaturesFile);
-    assertionDecoderConfiguration.setEnabledFeatureIdSet(enabledFeatureIdSet);
-
-    JarafeMEDecoder assertionDecoder = null;
-    assertionDecoder = new JarafeMEDecoder(assertionModelFile);
-    assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
 
     // SingleDocumentProcessor p = new SingleDocumentProcessor();
     SingleDocumentProcessorCtakes p = new SingleDocumentProcessorCtakes();
@@ -163,8 +202,8 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
     p.setConverter2(converter);
     for (ApiConcept apiConcept : apiConceptList)
     {
-      logger
-          .info(String.format("dir loader concept: %s", apiConcept.toString()));
+      //logger
+      //    .info(String.format("dir loader concept: %s", apiConcept.toString()));
       p.addConcept(apiConcept);
     }
 
@@ -177,26 +216,26 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         .info("(logging statement) AssertionAnalysisEngine.process() AFTER CALLING p.processSingleDocument()");
 
     Map<Integer, String> assertionTypeMap = p.getAssertionTypeMap();
-    logger.info(String.format("    - done processing ..\"."));
+    //logger.info(String.format("    - done processing ..\"."));
 
     // Map<Integer, Annotation> annotationMap = generateAnnotationMap(jcas,
     // Concept.type);
     CasIndexer<Annotation> indexer = new CasIndexer<Annotation>(jcas, null);
 
-    logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
+    //logger.info("assertionTypeMap loop OUTSIDE BEFORE...");
     for (Entry<Integer, String> current : assertionTypeMap.entrySet())
     {
-      logger.info("    assertionTypeMap loop INSIDE BEGIN");
+      //logger.info("    assertionTypeMap loop INSIDE BEGIN");
       String currentAssertionType = current.getValue();
-      logger.info(String.format("  currentAssertionType: %s",
-          currentAssertionType));
+      //logger.info(String.format("  currentAssertionType: %s",
+      //    currentAssertionType));
       Integer currentIndex = current.getKey();
       ApiConcept originalConcept = apiConceptList.get(currentIndex);
 
       Concept associatedConcept = (Concept) indexer
           .lookupByAddress(originalConcept.getExternalId());
       int entityAddress = associatedConcept.getOriginalEntityExternalId();
-      EntityMention entityMention = (EntityMention) indexer
+      IdentifiedAnnotation annotation = (IdentifiedAnnotation) indexer
           .lookupByAddress(entityAddress);
 
       // possible values for currentAssertionType:
@@ -219,76 +258,76 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         // throw new AnalysisEngineProcessException(runtimeException);
       
         // ALL OBVIOUS ERROR VALUES!!
-        entityMention.setSubject("skipped");
-        entityMention.setPolarity(-2);
-        entityMention.setConfidence(-2.0f);
-        entityMention.setUncertainty(-2);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject("skipped");
+        annotation.setPolarity(-2);
+        annotation.setConfidence(-2.0f);
+        annotation.setUncertainty(-2);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("present"))
       // PRESENT (mastif value)
       {
-        debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
+        //debugAnnotationsInCas(jcas, entityMention, "=== BEFORE setting entity mention properties (PRESENT)... ===");
         // ALL DEFAULT VALUES!! (since this is present)
-        entityMention.setSubject("patient");
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
-        debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
+        //debugAnnotationsInCas(jcas, entityMention, "=== AFTER setting entity mention properties (PRESENT)... ===");
       } else if (currentAssertionType.equals("absent"))
       // ABSENT (mastif value)
       {
-        entityMention.setSubject("patient");
-        entityMention.setPolarity(-1); // NOT DEFAULT VALUE
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(-1); // NOT DEFAULT VALUE
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("associated_with_someone_else"))
       // ASSOCIATED WITH SOMEONE ELSE (mastif value)
       {
-        entityMention.setSubject("Family_Member"); // NOT DEFAULT VALUE
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject("CONST.NE_SUBJECT_FAMILY_MEMBER"); // NOT DEFAULT VALUE
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("conditional"))
       // CONDITIONAL (mastif value)
       {
         // currently no mapping to sharp type...all sharp properties are defaults!
-        entityMention.setSubject("patient");
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("hypothetical"))
       // HYPOTHETICAL (mastif value)
       {
-        entityMention.setSubject("patient");
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(0);
-        entityMention.setConditional(true); // NOT DEFAULT VALUE
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(0);
+        annotation.setConditional(true); // NOT DEFAULT VALUE
+        annotation.setGeneric(false);
 
       } else if (currentAssertionType.equals("possible"))
       // POSSIBLE (mastif value)
       {
-        entityMention.setSubject("patient");
-        entityMention.setPolarity(1);
-        entityMention.setConfidence(1.0f);
-        entityMention.setUncertainty(1); // NOT DEFAULT VALUE
-        entityMention.setConditional(false);
-        entityMention.setGeneric(false);
+        annotation.setSubject(CONST.NE_SUBJECT_PATIENT);
+        annotation.setPolarity(1);
+        annotation.setConfidence(1.0f);
+        annotation.setUncertainty(1); // NOT DEFAULT VALUE
+        annotation.setConditional(false);
+        annotation.setGeneric(false);
       } else
       {
         String message = String.format(
@@ -299,6 +338,23 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
         Exception runtimeException = new RuntimeException(message);
         throw new AnalysisEngineProcessException(runtimeException);
       }
+      
+//      // Overwrite mastif's generic attribute with Mayo's generic attribute
+//      Boolean generic = GenericAttributeClassifier.getGeneric(jcas,entityMention);
+//      Boolean oldgeneric = entityMention.getGeneric();
+//      entityMention.setGeneric(generic);
+//      System.out.println("overwrote mastif's generic="+oldgeneric+" for "+entityMention.getCoveredText()+" with "+generic);
+//
+//      // Overwrite mastif's subject attribute with Mayo subject attribute. 
+//      // SHARP annotation guidelines have subject=NULL whenever generic=true
+//      String subject = null; 
+//      String oldsubj = entityMention.getSubject();
+//      if (entityMention.getGeneric()==false) {
+//          subject = SubjectAttributeClassifier.getSubject(jcas,entityMention);
+//      }
+//	    entityMention.setSubject(subject);
+//      System.out.println("overwrote mastif's subject="+oldsubj+" for "+entityMention.getCoveredText()+" with "+subject);
+
 //      entityMention.addToIndexes();
 //      logger.info(String.format("added back entityMention (%s) to indexes",
 //          entityMention.toString()));
@@ -311,21 +367,22 @@ public class AssertionAnalysisEngine extends JCasAnnotator_ImplBase
       // assertion.setAssociatedConcept(associatedConcept);
       // assertion.addToIndexes();
 
-      logger.info("    assertionTypeMap loop INSIDE END");
+      //logger.info("    assertionTypeMap loop INSIDE END");
     }
-    logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
+    //logger.info("assertionTypeMap loop OUTSIDE AFTER!!");
+    System.out.println("(stdout) AssertionAnalysisEngine.process() END");
     logger.info("(logging statement) AssertionAnalysisEngine.process() END");
   }
 
-  public void debugAnnotationsInCas(JCas jcas, EntityMention entityMention,
+  public void debugAnnotationsInCas(JCas jcas, IdentifiedAnnotation annotation,
       String label)
   {
-    CasIndexer<EntityMention> i = new CasIndexer<EntityMention>(jcas, entityMention.getType());
+    CasIndexer<IdentifiedAnnotation> i = new CasIndexer<IdentifiedAnnotation>(jcas, annotation.getType());
     
     StringBuilder b = new StringBuilder();
-    b.append(String.format("<<<<<%n### TARGET ###%nclass: %s%naddress: %d%nvalue: %s%n### END TARGET ###%n>>>>>%n%n", entityMention.getClass().getName(), entityMention.getAddress(), entityMention.toString()));
+    b.append(String.format("<<<<<%n### TARGET ###%nclass: %s%naddress: %d%nvalue: %s%n### END TARGET ###%n>>>>>%n%n", annotation.getClass().getName(), annotation.getAddress(), annotation.toString()));
     
-    String debugOutput = i.convertToDebugOutput(label, entityMention);
+    String debugOutput = i.convertToDebugOutput(label, annotation);
     
     b.append(debugOutput);
     

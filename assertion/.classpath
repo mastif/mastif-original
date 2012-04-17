@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="src" path="resources"/>
 	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
@@ -16,5 +16,8 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/common-type-system"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/UIMA"/>
+	<classpathentry kind="lib" path="/relation-extractor/lib/uimafit-1.2.0.jar" sourcepath="/relation-extractor/lib/uimafit-1.0.0-javadoc.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/clearparser-wrapper"/>
+	<classpathentry kind="lib" path="/core/lib/log4j-1.2.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,3 +1,25 @@
+/*
+ * Copyright: (c) 2012   The MITRE Corporation. All rights reserved.
+ *
+ * Except as contained in the copyright notice above, or as used to identify 
+ * MITRE  as the author of this software, the trade names, trademarks, service
+ * marks, or product names of the copyright holder shall not be used in
+ * advertising, promotion or otherwise in connection with this software without
+ * prior written authorization of the copyright holder.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and 
+ * limitations under the License. 
+ */
+
 package org.mitre.medfacts.uima.assertion;
 
 import java.io.File;
@@ -37,6 +59,8 @@ import org.mitre.medfacts.zoner.LineTokenToCharacterOffsetConverter;
 import edu.mayo.bmi.uima.core.type.refsem.OntologyConcept;
 import edu.mayo.bmi.uima.core.type.refsem.UmlsConcept;
 import edu.mayo.bmi.uima.core.type.textsem.EntityMention;
+import edu.mayo.bmi.uima.core.type.textsem.EventMention;
+import edu.mayo.bmi.uima.core.type.textsem.IdentifiedAnnotation;
 
 public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
 {
@@ -50,62 +74,56 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
   @Override
   public void process(JCas jcas) throws AnalysisEngineProcessException
   {
-    logger.info("beginning of process()");
-    logger.info("beginning of process2()");
+    logger.info("beginning of ConceptConverterAnalysisEngine.process()");
     String contents = jcas.getDocumentText();
 
-    int umlsConceptType = UmlsConcept.type;
-    // AnnotationIndex<Annotation> conceptAnnotationIndex =
-    // jcas.getAnnotationIndex(umlsConceptType);
+    processForEntityType(jcas, EntityMention.type, EntityMention.class);
 
-    Map<Integer, UmlsConcept> idToConceptMap = new HashMap<Integer, UmlsConcept>();
-    Map<Integer, Set<Integer>> idToConceptMapForEntity = new HashMap<Integer, Set<Integer>>();
-    Map<Integer, Set<EntityMention>> idToNamedEntityMap = new HashMap<Integer, Set<EntityMention>>();
+    processForEntityType(jcas, EventMention.type, EventMention.class);
 
-    int entityMentionType = EntityMention.type;
-    AnnotationIndex<Annotation> entityMentionAnnotationIndex = jcas
-        .getAnnotationIndex(entityMentionType);
+    logger.info("end of ConceptConverterAnalysisEngine.process()");
+  }
+
+  public void processForEntityType(JCas jcas, int annotationType, Class<? extends IdentifiedAnnotation> annotationClass)
+  {
+    AnnotationIndex<Annotation> annotationIndex = jcas
+        .getAnnotationIndex(annotationType);
 
     int totalAnnotationCount = jcas.getAnnotationIndex().size();
-    int entityMentionAnnotationCount = entityMentionAnnotationIndex.size();
+    int typeSpecificAnnotationCount = annotationIndex.size();
 
     logger.info(String.format("    total annotation count %d",
         totalAnnotationCount));
-    logger.info(String.format("    named entity annotation count %d",
-        entityMentionAnnotationCount));
+    logger.info(String.format("    %s annotation count %d",
+        annotationClass.getName(),
+        typeSpecificAnnotationCount));
 
-    logger.info("    before iterating over named entities...");
-    for (FeatureStructure featureStructure : entityMentionAnnotationIndex)
+    //logger.info("    before iterating over named entities...");
+    for (FeatureStructure featureStructure : annotationIndex)
     {
-      logger.info("    begin single named entity");
-      EntityMention entityMentionAnnotation = (EntityMention) featureStructure;
+      //logger.info("    begin single named entity");
+      IdentifiedAnnotation annotation = (IdentifiedAnnotation) featureStructure;
 
-      int begin = entityMentionAnnotation.getBegin();
-      int end = entityMentionAnnotation.getEnd();
-      String conceptText = entityMentionAnnotation.getCoveredText();
+      int begin = annotation.getBegin();
+      int end = annotation.getEnd();
+      String conceptText = annotation.getCoveredText();
 
-      logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText,
-          begin, end));
+      //logger.info(String.format("NAMED ENTITY: \"%s\" [%d-%d]", conceptText,
+      //    begin, end));
 
       Concept concept = new Concept(jcas, begin, end);
       concept.setConceptText(conceptText);
       concept.setConceptType(null);
 
-      concept.setOriginalEntityExternalId(entityMentionAnnotation.getAddress());
+      concept.setOriginalEntityExternalId(annotation.getAddress());
 
-      FSArray ontologyConceptArray = entityMentionAnnotation
+      FSArray ontologyConceptArray = annotation
           .getOntologyConceptArr();
 
       ConceptType conceptType = ConceptLookup
           .lookupConceptType(ontologyConceptArray);
 
-      logger.info(String.format("got concept type: %s", conceptType));
-
-      // if (conceptType != null)
-      // {
-      // concept.setConceptType(conceptType.toString());
-      // concept.addToIndexes();
-      // }
+      //logger.info(String.format("got concept type: %s", conceptType));
 
       // now always generating a concept annotation whether or not the
       // conceptType is null (previously, we only generated a concept
@@ -116,124 +134,10 @@ public class ConceptConverterAnalysisEngine extends JCasAnnotator_ImplBase
       }
       concept.addToIndexes();
 
-      logger.info("finished adding new Concept annotation. " + concept);
+      //logger.info("finished adding new Concept annotation. " + concept);
 
-      // FSArray conceptArray = namedEntityAnnotation.getOntologyConceptArr();
-      //
-      // logger.info("        before iterating over concepts...");
-      // for (FeatureStructure currentConceptArrayItem : conceptArray.toArray())
-      // {
-      // logger.info("        begin single concept");
-      // UmlsConcept umlsConcept = (UmlsConcept)currentConceptArrayItem;
-      //
-      // String codingScheme = umlsConcept.getCodingScheme();
-      // String cui = umlsConcept.getCui();
-      // String tui = umlsConcept.getTui();
-      //
-      // Concept concept = new Concept(jcas, begin, end);
-      // concept.setConceptText(conceptText);
-      // concept.setConceptType(null);
-      //
-      // concept.addToIndexes();
-      // logger.info("        end single concept");
-      // }
-      // logger.info("        after iterating over concepts.");
-      logger.info("    end single named entity");
     }
-    logger.info("    after iterating over named entities.");
-
-    // ArrayList<ApiConcept> apiConceptList = new ArrayList<ApiConcept>();
-    // for (FeatureStructure featureStructure : conceptAnnotationIndex)
-    // {
-    // UmlsConcept umlsConceptAnnotation = (UmlsConcept)featureStructure;
-    //
-    // ApiConcept apiConcept = new ApiConcept();
-    // int umlsConceptId = umlsConceptAnnotation.getAddress();
-    //
-    // int begin = 0; //umlsConceptAnnotation.getBegin();
-    // int end = 0; //umlsConceptAnnotation.getEnd();
-    // String conceptText = contents.substring(begin, begin + end + 1);
-    //
-    // apiConcept.setBegin(begin);
-    // apiConcept.setEnd(end);
-    // apiConcept.setText(conceptText);
-    // apiConcept.setType(null);
-    // //apiConcept.setType(umlsConceptAnnotation.getConceptType());
-    //
-    // apiConceptList.add(apiConcept);
-    // }
-
-    /*
-     * String assertionModelContents; String scopeModelFilePath; String
-     * cueModelFilePath; File enabledFeaturesFile;
-     * 
-     * try { String assertionModelResourceKey = "assertionModelResource"; String
-     * assertionModelFilePath = getContext().getResourceFilePath(
-     * assertionModelResourceKey); File assertionModelFile = new
-     * File(assertionModelFilePath); assertionModelContents = StringHandling
-     * .readEntireContents(assertionModelFile); String scopeModelResourceKey =
-     * "scopeModelResource"; scopeModelFilePath =
-     * getContext().getResourceFilePath( scopeModelResourceKey); String
-     * cueModelResourceKey = "cueModelResource"; cueModelFilePath =
-     * getContext().getResourceFilePath( cueModelResourceKey); String
-     * enabledFeaturesResourceKey = "enabledFeaturesResource"; String
-     * enabledFeaturesFilePath = getContext().getResourceFilePath(
-     * enabledFeaturesResourceKey); enabledFeaturesFile = new
-     * File(enabledFeaturesFilePath); } catch (ResourceAccessException e) {
-     * String message = String.format("problem accessing resource"); throw new
-     * RuntimeException(message, e); }
-     * 
-     * // String conceptFilePath =
-     * currentTextFile.getAbsolutePath().replaceFirst("\\.txt$", ".con"); //
-     * File conceptFile = new File(conceptFilePath); //
-     * logger.info(String.format("    - using concept file \"%s\"...",
-     * conceptFile.getName())); // String conceptFileContents =
-     * StringHandling.readEntireContents(conceptFile); // //List<Concept>
-     * parseConceptFileContents(conceptFileContents); // //
-     * LineTokenToCharacterOffsetConverter converter = // new
-     * LineTokenToCharacterOffsetConverter(contents); // // List<ApiConcept>
-     * apiConceptList = parseConceptFile(conceptFile, contents, converter);
-     * 
-     * LineTokenToCharacterOffsetConverter converter = new
-     * LineTokenToCharacterOffsetConverter(contents);
-     * 
-     * AssertionDecoderConfiguration assertionDecoderConfiguration = new
-     * AssertionDecoderConfiguration();
-     * 
-     * ScopeParser scopeParser = new ScopeParser(scopeModelFilePath,
-     * cueModelFilePath);
-     * assertionDecoderConfiguration.setScopeParser(scopeParser);
-     * 
-     * Set<String> enabledFeatureIdSet = null; enabledFeatureIdSet =
-     * BatchRunner.loadEnabledFeaturesFromFile(enabledFeaturesFile);
-     * assertionDecoderConfiguration
-     * .setEnabledFeatureIdSet(enabledFeatureIdSet);
-     * 
-     * JarafeMEDecoder assertionDecoder = null; assertionDecoder = new
-     * JarafeMEDecoder(assertionModelContents);
-     * assertionDecoderConfiguration.setAssertionDecoder(assertionDecoder);
-     * 
-     * SingleDocumentProcessor p = new SingleDocumentProcessor(converter);
-     * p.setAssertionDecoderConfiguration(assertionDecoderConfiguration);
-     * p.setContents(contents); for (ApiConcept apiConcept : apiConceptList) {
-     * logger.info(String.format("dir loader concept: %s",
-     * apiConcept.toString())); p.addConcept(apiConcept); }
-     * p.processSingleDocument(); Map<Integer, String> assertionTypeMap =
-     * p.getAssertionTypeMap();
-     * logger.info(String.format("    - done processing \"%s\"."));
-     * 
-     * for (Entry<Integer, String> current : assertionTypeMap.entrySet()) {
-     * String currentAssertionType = current.getValue(); Integer currentIndex =
-     * current.getKey(); ApiConcept originalConcept =
-     * apiConceptList.get(currentIndex);
-     * 
-     * Assertion assertion = new Assertion(jcas, originalConcept.getBegin(),
-     * originalConcept.getEnd());
-     * assertion.setAssertionType(currentAssertionType);
-     * assertion.addToIndexes(); }
-     */
-
-    logger.info("beginning of process()");
+    //logger.info("    after iterating over named entities.");
   }
 
 }

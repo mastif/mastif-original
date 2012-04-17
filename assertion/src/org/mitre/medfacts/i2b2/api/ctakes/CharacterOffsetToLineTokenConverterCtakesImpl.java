@@ -1,3 +1,25 @@
+/*
+ * Copyright: (c) 2012   The MITRE Corporation. All rights reserved.
+ *
+ * Except as contained in the copyright notice above, or as used to identify 
+ * MITRE  as the author of this software, the trade names, trademarks, service
+ * marks, or product names of the copyright holder shall not be used in
+ * advertising, promotion or otherwise in connection with this software without
+ * prior written authorization of the copyright holder.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0 
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and 
+ * limitations under the License. 
+ */
+
 package org.mitre.medfacts.i2b2.api.ctakes;
 
 import java.util.ArrayList;
@@ -114,11 +136,11 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
   
   public LineAndTokenPosition convertCharacterOffsetToLineToken(int characterOffset)
   {
-    logger.info("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
+    logger.finest("entering CharacterOffsetToLineTokenConverterCtakesImpl.convertCharacterOffsetToLineToken() with a characterOffset of: " + characterOffset);
     
-    logger.info("before adjusting input character offset...");
+    logger.finest("before adjusting input character offset...");
     characterOffset = adjustOffsetToBestMatch(characterOffset);
-    logger.info("after adjusting input character offset.");
+    logger.finest("after adjusting input character offset.");
     int baseTokenTypeId = BaseToken.type;
     
     ConstraintConstructorFindContainedBy constraintConstructorFindContainedBy = new ConstraintConstructorFindContainedBy(jcas);
@@ -138,14 +160,14 @@ public class CharacterOffsetToLineTokenConverterCtakesImpl implements CharacterO
 //    Annotation sentenceAnnotation = filteredIterator.next();
 //    Sentence sentence = (Sentence)sentenceAnnotation;
     
-    logger.info("finding current or previous sentence for character offset " + characterOffset);
+    logger.finest("finding current or previous sentence for character offset " + characterOffset);
     Sentence sentence = findPreviousOrCurrentSentence(characterOffset);
     if (sentence == null)
     {
     	logger.info("current or previous sentence IS NULL!");
     } else
     {
-    	logger.info("current or previous sentence -- id: " + sentence.getAddress() +
+    	logger.finest("current or previous sentence -- id: " + sentence.getAddress() +
     			"; begin: " + sentence.getBegin() + 
     			"; end: " + sentence.getEnd());
     }

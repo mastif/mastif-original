@@ -11,7 +11,7 @@
   <modules>
     <module>../med-facts-zoner</module>
     <module>../med-facts-i2b2</module>
-    <module>../medfacts-uima-assertion-pear</module>
+    <!-- <module>../medfacts-uima-assertion-pear</module> -->
     <module>../filename-printer-pear</module>
   </modules>
 

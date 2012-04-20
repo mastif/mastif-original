@@ -1,9 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
-  <title>Installing MASTIF (MITRE Internal Instructions)</title>
+  <title>Installing MASTIF within SHARP-cTAKES (MITRE Internal Instructions)</title>
 
-  
-  
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
   
@@ -46,199 +44,246 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
   <div class="noticeFooter">© 2012 The MITRE Corporation</div>
 </blockquote>
 <ol start="1" type="1">
-  <li>Download
-the UIMA 2.3.1 zip file or tar ball (from&nbsp;<a href="http://uima.apache.org/downloads.cgi">http://uima.apache.org/downloads.cgi</a>).
-&nbsp;Extract this to a location on your machine, preferably one
-without spaces in the path. &nbsp;I usually extract the archive, which
-produces a folder "apache-uima" and then move this to /opt/uima (linux
-and mac) or c:\opt\uima (pc).<br>
-    <br>
-For windows:<br>
-mkdir c:\temp\extract<br>
-mkdir c:\opt<br>
-(unzip the downloaded zip file to c:\temp\extract)<br>
-move c:\temp\extract\apache-uima c:\opt\uima<br>
-    <br>
-For mac/linux:<br>
-mkdir /opt /tmp/extract<br>
-tar -xvzf /path/to/uimaj.tar.gz<br>
-mv /opt/tmp/extract/apache-uima /opt/uima<br>
-    <br>
-  </li>
-  <li>In
-your environment, set UIMA_HOME to be the directory where you installed
-UIMA.</li>
-  <li>Also modifying your environment, add the bin directory below the
-UIMA installation directory ("c:\opt\uima\bin" on windows or
-"/opt/uima/bin" on mac/linux) to your PATH environment variable. <br>
-    <br>
-On windows your new PATH variable should look like:<br>
-    <br>
-c:\opt\uima\bin;<span class="inlineReplacement">(YOUR OLD PATH)</span><br>
-    <br>
-On linux/mac, your new PATH variable should look like:<br>
-    <br>
-/opt/uima/bin:<span class="inlineReplacement">(YOU OLD PATH)</span><br>
-  </li>
-  <br>
-  <li>Create
-a directory on your system to host the installed pear files, the input
-files directory, and the output files directory. &nbsp;For me, I did
-this under /mastif (on a mac or linux box — on windows this would be
-c:\mastif)<br>
-    <br>
-My directory structure looks like:</li>
-  <ul type="circle">
-    <li>/mastif</li>
-    <ul type="square">
-      <li>installed_pears</li>
-      <li>input</li>
-      <li>output</li>
+
+  <li>Install Eclipse Indigo (either the "eclipse ide for java ee
+  developers" or "eclipse ide for java developers").  </li>
+  <li> Run eclipse, and then setup the UIMA plugins for eclipse: 
+    <ul style="circle">
+      <li>Run Eclipse</li>
+      <li>Go to the help menu and choose "install new software" </li>
+      <li>Click the "add" button, then put in "uima update site" for
+      the name, put in
+      "http://www.apache.org/dist/uima/eclipse-update-site" for the
+      location, and click ok.</li>
+      <li>Check the box next to "Apache UIMA Eclipse tooling and
+      runtime support" (this includes runtime and tools).  Click next,
+      and proceed through the installation (it may require you to
+      accept an open source license for uima).  Please note that it's
+      ok if the tools are for uima 2.4.0, even though we're installing
+      uima 2.3.1 in the next step.</li>
+      
     </ul>
-  </ul>
-  <li>Grab
-the file "<a href="http://employeeshare.mitre.org/m/mcoarr/transfer/medfact/ctakes_and_assertion/MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip">MITRE-ASSERTION-CTAKES-PIPELINE-2011-12-28.zip</a>"
-from my transfer folder. &nbsp;Extract this to a temporary location on
-your sytem. &nbsp;</li>
-  <li>Run
-$UIMA_HOME/bin/runPearInstaller.sh (linux/mac) or
-%UIMA_HOME%\bin\runPearInstaller.bat (win)</li>
-  <li>Set
-the installation directory to be the "installed_pears" directory you
-created in step 3 above.</li>
-  <li>For each of the following
-(in order) choose the pear file (inside the "pear-files" directory that
-was created when you extracted the zip file above), click install, and
-make sure it installs successfully (screen text will be blue on success
-and
-red on error):
-    <div>
-    <ul class="compactList" type="circle">
-      <li>core</li>
-      <li>document preprocessor</li>
-      <li>POS tagger</li>
-      <li>chunker</li>
-      <li>context dependent
-tokenizer</li>
-      <li>dictionary lookup DB</li>
-      <li>LVG</li>
-      <li>NE contexts</li>
-      <li>assertion</li>
-      <li>clinical
-documents pipeline</li>
-    </ul>
-    </div>
+  <li>Install UIMA 2.3.1 "UIMA Java framework and sdk" binary release.
+  Download the zip or the .tar.gz file and extract it.  Then rename
+  the extracted directory "apache-uima" to "uima", and move it to
+  c:\uima (windows) or /uima (linux or mac).  On
+  the <a href="http://uima.apache.org/downloads.cgi">download</a>
+  page, 
+  look at the section "latest official releases" and go to the section
+  for the "2.3.1" release. 
   </li>
+  <li>Back in eclipse setup the uima build path�򠠦 (in the wiki
+  instructions, this is listed as "add uima to build path config in
+  eclipse"). 
+  <ul style="circle">
+    <li>Go into the eclipse preferences (eclipse -> preference on a
+    mac; I think this is under Tools, Window, or Help on linux/win). 
+      </li>
+    <li>Navigate to Java -> Build Path</li>
+    <li>Click on "Classpath Variables"</li>
+    <li>Click "new"</li>
+    <li>Enter "UIMA" for the name</li>
+    <li>Click the folder button for the path, and select c:\uima (windows) or /uima (linux/mac) and say ok/open.</li>
+    <li>Click on the "User Libraries" under the build path section (in the left hand pane)</li>
+    <li>Click the "new" button, name the new user library "UIMA", and click ok.</li>
+    <li>Make sure the new "UIMA" library is selected, then click the "add jars" button.</li>
+    <li>Navigate to your UIMA installation directory (c:\uima for windows, /uima for linux/mac), then open the lib folder, and select all the jars in there — control-click or shift-click. And then say ok/open.</li>
+    <li>Optional — download and install a uima source distribution, then for each of these jars, set the source attachment.  This will be useful for line-by-line debugging.</li>
+    <li>Optional, but recommended (not needed if you install source in the previous step) — expand "uima-core.jar", click on "javadoc location", then click the "edit" button.  Then leave the "javadoc url" radio button selected (it's first and it's default), click the browse button, go to your uima installation directory (c:\uima or /uima), then go into docs/d/api and say open/ok.  Then say ok to the javadoc dialog.</li>
+    <li>Finally, say ok to the User Library settings in the preferences window.</li>
+    </ul>
+    </li>
+  <li>Grab the sharp ctakes sources.  For now, grab the source zip
+  file from here:
+  ftp://tempspace.mitre.org/users/mcoarr/medfacts/SHARPn-cTAKES__WITH_MASIF.zip
+  . Once we are commited to sharp's ctakes svn, you can just check out
+  https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/SHARPn-cTAKES
+  — check out to a new directory such as c:\ctakes (windows) or
+  /ctakes (mac/linux). 
+  </li>
+  <li>Make a new directory (c:\ctakes for windows or /ctakes for
+  mac/linux).  Cd to that directory and extract the source zip file
+  (or if using sharp svn, just check out into this new directory
+  rather than creating it in the first place — see last step). 
+  </li>
+  <li>
+    Import the source projects into eclipse: 
+    <ul style="circle">
+      <li>Back in eclipse, choose File -> Import.  Then choose General
+      -> "Existing Projects into Workspace" and click Next.  </li> 
+      <li>Leave the radio button for "select root directory" selected and click the browse button.  Choose the directory where you extracted/checked out the source code — c:\ctakes (windows) or /ctakes (mac/linux).  Then say ok/open to the directory selection dialog.</li>
+      <li>This will cause the "projects" list box to populate with a
+      list of all the ctakes projects.  Now click finished.</li> 
+      <li>Verify that each project's build path includes the proper
+      reference to the user library "UIMA" that we created above:
+	<ul style="square">
+	  <li>Right click on each project, choose Build Path -> "configure build path".  Then click on the libraries tab, and you should see "UIMA" listed as one of the libraries.</li>
+	</ul>
+      </li> 
+    </ul>
+  </li>
+  <li>
+    Go into the project "files for pipeline root" and edit
+    build.properties 
+    <ul style="circle">
+      <li>Change UIMA_HOME and ECLIPSE_HOME to the appropriate directories.  UIMA_HOME should point to c:\uima (windows) or /uima (mac/linux)</li>
+    </ul>
+  </li>
+  <li>Outside of eclipse, navigate to your uima installation
+  directory, then open the bin directory and edit the file
+  jcasgen_merge.bat (windows) or jcasgen_merge.sh (mac/linux).  Search
+  for "startup.jar".  You will need to change the startup.jar to the
+  version of the launcher plugin that is in your eclipse home.  
+    <ul style="circle">
+      <li>Open a command prompt to your eclipse installation directory.
+      Go into plugins and do a directory listing looking for
+      *.launcher_*.jar.  Pay attention to the version number.  And on
+      the mac, note that you do not want the one that contains
+      "*.launcher.cocoa.macosx.x86_64*". You want the one with the
+      simple version number. </li>
+      <li>Windows
+	<ul style="square">
+	  <li>Before: "%UIMA_JAVA_CALL%" "%logger%" -cp
+	  "%ECLIPSE_HOME%\startup.jar"
+	  "-Duima.datapath=%UIMA_DATAPATH%"
+	  org.eclipse.core.launcher.Main %ARGS%</li>
+	  <li>After: "%UIMA_JAVA_CALL%" "%logger%" -cp
+	  "%ECLIPSE_HOME%\plugins\org.eclipse.equinox.launcher_VERSION.jar"
+	  "-Duima.datapath=%UIMA_DATAPATH%"
+	  org.eclipse.core.launcher.Main %ARGS%</li>
+	</ul>
+      </li>
+      <li>Mac/Linux
+	<ul style="square">
+	  <li>Before: ES="$ECLIPSE_HOME/startup.jar"
+	  </li>
+	  <li>After:
+	  ES="$ECLIPSE_HOME/plugins/org.eclipse.equinox.launcher_1.2.0.v20110502.jar"</li> 
+	</ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    Back in eclipse, go into the project "files for pipeline root" and
+    right click on build.xml.  Run As -> Ant Build. That should run
+    without any errors.   
+    <ul style="circle">
+      <li>If Run As doesn't show an "ant build", try right clicking on the project and choosing "refresh".  If "ant build" doesn't show up still, try restarting eclipse.</li>
+    </ul>
+  </li>
+  <li>In the "dictionary lookup" project, navigate to
+  desc/analysis_engine and edit the file
+  DictionaryLookupAnnotatorUMLS.xml
+    <ul style="circle">
+      <li>Find the open tag for the "configurationParameterSettings"
+      element (not "configuratonParameters").</li>
+      <li>Then find the two "nameValuePair" elements that have a name
+      of "UMLSUser" and "UMLSPW" and update their respective "value"
+      elements with the proper string value (inside the "string
+      element") for the username and password.</li> 
+      </ul>
+  </li>
+  <li>
+    In the "clinical documents pipeline" project, navigate to
+    desc/analysis_engine and open
+    AggregatePlaintextUMLSProcessor_with_mastif.xml (in the real
+    version, we'll edit the original file)
+    <ul style="circle">
+      <li>Search for "AssertionAnnotator"</li>
+      <li>Ensure that the import location is
+      "../../../assertion/desc/assertionMiniPipelineAnalysisEngine.xml"</li> 
+    </ul>
+  </li>
+  <li>At this point you may still see errors on some of the ctakes
+  projects in eclipse (especially if you are building ctakes for the
+  first time in this eclipse workspace).  If you do see any red X's on
+  the project icons, then: 
+    <ul style="circle">
+      <li>Right click on every project and choose "refresh" (you may
+      also navigate to each project using the keyboard and press
+      F5)</li>
+      <li>Then restart eclipse</li>
+      <li>If needed, "refresh" each project again.</li>
+      <li>The errors should have gone away at this point.</li>
+    </ul>
+  </li>
+  <li>Checkout MASTIF into a separate directory (i.e. not a
+  sub-directory of SHARP-cTAKES).  If not already checked out the code is
+  available via git:
+
+    git clone ssh://username@git.code.sf.net/p/mastif/code mastif-code
+
+    </li>
+  
+  <li>MASTIF uses Maven to
+  build. These instructions assume you have Maven installed on your
+  system and the "mvn" executable is in your path.  Maven, along
+  with documentation is available at: http://maven.apache.org/
+    </li>
+
+  <li> Build the MASTIF library files. 
+  Enter the directory mastif-code/med-facts-all and execute "mvn
+  install". 
+  </li>
+
+  <li>Copy MASTIF library files into the already built SHARP-cTAKES
+  pipeline. (See the SHARP-cTAKES documentation for checking out and
+  building the
+  latest version of SHARP-cTAKES).
+  The .jar files
+  "mastif-code/med-facts-i2b2/target/med-facts-i2b2-1.2-SHAPSHOT.jar"
+  and "mastif-code/med-facts-zoner/target/med-facts-zoner-1.1.jar"
+  should be copied to "SHARP-cTAKES/assertion/lib/"
+
+
   <li>To test successful
-install, run "cvd.sh" (mac/linux) or "cvd.bat" (windows) on the
-commandline to start up the CAS visual debugger.</li>
-  <ul type="circle">
-    <li>Choose Run -&gt; Load
-AE. &nbsp;Then browse to your installed pear files directory, then open
-"clinical documents pipeline/clinical documents pipeline_pear.xml" and
-say ok. &nbsp;It'll take a few (5-10) seconds to load. &nbsp;Make sure
-this loads correctly.&nbsp; If there's a problem, you'll get an error
-dialog and perhaps
-error message in the console window where you started this.&nbsp; If it
-loads successfully, you'll see a message in the status bar at the
-bottom of the window saying "Done loading AE
-AggregatePlainTextProcessor in <span style="font-style: italic;">n</span>
-seconds".<br>
-    </li>
-    <li>Open a sample text
-input document (You can use any clinical document.&nbsp; If you have
-access to the i2b2 data, I'd suggest the i2b2 eval data set 0001.txt,
-but you
-can use something else). &nbsp;Do this by going to File -&gt; Open Text
-File.</li>
-    <li>Run
-the AE on the text file you just loaded by going to Run -&gt; (second
-option) "Run AggregatePlaintextProcessor". &nbsp;This will take a
-minute or so to complete. &nbsp;When it completes, there will be a tree
-of annotations in the top left pane ("CAS Index Repository").
-&nbsp;Expand this and you should see Annotation Index -&gt;
-uima.tcas.Annotation -&gt; org.mitre.medfacts.types.Assertion, and a
-count of that annotation will be in brackets. &nbsp;Click on that and
-you'll see the list of annotations in the bottom left pane.</li>
-  </ul>
-  <li>To
-run this over a batch of data, you want to use the CPE (collection
-processing engine). &nbsp;Do this by:</li>
-  <ul type="circle">
-    <li>Save
-one of the sample cpe xml configuration files (see attached) to a
-location on your system as cpe.xml. &nbsp;If you use another filename,
-update the commands below. &nbsp;For directories, I'd recommend the
-directories that you created above -- "/mastif" (linux/mac) or
-"c:\mastif" (windows).</li>
-    <li>Edit this file to make
-the following changes:</li>
-    <ul type="square">
-      <li>"import" statements
-pointing to UIMA components' xml configuration files</li>
-      <ul type="square">
-        <li>Search for lines
-that start with "&lt;import". &nbsp;There are 3 in this file that are
-not commented out. &nbsp;The first and the third need to be updated to
-point to your UIMA installation. &nbsp;The second needs to point to
-your "installed_pears" directory.</li>
-        <li>The paths in the
-"import" elements should be "file:" urls. &nbsp;For mac/linux that
-would look like "file:/some/directory/file.txt"; for windows that would
-look like "file:/C:/some/directory/file.txt".</li>
-      </ul>
-      <li>Input and output
-directories</li>
-      <ul type="square">
-        <li>Search for
-"InputDirectory" and "OutputDirectory". &nbsp;A few lines down from
-each of these is a directory that should contain your input text files
-and (eventually) will contain your output xmi files. &nbsp;These are
-the directories you created beside the "installed_pears" directory.</li>
-        <li>The
-input and output directories should be file paths, preferably absolute,
-though relative paths work too. &nbsp;For windows systems, forward or
-backslashes will work. &nbsp;For unix and mac systems, this must be a
-forward slash. &nbsp;Also note that this is a file path, not a "file:"
-url.</li>
-      </ul>
+    <ul type="circle">
+    <li>Right click on the "clinical document pipeline" project in
+    eclipse and choose "Run As" -> "Run Configurations�򠠦"</li>
+    <li>Expand "java application" in the left pane of the run
+    configurations window, and left click on
+    "UIMA_CVD--clinical-document-pipeline"</li>
+    <li>Then right click on it, and choose "duplicate".</li>
+    <li>Click on the new Entry — it probably contains " (1)" at the
+    end of the name.</li>
+    <li>In the right hand side, edit the name — try removing the "
+    (1)" and adding " with mastif"</li>
+    <li>Then click on the "Arguments" tab and go into the "VM Arguments" text area.  At the end put a space and then paste the following to setup the proxies:
+
+-Dhttp.proxyHost=gatekeeper.mitre.org -Dhttp.proxyPort=80
+      -Dhttp.nonProxyHosts=*.mitre.org
+      -Dhttps.proxyHost=gatekeeper.mitre.org -Dhttps.proxyPort=80</li>
+    <li>Then click the "apply" button.</li>
+    <li>Next click the "Run" button.  This will start the CAS Visual
+    Debugger, but it will not be loaded with the clinical documents
+    pipeline yet.</li>
+    <li>Go to the Run menu and select "Load AE".  Then navigate to the "clinical document pipeline" project directory, then go to desc/analysis_engine, and select AggregatePlaintextUMLSProcessor_with_mastif.xml and click ok.  This usually takes 7-15 seconds to load.  Look in the status bar for progress.
+9.	Next go to the File menu and select say "open text file".
+      Choose a sample clinical document.  The i2b2 evaluation text
+      files are good examples.  Say ok.</li>
+    <li>Next go to the File menu and select say "open text file".
+    Choose a sample clinical document.  The i2b2 evaluation text files
+    are good examples.  Say ok.</li>
+    <li>Finally, go to the Run menu and choose "Run
+    AggregatePlaintextUMLSProcessor".</li>
+    <li>If anything goes wrong, you can look in both the eclipse
+    console (from eclipse�򠠦 Window -> Show View -> Console) and look at
+    the ~/uima.log file (from the CVD�򠠦 Tools -> View Log File).</li>
+    <li>If everything runs correctly, you should see 1) the status bar
+    message "Done running AE AggregatePlaintextUMLSProcessor in n
+    seconds" and b) the top left pane will show a positive count in
+    brackets next to "AnnotationIndex".</li>
+    <li>To view the assertion annotations, expand the following (the
+    important class names are bolded here for easy reading): 
+      <ul>AnnotationIndex</ul>
+      <ul>uima.tcas.Annotation</ul>
+      <ul>edu.mayo.bmi.uima.core.type.textsem.<b>IdentifiedAnnotation</b></ul>
+      <ul>edu.mayo.bmi.uima.core.type.textsem.<b>EntityMention</b></ul>
+    <li>Then in the bottom left, you'll see a list of the
+    EntityMention annotations with the appropriate annotations
+    (polarity, uncertainty, conditional, generic, and subject).</li>
     </ul>
-    <li>Place
-some files in the input directory.</li>
-    <li>Back
-on the command-line, go to the directory where you saved this cpe.xml
-file. &nbsp;Now run "runCPE.sh cpe.xml" (mac/linux) or "runCPE.bat
-cpe.xml" (windows). &nbsp;<br>
-      <br>
-If you're on a mac or linux box, I recommend capturing the output like
-using the following command, as this will capture std out and std err
-to file and still show it on the screen:<br>
-      <br>
-runCPE.sh cpe_mimic.xml 2&gt;&amp;1 | tee running_cpe.log</li>
-    <li>After
-this completes, your output directory will contain an XMI file for each
-text input file. &nbsp;This will contain an xml representation of the
-CAS, including the assertion annotations. &nbsp;You can look at these
-by hand, or run annotationViewer.sh to open these up.</li>
-    <li>If
-you're viewing the text file by hand, you can search for ":Concept "
-and ":Assertion " to find the generated annotations. &nbsp;The concepts
-are used internally to map named entity, ontology concept, and rxnorm
-concepts to an "i2b2-like" concept annotation used by our assertion
-engine. &nbsp;The assertion annotations are the real output of the
-MASTIF system. &nbsp;For every "Concept" annotations with a concept
-type of "PROBLEM", one Assertion will be generated.<br>
-      <br>
-If
-you don't see this output, either no appropriate concepts were found
-to markup or there was a problem, and you should look at the log output
-and get in touch with us.&nbsp; For the log output, you should look at
-both the console where you executed runCPE and the file uima.log in
-your home directory ($HOME on linux/mac; %USERPROFILE% on windows)<br>
-    </li>
-  </ul>
-  <li>The end! &nbsp;Let me
-know if you need any help.</li>
+  </li>
 </ol>
 <div>
 <p class="MsoNormal">Matt</p>

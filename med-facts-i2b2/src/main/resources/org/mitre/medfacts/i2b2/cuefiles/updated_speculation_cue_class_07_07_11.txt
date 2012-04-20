@@ -1,0 +1,194 @@
+uncertain	negposs_adj	mid
+unsure	negposs_adj	mid
+improbable	negprob_adj	low
+unlikely	negprob_adj	low
+doubtful	negprob_adj	low
+doubt	negprob_verb	low
+doubted	negprob_verb	low
+doubting	negprob_verb	low
+doubts	negprob_verb	low
+possible	poss_adj	mid
+poss	poss_adj	mid
+hypothetical	poss_adj	mid
+questionable	poss_adj	mid
+consistent with	poss_adj	mid
+compatible with	poss_adj	mid
+equivocal for	poss_adj	mid
+suspicious for	poss_adj	mid
+potential	poss_adj	mid
+concerned for	poss_adj	mid
+concerning for	poss_adj	mid
+worrisome for	poss_adj	mid
+unclear	poss_adj	mid
+unknown	poss_adj	mid
+possibly	poss_adv	mid
+potentially	poss_adv	mid
+maybe	poss_adv	mid
+perhaps	poss_adv	mid
+possibilities	poss_noun	mid
+possibility	poss_noun	mid
+evidence for	poss_noun	mid
+evidence of	poss_noun	mid
+speculation	poss_noun	mid
+consideration	poss_noun	mid
+?	poss_noun	mid
+ddx	poss_noun	mid
+differential diagnosis	poss_noun	mid
+differential diagnoses	poss_noun	mid
+believe	poss_verb	high
+believed	prob_verb	high
+believes	prob_verb	high
+believing	prob_verb	high
+consider	poss_verb	mid
+considered	poss_verb	mid
+considering	poss_verb	mid
+considers	poss_verb	mid
+t/c	poss_verb	mid
+entertain	poss_verb	mid
+entertained	poss_verb	mid
+entertaining	poss_verb	mid
+entertains	poss_verb	mid
+question	poss_verb	mid
+questioned	poss_verb	mid
+questioning	poss_verb	mid
+questions	poss_verb	mid
+speculate	prob_verb	high
+speculated	prob_verb	high
+speculates	prob_verb	high
+speculating	prob_verb	high
+can	poss_modal	mid
+could	poss_modal	mid
+may	poss_modal	mid
+might	poss_modal	mid
+whether or not	poss_conj	mid
+whether	poss_conj	mid
+either	poss_conj	mid
+or	poss_conj	mid
+if	poss_conj	mid
+unless	poss_conj	low
+probable	prob_adj
+likely	prob_adj	high
+presumed	prob_adj	high
+presumptive	prob_adj	high
+apparent	prob_adj	high
+preliminary	prob_adj	high
+putative	prob_adj	high
+indicative of	prob_adj	high
+suggestive of	prob_adj	high
+typical of	prob_adj	high
+probably	prob_adv	high
+likely	prob_adv	high
+presumably	prob_adv	high
+apparently	prob_adv	high
+reportedly	prob_adv	high
+seemingly	prob_adv	high
+supposedly	prob_adv	high
+must	prob_modal	high
+appear	prob_verb	high
+appeared	prob_verb	high
+appearing	prob_verb	high
+appears	prob_verb	high
+seem	prob_verb	high
+seemed	prob_verb	high
+seems	prob_verb	high
+seeming	prob_verb	high
+estimate	prob_verb	high
+estimated	prob_verb	high
+estimates	prob_verb	high
+estimating	prob_verb	high
+feel that	prob_verb	high
+feeling that	prob_verb	high
+feels that	prob_verb	high
+felt that	prob_verb	high
+hypothesize	prob_verb	high
+hypothesized	prob_verb	high
+hypothesizes	prob_verb	high
+hypothesizing	prob_verb	high
+implied	prob_verb	high
+implies	prob_verb	high
+imply	prob_verb	high
+implying	prob_verb	high
+indicate	prob_verb	high
+indicated	prob_verb	high
+indicates	prob_verb	high
+indicating	prob_verb	high
+postulate	prob_verb	high
+postulated	prob_verb	high
+postulating	prob_verb	high
+postulates	prob_verb	high
+propose	prob_verb	high
+proposed	prob_verb	high
+proposes	prob_verb	high
+proposing	prob_verb	high
+suggest	prob_verb	high
+suggested	prob_verb	high
+suggesting	prob_verb	high
+suggests	prob_verb	high
+support	prob_verb	high
+supported	prob_verb	high
+supporting	prob_verb	high
+supports	prob_verb	high
+suppose	prob_verb	high
+supposed	prob_verb	high
+supposes	prob_verb	high
+supposing	prob_verb	high
+suspect	prob_verb	high
+suspected	prob_verb	high
+suspecting	prob_verb	high
+suspects	prob_verb	high
+think	prob_verb	high
+thinks	prob_verb	high
+thinking	prob_verb	high
+thought	prob_verb	high
+concern for	prob_noun	high
+concerns for	prob_noun	high
+implication	prob_noun	high
+implications	prob_noun	high
+impression of	prob_noun	high
+indication of	prob_noun	high
+indications of	prob_noun	high
+suspicion	prob_noun	high
+suspicions	prob_noun	high
+suggestion	prob_noun	high
+suggestions	prob_noun	high
+hypothesis	prob_noun	high
+hypotheses	prob_noun	high
+probability	prob_noun	high
+probabilities	prob_noun	high
+sign of	prob_noun	high
+signs of	prob_noun	high
+v.s.	prob_prep	high
+versus	prob_prep	high
+vs.	prob_prep	high
+vs	prob_prep	high
+r / o	test	mid
+ro	test	mid
+r/o	test	mid
+rule out	test	mid
+ruling out	test	mid
+rule - out	test	mid
+ruling - out	test	mid
+test for	test	mid
+tested for	test	mid
+testing for	test	mid
+tests for	test	mid
+check for	test	mid
+checked for	test	mid
+checking for	test	mid
+checks for	test	mid
+evaluate for	test	mid
+eval for	test	mid
+evaluated for	test	mid
+evaluates for	test	mid
+evaluating for	test	mid
+evaluation for	test	mid
+assess for	test	mid
+assessment for	test	mid
+monitor for	test	mid
+monitored for	test	mid
+monitoring for	test	mid
+monitors for	test	mid
+seriologies for	test	mid
+seriology for	test	mid
+work up for	test	mid
+workup for	test	mid

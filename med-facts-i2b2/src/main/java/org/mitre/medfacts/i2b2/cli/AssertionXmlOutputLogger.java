@@ -20,6 +20,7 @@ public class AssertionXmlOutputLogger
   BufferedWriter bufferedWriter = null;
 
   protected String baseDirectory;
+  protected String fileNameSuffix;
 
   public AssertionXmlOutputLogger()
   {
@@ -29,7 +30,14 @@ public class AssertionXmlOutputLogger
   public void init()
   {
     {
-      String assertionXmlOutputFilename = "assertion_output_debug.xml";
+      String assertionXmlOutputFilename = null;
+      if (fileNameSuffix != null && !fileNameSuffix.isEmpty())
+      {
+        assertionXmlOutputFilename = "assertion_output_debug." + fileNameSuffix + ".xml";
+      } else
+      {
+        assertionXmlOutputFilename = "assertion_output_debug.xml";
+      }
       try
       {
         File baseDirectoryFile = new File(getBaseDirectory());
@@ -201,6 +209,16 @@ public class AssertionXmlOutputLogger
   public void setBaseDirectory(String baseDirectory)
   {
     this.baseDirectory = baseDirectory;
+  }
+
+  public String getFileNameSuffix()
+  {
+    return fileNameSuffix;
+  }
+
+  public void setFileNameSuffix(String fileNameSuffix)
+  {
+    this.fileNameSuffix = fileNameSuffix;
   }
 
 

@@ -12,9 +12,10 @@ import java.util.List;
  *
  * @author MCOARR
  */
-class CueItem
+public class CueItem
 {
   protected List<String> tokenList = new ArrayList<String>();
+  protected String cueWordClass;
 
   public void addToken(String token)
   {
@@ -55,6 +56,16 @@ class CueItem
     }
     sb.append("}");
     return sb.toString();
+  }
+
+  public String getCueWordClass()
+  {
+    return cueWordClass;
+  }
+
+  public void setCueWordClass(String cueWordClass)
+  {
+    this.cueWordClass = cueWordClass;
   }
 
 }

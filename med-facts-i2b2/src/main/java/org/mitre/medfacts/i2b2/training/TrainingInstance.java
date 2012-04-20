@@ -156,4 +156,20 @@ public class TrainingInstance
 
     return b.toString();
   }
+
+  public String toString()
+  {
+    StringBuilder b = new StringBuilder();
+
+    int i = 0;
+    int size = featureSet.size();
+    for(String currentFeature : featureSet)
+    {
+      b.append(currentFeature);
+      i++;
+      if (i < size) { b.append(" "); }
+    }
+
+    return b.toString();
+  }
 }

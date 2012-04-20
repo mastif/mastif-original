@@ -8,7 +8,7 @@
             </goals>
             <properties>
                 <exec.classpathScope>runtime</exec.classpathScope>
-                <exec.args>-classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="C:/Documents and Settings/wellner/MedFactExtraction/i2b2-post-hoc-analysis/" --cue-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/cue.model" --scope-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/scope.model" --train=train --decode=eval --features-file="featureFile9-NoCueScope" --gaussian-prior=1.0 --mode=eval</exec.args>
+                <exec.args>-Xmx1024m -classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data.quick" --cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/cue.model" --scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/scope.model" --pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/pos.model" --train=train --decode=eval --features-file="featureFile9" --gaussian-prior=1.0 --mode=eval</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -20,7 +20,7 @@
             </goals>
             <properties>
                 <exec.classpathScope>runtime</exec.classpathScope>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="C:/Documents and Settings/wellner/MedFactExtraction/i2b2-post-hoc-analysis/" --cue-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/cue.model" --scope-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/scope.model" --train=train --decode=eval --features-file="featureFile9-NoCueScope" --gaussian-prior=1.0 --mode=eval</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -Xmx1024m -classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data.quick" --cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/cue.model" --scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/scope.model" --pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/pos.model" --train=train --decode=eval --features-file="featureFile9" --gaussian-prior=1.0 --mode=eval</exec.args>
                 <jpda.listen>true</jpda.listen>
                 <exec.executable>java</exec.executable>
             </properties>
@@ -32,9 +32,16 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
             </goals>
             <properties>
-                <exec.args>${profiler.args} -classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="C:/Documents and Settings/wellner/MedFactExtraction/i2b2-post-hoc-analysis/" --cue-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/cue.model" --scope-model="C:/Documents and Settings/wellner/MedFactExtraction/test-separate-jar/scope.model" --train=train --decode=eval --features-file="featureFile9-NoCueScope" --gaussian-prior=1.0 --mode=eval</exec.args>
+                <exec.args>${profiler.args} -Xmx1024m -classpath %classpath org.mitre.medfacts.i2b2.cli.BatchRunner --base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data.quick" --cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/cue.model" --scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/scope.model" --pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/pos.model" --train=train --decode=eval --features-file="featureFile9" --gaussian-prior=1.0 --mode=eval</exec.args>
                 <profiler.action>profile</profiler.action>
                 <exec.executable>${profiler.java}</exec.executable>
             </properties>
+        </action>
+        <action>
+            <actionName>CUSTOM-dependency:list</actionName>
+            <displayName>dependency:list</displayName>
+            <goals>
+                <goal>dependency:list</goal>
+            </goals>
         </action>
     </actions>

@@ -4,9 +4,21 @@
   <groupId>org.mitre.medfacts.i2b2</groupId>
   <artifactId>med-facts-i2b2</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
   <name>med-facts-i2b2</name>
   <url>http://maven.apache.org</url>
+
+  <scm>
+    <connection>
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-i2b2
+    </connection>
+    <developerConnection>
+      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-i2b2
+    </developerConnection>
+    <url>
+      https://developer.mitre.org/gf/project/medfact/scmsvn/?action=browse&amp;path=%2Fbranches%2Fapi_wrapper_take_two%2Fmed-facts-i2b2%2F
+    </url>
+  </scm>
 
   <repositories>
     <repository>
@@ -30,7 +42,7 @@
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
-            <version>2.2</version>
+            <version>2.4</version>
             <configuration>
                 <encoding>${project.build.sourceEncoding}</encoding>
             </configuration>
@@ -56,14 +68,23 @@
           <configuration>
             <mainClass>org.mitre.medfacts.i2b2.cli.BatchRunner</mainClass>
             <arguments>
-              <argument>--base-dir="C:/workspace.medical_facts/med_facts_work.2010-08-18T1000/med-facts-i2b2-data/"</argument>
+              <argument>--base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data"</argument>
+              <argument>--cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data/cue.model"</argument>
+              <argument>--scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data/scope.model"</argument>
+              <argument>--pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data/pos.model"</argument>
+              
+              <!--
+              <argument>- -base-dir="/work/medfacts/i2b2/_for_i2b2_paper/data.quick"</argument>
+              <argument>- -cue-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/cue.model"</argument>
+              <argument>- -scope-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/scope.model"</argument>
+              <argument>- -pos-model="/work/medfacts/i2b2/_for_i2b2_paper/data.quick/pos.model"</argument>
+              -->
+
               <argument>--train=train</argument>
               <argument>--decode=eval</argument>
-              <argument>--features-file=featureFile9</argument>
+              <argument>--features-file="featureFile9"</argument>
               <argument>--gaussian-prior=1.0</argument>
               <argument>--mode=eval</argument>
-              <argument>--scope-model=scope.model</argument>
-              <argument>--cue-model=cue.model</argument>
             </arguments>
           </configuration>
         </plugin>
@@ -105,9 +126,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mitre.itc</groupId>
-      <artifactId>jcarafe_2.8.0</artifactId>
-      <version>0.9.6.RC1</version>
+      <groupId>org.mitre</groupId>
+      <artifactId>jcarafe-ext_2.9.1</artifactId>
+      <version>0.9.8.3.RC4</version>
     </dependency>
     <dependency>
         <groupId>commons-cli</groupId>
@@ -117,9 +138,25 @@
     <dependency>
       <groupId>org.mitre.medfacts.zoner</groupId>
       <artifactId>med-facts-zoner</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>1.1</version>
     </dependency>
   </dependencies>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <configuration>
+          <targetJdk>1.6</targetJdk>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javancss-maven-plugin</artifactId>
+        <version>2.0-beta-2</version>
+      </plugin>
+    </plugins>
+  </reporting>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

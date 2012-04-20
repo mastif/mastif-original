@@ -1,6 +1,7 @@
 package org.mitre.medfacts.i2b2.processors;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -25,10 +26,16 @@ public abstract class FileProcessor
     this.pattern = Pattern.compile(patternString);
   }
 
-  public List<Annotation> processConceptAnnotationFile(String currentFilename)
+  public List<Annotation> processAnnotationFile(String currentFilename)
           throws FileNotFoundException, IOException
   {
-    FileReader fr = new FileReader(currentFilename);
+    File currentFile = new File(currentFilename);
+    return processAnnotationFile(currentFile);
+  }
+  public List<Annotation> processAnnotationFile(File currentFile)
+          throws FileNotFoundException, IOException
+  {
+    FileReader fr = new FileReader(currentFile);
     BufferedReader br = new BufferedReader(fr);
 
     List<Annotation> annotationList = new ArrayList<Annotation>();

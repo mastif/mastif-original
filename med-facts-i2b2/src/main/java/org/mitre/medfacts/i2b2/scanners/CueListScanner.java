@@ -28,6 +28,8 @@ import org.mitre.medfacts.i2b2.util.Location;
  */
 public class CueListScanner
 {
+  private static final Logger logger = Logger.getLogger(CueListScanner.class.getName());
+  public static Pattern SINGLE_TAB_PATTERN = Pattern.compile("\\t");
   public static Pattern WHITESPACE_PATTERN = Pattern.compile("\\s+");
 
   protected CueWordType cueWordType;
@@ -61,7 +63,7 @@ public class CueListScanner
           boolean matched = compareForCueMatch(cueItem, currentLine, tokenOffset);
           if (matched)
           {
-            System.out.format("MATCHES!!!%n  BEGIN MATCH%n  cue: %s%n  inputLine: %s%n  position: %d%n  END MATCH%n%n", cueItem.toString(), convertLineToString(currentLine), tokenOffset);
+            logger.finest(String.format("MATCHES!!!%n  BEGIN MATCH%n  cue: %s%n  inputLine: %s%n  position: %d%n  END MATCH%n%n", cueItem.toString(), convertLineToString(currentLine), tokenOffset));
             CueWordAnnotation a = new CueWordAnnotation();
             int beginOffset = tokenOffset;
             int endOffset = tokenOffset + size - 1;
@@ -74,6 +76,7 @@ public class CueListScanner
             a.setBegin(beginLocation);
             a.setEnd(endLocation);
             a.setCueWordType(getCueWordType());
+            a.setCueWordClass(cueItem.getCueWordClass());
             a.setCueWordText(constructWordSequenceText(currentLine, beginOffset, endOffset));
             annotationList.add(a);
           }
@@ -162,7 +165,7 @@ public class CueListScanner
     this.annotationList = annotationList;
   }
 
-  public void loadScannerTermsFile(File scannerTermsFile)
+  public final void loadScannerTermsFile(File scannerTermsFile)
   {
     try
     {
@@ -181,15 +184,32 @@ public class CueListScanner
 
   }
 
-  public void loadScannerTermsFromReader(BufferedReader bufferedReader)
+  public final void loadScannerTermsFromReader(BufferedReader bufferedReader)
   {
     try
     {
       for(String input = null; (input = bufferedReader.readLine()) != null; )
       {
+        String tabSeparatedInput[] = SINGLE_TAB_PATTERN.split(input);
+        String cueWordClass = null;
+        if (tabSeparatedInput.length == 0)
+        {
+          throw new RuntimeException("cue terms file should have one or two tab separated items on each line, but had zero");
+        } else if (tabSeparatedInput.length == 1)
+        {
+          input = tabSeparatedInput[0];
+        } else if ((tabSeparatedInput.length == 2) || (tabSeparatedInput.length == 3))
+        {
+          input = tabSeparatedInput[0];
+          cueWordClass = tabSeparatedInput[1];
+        } else if (tabSeparatedInput.length > 3)
+        {
+          throw new RuntimeException("cue terms file should have one or two tab separated items on each line, but had more than two");
+        }
         //System.out.format(" - INPUT LINE: %s%n", input);
         String tokens[] = WHITESPACE_PATTERN.split(input);
         CueItem cueItem = new CueItem();
+        cueItem.setCueWordClass(cueWordClass);
 
         for (String t : tokens)
         {

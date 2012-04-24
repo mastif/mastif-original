@@ -72,7 +72,7 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
   look at the section "latest official releases" and go to the section
   for the "2.3.1" release. 
   </li>
-  <li>Back in eclipse setup the uima build path�򠠦 (in the wiki
+  <li>Back in eclipse setup the uima build path򠠦 (in the wiki
   instructions, this is listed as "add uima to build path config in
   eclipse"). 
   <ul style="circle">
@@ -92,20 +92,10 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
     <li>Optional, but recommended (not needed if you install source in the previous step) — expand "uima-core.jar", click on "javadoc location", then click the "edit" button.  Then leave the "javadoc url" radio button selected (it's first and it's default), click the browse button, go to your uima installation directory (c:\uima or /uima), then go into docs/d/api and say open/ok.  Then say ok to the javadoc dialog.</li>
     <li>Finally, say ok to the User Library settings in the preferences window.</li>
     </ul>
-    </li>
-  <li>Grab the sharp ctakes sources.  For now, grab the source zip
-  file from here:
-  ftp://tempspace.mitre.org/users/mcoarr/medfacts/SHARPn-cTAKES__WITH_MASIF.zip
-  . Once we are commited to sharp's ctakes svn, you can just check out
-  https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/SHARPn-cTAKES
-  — check out to a new directory such as c:\ctakes (windows) or
-  /ctakes (mac/linux). 
-  </li>
   <li>Make a new directory (c:\ctakes for windows or /ctakes for
-  mac/linux).  Cd to that directory and extract the source zip file
-  (or if using sharp svn, just check out into this new directory
-  rather than creating it in the first place — see last step). 
-  </li>
+  mac/linux).  Cd to that directory and extract the cTAKES sources
+  from SVN, via:
+    svn co https://ohnlp.svn.sourceforge.net/svnroot/ohnlp/branches/SHARPn-cTAKES
   <li>
     Import the source projects into eclipse: 
     <ul style="circle">
@@ -207,9 +197,8 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
       <li>The errors should have gone away at this point.</li>
     </ul>
   </li>
-  <li>Checkout MASTIF into a separate directory (i.e. not a
-  sub-directory of SHARP-cTAKES).  If not already checked out the code is
-  available via git:
+  <li>The code for MASTIF should have already been checked out, if
+  not, here is the git command to do so:
 
     git clone ssh://username@git.code.sf.net/p/mastif/code mastif-code
 
@@ -239,7 +228,7 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
   <li>To test successful
     <ul type="circle">
     <li>Right click on the "clinical document pipeline" project in
-    eclipse and choose "Run As" -> "Run Configurations�򠠦"</li>
+    eclipse and choose "Run As" -> "Run Configurations򠠦"</li>
     <li>Expand "java application" in the left pane of the run
     configurations window, and left click on
     "UIMA_CVD--clinical-document-pipeline"</li>
@@ -267,8 +256,8 @@ Corporation, Contracts Office, 7515 Colshire Drive, McLean, VA
     <li>Finally, go to the Run menu and choose "Run
     AggregatePlaintextUMLSProcessor".</li>
     <li>If anything goes wrong, you can look in both the eclipse
-    console (from eclipse�򠠦 Window -> Show View -> Console) and look at
-    the ~/uima.log file (from the CVD�򠠦 Tools -> View Log File).</li>
+    console (from eclipse Window -> Show View -> Console) and look at
+    the ~/uima.log file (from the CVD Tools -> View Log File).</li>
     <li>If everything runs correctly, you should see 1) the status bar
     message "Done running AE AggregatePlaintextUMLSProcessor in n
     seconds" and b) the top left pane will show a positive count in

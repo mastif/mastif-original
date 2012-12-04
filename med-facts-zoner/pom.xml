@@ -2,24 +2,52 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>org.mitre.medfacts.zoner</groupId>
-  <artifactId>med-facts-zoner</artifactId>
+  <artifactId>mastif-zoner</artifactId>
   <packaging>jar</packaging>
-  <version>1.1</version>
-  <name>med-facts-zoner</name>
-  <url>http://maven.apache.org</url>
+  <version>1.4-SNAPSHOT</version>
+  <name>mastif-zoner</name>
+  <description>identify and assign labels to sections (zones) within clinical documents</description>
+  <url>http://mastif.sf.net</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <scm>
-    <connection>
-      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-zoner
-    </connection>
-    <developerConnection>
-      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-zoner
-    </developerConnection>
-    <url>
-      https://developer.mitre.org/gf/project/medfact/scmsvn/?action=browse&amp;path=%2Fbranches%2Fapi_wrapper_take_two%2Fmed-facts-zoner%2F
-    </url>
+    <connection>scm:git:git://git.code.sf.net/p/mastif/code</connection>
+    <developerConnection>scm:git:ssh://mattcoarr-work@git.code.sf.net/p/mastif/code</developerConnection>
+    <url>https://sourceforge.net/p/mastif/code/</url>
   </scm>
+
+  <developers>
+    <developer>
+      <id>mcoarr</id>
+      <name>Matt Coarr</name>
+      <email>mcoarr@mitre.org</email>
+    </developer>
+    <developer>
+      <id>wellner</id>
+      <name>Ben Wellner</name>
+      <email>wellner@mitre.org</email>
+    </developer>
+    <developer>
+      <id>robyn</id>
+      <name>Robyn Kozierok</name>
+      <email>robyn@mitre.org</email>
+    </developer>
+  </developers>
 
 
   <dependencies>
@@ -80,18 +108,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
   <distributionManagement>
-    <downloadUrl>http://rcf.mitre.org/project/chatter/repo</downloadUrl>
-    <repository>
-      <uniqueVersion>false</uniqueVersion>
-      <id>chatter_repository</id>
-      <name>Chatter Project Repository</name>
-      <url>scp://beijing.mitre.org/afs/rcf/project/chatter/repo</url>
-      <layout>default</layout>
-    </repository>
-    <site>
-      <id>med_facts_zoner_website_upload</id>
-      <url>scp://beijing.mitre.org/afs/rcf/project/medfact/site/med-facts-zoner</url>
-    </site>
+    <downloadUrl>https://sourceforge.net/projects/mastif/files/</downloadUrl>
   </distributionManagement>
 </project>
 

@@ -10,7 +10,7 @@
   <groupId>org.mitre.medfacts.zoner</groupId>
   <artifactId>mastif-zoner</artifactId>
   <packaging>jar</packaging>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <name>mastif-zoner</name>
   <description>identify and assign labels to sections (zones) within clinical documents</description>
   <url>http://mastif.sf.net</url>

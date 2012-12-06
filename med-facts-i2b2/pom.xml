@@ -1,31 +1,52 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.mitre.medfacts.i2b2</groupId>
-  <artifactId>med-facts-i2b2</artifactId>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
+  <groupId>net.sf.mastif</groupId>
+  <artifactId>mastif-i2b2</artifactId>
   <packaging>jar</packaging>
-  <version>1.2-SNAPSHOT</version>
-  <name>med-facts-i2b2</name>
-  <url>http://maven.apache.org</url>
+  <version>1.5-SNAPSHOT</version>
+  <name>mastif-i2b2</name>
+  <description>assertion status classification of medical named entities within clinical documents</description>
+  <url>http://mastif.sf.net</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 
   <scm>
-    <connection>
-      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-i2b2
-    </connection>
-    <developerConnection>
-      scm:svn:svn+ssh://developer.mitre.org/svnroot/medfact/branches/api_wrapper_take_two/med-facts-i2b2
-    </developerConnection>
-    <url>
-      https://developer.mitre.org/gf/project/medfact/scmsvn/?action=browse&amp;path=%2Fbranches%2Fapi_wrapper_take_two%2Fmed-facts-i2b2%2F
-    </url>
+    <connection>scm:git:git://git.code.sf.net/p/mastif/code</connection>
+    <developerConnection>scm:git:ssh://mattcoarr-work@git.code.sf.net/p/mastif/code</developerConnection>
+    <url>https://sourceforge.net/p/mastif/code/</url>
   </scm>
 
-  <repositories>
-    <repository>
-      <id>mitre-chatter-repository</id>
-      <url>http://rcf.mitre.org/project/chatter/repo</url>
-    </repository>
-  </repositories>
+  <developers>
+    <developer>
+      <id>mcoarr</id>
+      <name>Matt Coarr</name>
+      <email>mcoarr@mitre.org</email>
+    </developer>
+    <developer>
+      <id>wellner</id>
+      <name>Ben Wellner</name>
+      <email>wellner@mitre.org</email>
+    </developer>
+    <developer>
+      <id>robyn</id>
+      <name>Robyn Kozierok</name>
+      <email>robyn@mitre.org</email>
+    </developer>
+  </developers>
+
 
   <build>
     <plugins>
@@ -114,6 +135,22 @@
             </descriptorRefs>
           </configuration>
         </plugin> 
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.2.1</version>
+          <executions>
+            <execution>
+              <id>default</id>
+              <goals>
+                <goal>perform</goal>
+              </goals>
+              <configuration>
+                <pomFileName>med-facts-i2b2/pom.xml</pomFileName>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
     </plugins>
   </build>
 
@@ -136,11 +173,12 @@
         <version>1.2</version>
     </dependency>
     <dependency>
-      <groupId>org.mitre.medfacts.zoner</groupId>
-      <artifactId>med-facts-zoner</artifactId>
-      <version>1.1</version>
+      <groupId>net.sf.mastif</groupId>
+      <artifactId>mastif-zoner</artifactId>
+      <version>1.4</version>
     </dependency>
   </dependencies>
+
   <reporting>
     <plugins>
       <plugin>
@@ -157,8 +195,11 @@
       </plugin>
     </plugins>
   </reporting>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+  <distributionManagement>
+    <downloadUrl>https://sourceforge.net/projects/mastif/files/</downloadUrl>
+  </distributionManagement>
 </project>
 

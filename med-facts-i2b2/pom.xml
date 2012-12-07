@@ -10,7 +10,7 @@
   <groupId>net.sf.mastif</groupId>
   <artifactId>mastif-i2b2</artifactId>
   <packaging>jar</packaging>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.4-SNAPSHOT</version>
   <name>mastif-i2b2</name>
   <description>assertion status classification of medical named entities within clinical documents</description>
   <url>http://mastif.sf.net</url>
@@ -25,7 +25,7 @@
 
   <scm>
     <connection>scm:git:git://git.code.sf.net/p/mastif/code</connection>
-    <developerConnection>scm:git:ssh://mattcoarr-work@git.code.sf.net/p/mastif/code</developerConnection>
+    <developerConnection>scm:git:ssh://git.code.sf.net/p/mastif/code</developerConnection>
     <url>https://sourceforge.net/p/mastif/code/</url>
   </scm>
 
@@ -163,7 +163,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.mitre</groupId>
+      <groupId>net.sf.carafe.jcarafe</groupId>
       <artifactId>jcarafe-ext_2.9.1</artifactId>
       <version>0.9.8.3.RC4</version>
     </dependency>

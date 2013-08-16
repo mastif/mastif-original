@@ -21,9 +21,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
             </goals>
             <properties>
-                <exec.workingdir>C:\a_projects\AFEM\i2b2 data</exec.workingdir>
+                <exec.workingdir>C:\a_projects\AFEM\NO BACKUP\i2b2 data</exec.workingdir>
                 <exec.classpathScope>runtime</exec.classpathScope>
-                <exec.args>-classpath %classpath org.mitre.medfacts.zoner.ZonerCli obesity_patient_records_training_mini.xml</exec.args>
+                <exec.args>-classpath %classpath org.mitre.medfacts.zoner.ZonerCli 185795+subsections.txt</exec.args>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -34,9 +34,9 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
             </goals>
             <properties>
-                <exec.workingdir>C:\a_projects\AFEM\i2b2 data</exec.workingdir>
+                <exec.workingdir>C:\a_projects\AFEM\NO BACKUP\i2b2 data</exec.workingdir>
                 <exec.classpathScope>runtime</exec.classpathScope>
-                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath org.mitre.medfacts.zoner.ZonerCli obesity_patient_records_training_mini.xml</exec.args>
+                <exec.args>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address} -classpath %classpath org.mitre.medfacts.zoner.ZonerCli 185795+subsections.txt</exec.args>
                 <jpda.listen>true</jpda.listen>
                 <exec.executable>java</exec.executable>
             </properties>
@@ -48,8 +48,8 @@
                 <goal>org.codehaus.mojo:exec-maven-plugin:1.1.1:exec</goal>
             </goals>
             <properties>
-                <exec.workingdir>C:\a_projects\AFEM\i2b2 data</exec.workingdir>
-                <exec.args>${profiler.args} -classpath %classpath org.mitre.medfacts.zoner.ZonerCli obesity_patient_records_training_mini.xml</exec.args>
+                <exec.workingdir>C:\a_projects\AFEM\NO BACKUP\i2b2 data</exec.workingdir>
+                <exec.args>${profiler.args} -classpath %classpath org.mitre.medfacts.zoner.ZonerCli 185795+subsections.txt</exec.args>
                 <profiler.action>profile</profiler.action>
                 <exec.executable>${profiler.java}</exec.executable>
             </properties>

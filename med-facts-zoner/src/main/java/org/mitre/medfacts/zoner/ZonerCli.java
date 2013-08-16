@@ -60,6 +60,7 @@ public class ZonerCli {
     protected List<SectionRegexDefinition> templateRegexDefinitionList;
     protected List<SectionRegexDefinition> subsectionRegexDefinitionList;
     protected Map<String, Node> fragmentMap;
+    protected Map<String, AttributesHolder> fragmentAttrsMap;
     // This will include all the Ranges, including those we will eventually mark
     // isIgnore because of overlaps
     protected List<Range> fullRangeList = new ArrayList<Range>();
@@ -80,13 +81,18 @@ public class ZonerCli {
     protected Map<Range, List<Range>> templateMap = new HashMap<Range, List<Range>>();
     protected String entireContents;
     public static final int expansionThreshold = 5;
-    private static String defaultRegexFilename = "org/mitre/medfacts/zoner/section_regex.xml";
+    private static String defaultRegexFilename = "org/mitre/medfacts/zoner/section_regex_with_attributes.xml";
     private CharacterOffsetToLineTokenConverter converter;
     private XPathExpression sectionExpression;
     private XPathExpression regexExpression;
     private XPathExpression regexIgnoreCaseExpression;
     private XPathExpression regexFindAllExpression;
     private XPathExpression labelExpression;
+    private XPathExpression subjectExpression;
+    private XPathExpression medicalExpression;
+    private XPathExpression temporalExpression;
+    private XPathExpression uncertainExpression;
+    private XPathExpression negatedExpression;
     private XPathExpression subsectionOfExpression;
     private XPathExpression fragmentExpression;
     private XPathExpression fragmentNameExpression;
@@ -98,17 +104,29 @@ public class ZonerCli {
     private XPathExpression subsectionExpression;
     private boolean doTemplates;
     private boolean doSubsections;
+    private boolean convertOffsets;
 
     public ZonerCli() {
-        this(null);
+        this(null, false);
+    }
+    
+    public ZonerCli(URI regexFileUri) {
+        this (regexFileUri, false);
     }
 
-    public ZonerCli(URI regexFileUri) {
+    /**
+     * 
+     * @param regexFileUri - the patterns file that defines the section headings
+     * @param convertOffsets - if true will add i2b2 style line/token offsets to 
+     *                         the heading and section structures
+     */
+    public ZonerCli(URI regexFileUri, boolean convertOffsets) {
         try {
             if (regexFileUri == null) {
                 regexFileUri = this.getClass().getClassLoader().getResource(defaultRegexFilename).toURI();
             }
-
+            this.convertOffsets = convertOffsets;
+            
             Document input = parseDocument(regexFileUri.toString());
 
             XPathFactory factory = XPathFactory.newInstance();
@@ -118,6 +136,11 @@ public class ZonerCli {
             regexIgnoreCaseExpression = xpath.compile("./regex/@ignore-case");
             regexFindAllExpression = xpath.compile("./regex/@find-all");
             labelExpression = xpath.compile("./label/text()");
+            medicalExpression = xpath.compile("./medical/text()");
+            temporalExpression = xpath.compile("./temporal/text()");
+            subjectExpression = xpath.compile("./subject/text()");
+            uncertainExpression = xpath.compile("./uncertain/text()");
+            negatedExpression = xpath.compile("./negated/text()");
             subsectionOfExpression = xpath.compile("./subsection_of/text()");
             fragmentExpression = xpath.compile("/root/fragments/fragment");
             fragmentNameExpression = xpath.compile("./name/text()");
@@ -130,8 +153,10 @@ public class ZonerCli {
             doTemplates = true; // default
             doSubsections = true; // default
 
-            // get all the fragment elements out of the xml file and has name/expansion pairs
+            // get all the fragment elements out of the xml file and hash name/expansion pairs
+            // also hash name/attrs pairs
             fragmentMap = new LinkedHashMap<String, Node>();
+            fragmentAttrsMap = new LinkedHashMap<String, AttributesHolder>();
             NodeList fragmentNodeList =
                     (NodeList) fragmentExpression.evaluate(input, XPathConstants.NODESET);
             for (int i = 0; i < fragmentNodeList.getLength(); i++) {
@@ -140,6 +165,12 @@ public class ZonerCli {
                 String expansionString = fragmentExpansionExpression.evaluate(fragmentElement);
                 Node expansionNode = (Node) fragmentExpansionNode.evaluate(fragmentElement, XPathConstants.NODE);
                 fragmentMap.put(nameString, expansionNode);
+                fragmentAttrsMap.put(nameString,
+                        new AttributesHolder(medicalExpression.evaluate(fragmentElement),
+                            temporalExpression.evaluate(fragmentElement),
+                            subjectExpression.evaluate(fragmentElement),
+                            uncertainExpression.evaluate(fragmentElement),
+                            negatedExpression.evaluate(fragmentElement)));
                 logger.log(Level.FINEST, "found fragment: {0} -> {1}",
                         new Object[]{nameString, nodeToString(expansionNode)});
             }
@@ -187,8 +218,10 @@ public class ZonerCli {
 
             Node regexNode =
                     (Node) regexExpression.evaluate(theElement, XPathConstants.NODE);
+            AttributesHolder attrs = new AttributesHolder();
+            Map<Integer,List<String>> fragmentLevelsMap = new HashMap<Integer,List<String>>();
             String regexString = expandFragments(regexNode, embeddedFragmentExpression,
-                    embeddedFragmentName);
+                    embeddedFragmentName, fragmentLevelsMap /*attrs*/);
             // if the fragment nesting is too deep, expandFragments will return null
             // in that case, skip this regex
             if (regexString == null) {
@@ -208,6 +241,11 @@ public class ZonerCli {
             String labelString = labelExpression.evaluate(theElement);
             logger.finest(String.format(" - section -- label: \"%s\"; regex: \"%s\"; ignore case: \"%s\"; match all: \"%s\"",
                     labelString, regexString, regexIgnoreCaseString, regexFindAllString));
+            attrs.maybeSetMedical(medicalExpression.evaluate(theElement));
+            attrs.maybeSetSubject(subjectExpression.evaluate(theElement));
+            attrs.maybeSetTemporal(temporalExpression.evaluate(theElement));
+            attrs.maybeSetUncertain(uncertainExpression.evaluate(theElement));
+            attrs.maybeSetNegated(negatedExpression.evaluate(theElement));
             // subsectionOfString may be a comma-separated string of multiple section names, or just a single section name
             String subsectionOfString = subsectionOfExpression.evaluate(theElement);
             if (subsectionOfString.isEmpty()) {
@@ -224,9 +262,11 @@ public class ZonerCli {
 
             SectionRegexDefinition definition = new SectionRegexDefinition();
             definition.setLabel(labelString);
+            definition.setAttributes(attrs);
             definition.setRegex(currentRegex);
             definition.setFindAll(regexFindAll);
             definition.setSubsectionOf(subsectionOfString);
+            definition.setFragmentsMap(fragmentLevelsMap);
             theRegexDefinitionList.add(definition);
         }
     }
@@ -261,10 +301,10 @@ public class ZonerCli {
     }
 
     private String expandFragments(Node regexNode, XPathExpression embeddedFragmentExpression,
-            XPathExpression embeddedFragmentName) {
+            XPathExpression embeddedFragmentName, Map<Integer,List<String>> fragmentLevelsMap) {
         int levels = 0;
         Element parentRegexElement = (Element) regexNode;
-        Document ownerDocument = parentRegexElement.getOwnerDocument();
+        // Document ownerDocument = parentRegexElement.getOwnerDocument();
         //logger.log(Level.FINEST, "expandFragments on textContent: {0}", parentRegexElement.getTextContent());
         logger.log(Level.FINEST, "expandFragments on Node: {0}", nodeToString(regexNode));
 
@@ -275,9 +315,20 @@ public class ZonerCli {
                 for (int i = 0; i < fragmentList.getLength(); i++) {
                     Element fragmentRefElement = (Element) fragmentList.item(i);
                     String fragName = embeddedFragmentName.evaluate(fragmentRefElement);
-                    Node fragExpansionNode = fragmentMap.get(fragName);
+                    Node fragExpansionNode = fragmentMap.get(fragName).cloneNode(true);
+                    // attrs.merge(fragmentAttrsMap.get(fragName));
+                    // add to the fragment levels map (passed in)
+                    Integer l = new Integer(levels);
+                    List<String> levelList = fragmentLevelsMap.get(l);
+                    if (levelList == null) {
+                        levelList = new ArrayList<String>();
+                        fragmentLevelsMap.put(l, levelList);
+                    }
+                    levelList.add(fragName);
                     // replace the fragmentRef with its expansion
                     Node parentNode = fragmentRefElement.getParentNode();
+                    /* logger.finest(String.format("In Node %s replace\n\t%s\nwith\n\t%s", nodeToString(parentNode),
+                            nodeToString((Node)fragmentRefElement), nodeToString(fragExpansionNode))); */
                     parentNode.replaceChild(fragExpansionNode, fragmentRefElement);
                     logger.log(Level.FINEST, "Level {0} fragment {1} expansion: {2}",
                             new Object[]{levels, i, nodeToString((Node) parentRegexElement)});
@@ -368,8 +419,13 @@ public class ZonerCli {
 
         zonerCli.setInputFilename(inputFile);
         zonerCli.readFile(inputFile);
-        // initialize converter
-        zonerCli.initialize();
+        // note that at this time it is not possible to have convertOffsets
+        // be true when running from the command line -- leaving this here
+        // just in case we want to eventually support that functionality
+        if (zonerCli.convertOffsets) {
+            // initializeConverter converter
+            zonerCli.initializeConverter();
+        }
         zonerCli.setDoTemplates(true);
         zonerCli.execute();
         zonerCli.logRangesAndHeadings();
@@ -408,7 +464,20 @@ public class ZonerCli {
         this.doSubsections = doSubsections;
     }
 
+    public void setConvertOffsets(boolean convert) {
+        this.convertOffsets = convert;
+    }
+    
+    public void doConvertOffsets() {
+        this.convertOffsets = true;
+        this.initializeConverter();
+    }
+    
     public void initialize() {
+        this.initializeConverter();
+    }
+    
+    public void initializeConverter() {
         if (converter == null) {
             converter = new CharacterOffsetToLineTokenConverterDefaultImpl(getEntireContents());
         }
@@ -528,6 +597,7 @@ public class ZonerCli {
 
     public void findSubsections() {
         initSectionMap();
+        clearSubsectionMap();
         matchRegexes(subsectionRegexDefinitionList, SUBSECTION_LIST);
         Collections.sort(getSubsections());
         adjustSubsectionRangeEnds(subsectionMap);
@@ -566,7 +636,7 @@ public class ZonerCli {
         boolean findAll = currentDefinition.isFindAll();
         boolean findFirstOnly = !findAll;
         int i = 0;
-        logger.finest(String.format(" trying %s ...", currentDefinition.getLabel()));
+        // logger.finest(String.format(" trying %s ...", currentDefinition.getLabel()));
         while (currentMatcher.find()) {
             int start = currentMatcher.start();
             int end = currentMatcher.end();
@@ -574,9 +644,31 @@ public class ZonerCli {
 
             Range currentRange = new Range();
             currentRange.setLabel(currentDefinition.getLabel());
+            AttributesHolder attrs = new AttributesHolder(currentDefinition.getMedical(),
+                    currentDefinition.getTemporal(), currentDefinition.getSubject(),
+                    currentDefinition.getUncertain(), currentDefinition.getNegated());
             currentRange.setBegin(start + offset);
             currentRange.setEnd(end + offset);
             currentRange.setIgnore(false); //the default, may be changed later if overlap found
+            // check for named captures from fragments that contribute attributes
+            List<Integer> keyList = new ArrayList<Integer>(currentDefinition.getFragmentsMap().keySet());
+            Collections.sort(keyList);
+            for (Integer level : keyList) {
+                List<String> fragList = currentDefinition.getFragmentsMap().get(level);
+                for (String fragName : fragList) {
+                    logger.finest(String.format("checking for match with fragment named %s", fragName));
+                    try {
+                        if (currentMatcher.group(fragName) != null) {
+                            logger.finest(String.format(">>> found match for fragment %s with attrs %s", 
+                                    fragName, fragmentAttrsMap.get(fragName).toString()));
+                            attrs.merge(fragmentAttrsMap.get(fragName));
+                        }
+                    } catch (IllegalArgumentException x) {
+                        // there wasn't a matching group with that name at all, skip it
+                    }
+                }
+            }
+            currentRange.setAttrs(attrs);
             getList(listID).add(currentRange);
             if (parentRange != null) {
                 List<Range> rangeSubsections = subsectionMap.get(parentRange);
@@ -622,6 +714,11 @@ public class ZonerCli {
             currentHeading.setHeadingEnd(end);
             currentHeading.setHeadingBegin(begin);
             currentHeading.setLabel(currentRange.getLabel());
+            currentHeading.setMedical(currentRange.getMedical());
+            currentHeading.setTemporal(currentRange.getTemporal());
+            currentHeading.setSubject(currentRange.getSubject());
+            currentHeading.setUncertain(currentRange.getUncertain());
+            currentHeading.setNegated(currentRange.getNegated());
             currentHeading.setHeadingText(entireContents.substring(begin, end));
             if (!isLast) {
                 int j = i + 1; // index of next range, may increase if there are overlaps
@@ -681,21 +778,25 @@ public class ZonerCli {
                 // int realSectionEnd = oneBeforeNextRange;
                 int realSectionEnd = oneBeforeNextRange;
 
-                logger.fine("ZonerCli: calling converter on 'begin': " + begin);
-                LineAndTokenPosition beginLineAndTokenPosition = converter.convert(begin);
-                logger.fine("ZonerCli: calling converter on 'realSectionEnd': " + realSectionEnd);
-                LineAndTokenPosition endLineAndTokenPosition = converter.convert(realSectionEnd);
-
-                logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) %s to %s ",
-                        currentRange, getEntireContents().substring(begin, end),
-                        begin, end, realSectionEnd,
-                        beginLineAndTokenPosition.toString(), endLineAndTokenPosition.toString()));
-
+                if (convertOffsets) {
+                    logger.fine("ZonerCli: calling converter on 'begin': " + begin);
+                    LineAndTokenPosition beginLineAndTokenPosition = converter.convert(begin);
+                    logger.fine("ZonerCli: calling converter on 'realSectionEnd': " + realSectionEnd);
+                    LineAndTokenPosition endLineAndTokenPosition = converter.convert(realSectionEnd);
+                    
+                    logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) %s to %s ",
+                            currentRange, getEntireContents().substring(begin, end),
+                            begin, end, realSectionEnd,
+                            beginLineAndTokenPosition.toString(), endLineAndTokenPosition.toString()));
+                    currentRange.setBeginLineAndToken(beginLineAndTokenPosition);
+                    currentRange.setEndLineAndToken(endLineAndTokenPosition);
+                } else {
+                    logger.finest(String.format(" - %s: %s (%d-%d) (section end: %d) ",
+                            currentRange, getEntireContents().substring(begin, end),
+                            begin, end, realSectionEnd));
+                }
 
                 currentRange.setEnd(oneBeforeNextRange);
-                currentRange.setBeginLineAndToken(beginLineAndTokenPosition);
-                currentRange.setEndLineAndToken(endLineAndTokenPosition);
-
                 fullRangeListAdjusted.add(currentRange);
 
                 //SectionAnnotation a = new SectionAnnotation();
@@ -713,9 +814,6 @@ public class ZonerCli {
             adjustRangeEnds(theSubranges, false, curRange.getEnd()); // for now don't worry about overlap?
         }
     }
-    
-
-    
 
     public String getEntireContents() {
         return entireContents;
@@ -751,6 +849,9 @@ public class ZonerCli {
         getSubsections().clear();
     }
 
+    public void clearSubsectionMap() {
+        subsectionMap.clear();
+    }
     /**
      * @return the rangeList
      */
@@ -802,7 +903,7 @@ public class ZonerCli {
         logger.finest("================== RangeList ======================");
         for (Iterator i = getRangeList().iterator(); i.hasNext();) {
             // logger.finest(i.next().toString());
-            Range t = (Range)i.next();
+            Range t = (Range) i.next();
             logger.finest(t.toString());
             logger.finest(getEntireContents().substring(t.getBegin(), t.getEnd()));
             logger.finest("char at " + t.getEnd() + ": " + getEntireContents().charAt(t.getEnd()));
@@ -813,7 +914,7 @@ public class ZonerCli {
         }
         logger.finest("================== TemplatesList ======================");
         for (Iterator i = getTemplates().iterator(); i.hasNext();) {
-            Range t = (Range)i.next();
+            Range t = (Range) i.next();
             logger.finest(t.toString());
             logger.finest(getEntireContents().substring(t.getBegin(), t.getEnd()));
         }
@@ -859,22 +960,148 @@ public class ZonerCli {
         }
     }
 
+    protected static class AttributesHolder {
+
+        private String medical;
+        private String temporal;
+        private String subject;
+        private String uncertain;
+        private String negated;
+
+        public AttributesHolder() {
+            this.medical = null;
+            this.temporal = null;
+            this.subject = null;
+            this.uncertain = null;
+            this.negated = null;
+        }
+
+        public AttributesHolder(String medical, String temporal, String subject, String uncertain, String negated) {
+            this.medical = medical;
+            this.temporal = temporal;
+            this.subject = subject;
+            this.uncertain = uncertain;
+            this.negated = negated;
+        }
+
+        public AttributesHolder copy (AttributesHolder origAttrs) {
+            return new AttributesHolder(origAttrs.medical, origAttrs.temporal, origAttrs.subject, origAttrs.uncertain, origAttrs.negated);
+        }
+        
+        @Override
+        public String toString() {
+            return String.format("AttributesHolder Med: %s, Temp: %s, Subj: %s, Unc: %s, Neg: %s",
+                    ((this.medical==null)?"null":this.medical),
+                    ((this.temporal==null)?"null":this.temporal),
+                    ((this.subject==null)?"null":this.subject),
+                    ((this.uncertain==null)?"null":this.uncertain),
+                    ((this.negated==null)?"null":this.negated));
+        }
+        
+        /**
+         * 
+         * @param newAttrs another AttributesHolder object whose values should
+         * be merged into this AttributeHolder, with its values taking precedence
+         * over those already set for this object
+         */
+        public void merge(AttributesHolder newAttrs) {
+            logger.finest(String.format("Merging %s into %s", newAttrs.toString(), this.toString()));
+            this.medical = ((newAttrs.medical==null || newAttrs.medical.isEmpty())?this.medical:newAttrs.medical);
+            this.temporal = ((newAttrs.temporal==null || newAttrs.temporal.isEmpty())?this.temporal:newAttrs.temporal);
+            this.subject = ((newAttrs.subject==null || newAttrs.subject.isEmpty())?this.subject:newAttrs.subject);
+            this.uncertain = ((newAttrs.uncertain ==null || newAttrs.uncertain.isEmpty())?this.uncertain :newAttrs.uncertain );
+            this.negated = ((newAttrs.negated==null || newAttrs.negated.isEmpty())?this.negated:newAttrs.negated);
+        }
+        
+        public String getMedical() {
+            return medical;
+        }
+        // maybeSetters only change the value if there wasn't one there
+        // already -- in this way the earliest value set takes precedence
+        // over later ones
+        // as we drill down through fragments, we get the most specific
+        // attribute information earlier, and only fill in the less
+        // specific default if a more specific value was not found/set
+        
+        public void maybeSetMedical(String medical) {
+            if (this.medical == null) {
+                this.medical = medical;
+            }
+        }
+
+        public String getNegated() {
+            return negated;
+        }
+
+
+        public void maybeSetNegated(String negated) {
+            if (this.negated == null) {
+                this.negated = negated;
+            }
+        }
+
+        public String getSubject() {
+            return subject;
+        }
+
+        public void maybeSetSubject(String subject) {
+            if (this.subject == null) {
+                this.subject = subject;
+            }
+        }
+
+        public String getTemporal() {
+            return temporal;
+        }
+
+        public void maybeSetTemporal(String temporal) {
+            if (this.temporal == null) {
+                this.temporal = temporal;
+            }
+        }
+
+        public String getUncertain() {
+            return uncertain;
+        }
+
+        public void maybeSetUncertain(String uncertain) {
+            if (this.uncertain == null) {
+                this.uncertain = uncertain;
+            }
+        }
+    }
+
     public class Range implements Comparable<Range> {
 
         public Range() {
         }
         protected int begin;
         protected int end;
-        protected LineAndTokenPosition beginLineAndToken;
-        protected LineAndTokenPosition endLineAndToken;
+        // these default to null and are only set if convertOffsets is true
+        // in the ZonerCli
+        protected LineAndTokenPosition beginLineAndToken = null;
+        protected LineAndTokenPosition endLineAndToken = null;
+        protected AttributesHolder attrs;
         protected String label;
+        /**
+        protected String medical;
+        protected String temporal;
+        protected String subject;
+        protected String uncertain;
+        protected String negated;
+         * */
+        
         protected boolean ignore;
         protected boolean truncated;
 
         @Override
         public String toString() {
-            return String.format("RANGE \"%s\" [%d-%d]", label, begin, end);
+            return String.format("RANGE \"%s\" [%d-%d] Med: %s, Temp: %s, Subj: %s, Unc: %s, Neg: %s",
+                    label, begin, end, attrs.getMedical(), attrs.getTemporal(), 
+                    attrs.getSubject(), attrs.getUncertain(), attrs.getNegated());
         }
+        
+       
 
         public int getBegin() {
             return begin;
@@ -937,6 +1164,56 @@ public class ZonerCli {
             this.label = label;
         }
 
+        public String getMedical() {
+            return attrs.getMedical();
+        }
+/**
+        public void setMedical(String medical) {
+            this.medical = medical;
+        } */
+
+        public String getNegated() {
+            return attrs.getNegated();
+        }
+/**
+        public void setNegated(String negated) {
+            this.negated = negated;
+        } */
+
+        public String getSubject() {
+            return attrs.getSubject();
+        }
+/**
+        public void setSubject(String subject) {
+            this.subject = subject;
+        } */
+
+        public String getTemporal() {
+            return attrs.getTemporal();
+        }
+/**
+        public void setTemporal(String temporal) {
+            this.temporal = temporal;
+        } */
+
+        public String getUncertain() {
+            return attrs.getUncertain();
+        }
+
+        
+    /**
+        public void setUncertain(String uncertain) {
+            this.uncertain = uncertain;
+        } */
+        
+        public AttributesHolder getAttrs() {
+            return attrs;
+        }
+
+        public void setAttrs(AttributesHolder attrs) {
+            this.attrs = attrs;
+        }
+        
         public LineAndTokenPosition getBeginLineAndToken() {
             return beginLineAndToken;
         }
@@ -959,6 +1236,11 @@ public class ZonerCli {
         protected int headingBegin;
         protected int headingEnd;
         protected String label;
+        protected String medical;
+        protected String temporal;
+        protected String subject;
+        protected String uncertain;
+        protected String negated;
         protected String headingText;
 
         @Override
@@ -990,6 +1272,46 @@ public class ZonerCli {
             return label;
         }
 
+        public String getMedical() {
+            return medical;
+        }
+
+        public void setMedical(String medical) {
+            this.medical = medical;
+        }
+
+        public String getNegated() {
+            return negated;
+        }
+
+        public void setNegated(String negated) {
+            this.negated = negated;
+        }
+
+        public String getSubject() {
+            return subject;
+        }
+
+        public void setSubject(String subject) {
+            this.subject = subject;
+        }
+
+        public String getTemporal() {
+            return temporal;
+        }
+
+        public void setTemporal(String temporal) {
+            this.temporal = temporal;
+        }
+
+        public String getUncertain() {
+            return uncertain;
+        }
+
+        public void setUncertain(String uncertain) {
+            this.uncertain = uncertain;
+        }
+
         public void setHeadingText(String headingText) {
             this.headingText = headingText;
         }
@@ -1003,9 +1325,22 @@ public class ZonerCli {
 
         protected Pattern regex;
         protected String label;
+        /**
+        protected String medical;
+        protected String temporal;
+        protected String subject;
+        protected String uncertain;
+        protected String negated;
+         * **/
+        protected AttributesHolder attrs;
         protected boolean findAll;
         protected String subsectionOf = null;
-
+        // a map from fragment level to labels at that level
+        protected Map<Integer,List<String>> fragmentLevelsMap = null;
+        // a map from fragment labels to additional attributes the fragment carries
+        // let's keep this global?
+        // protected Map<String, AttributesHolder> fragmentAttrsMap = null;
+        
         public Pattern getRegex() {
             return regex;
         }
@@ -1020,6 +1355,56 @@ public class ZonerCli {
 
         public void setLabel(String label) {
             this.label = label;
+        }
+
+        public String getMedical() {
+            return attrs.getMedical();
+        }
+
+        /*
+        public void setMedical(String medical) {
+            this.medical = medical;
+        } */
+
+        public String getNegated() {
+            return attrs.getNegated();
+        }
+
+        /*
+        public void setNegated(String negated) {
+            this.negated = negated;
+        } */
+
+        public String getSubject() {
+            return attrs.getSubject();
+        }
+
+        /*
+        public void setSubject(String subject) {
+            this.subject = subject;
+        } */
+
+        public String getTemporal() {
+            return attrs.getTemporal();
+        }
+
+        /*
+        public void setTemporal(String temporal) {
+            this.temporal = temporal;
+        } */
+
+        public String getUncertain() {
+            return attrs.getUncertain();
+        }
+
+        /*
+        public void setUncertain(String uncertain) {
+            this.uncertain = uncertain;
+        } */
+        
+        public void setAttributes(AttributesHolder attrs) {
+            this.attrs = attrs;
+          
         }
 
         public boolean isFindAll() {
@@ -1037,6 +1422,26 @@ public class ZonerCli {
         public void setSubsectionOf(String subsectionOf) {
             this.subsectionOf = subsectionOf;
         }
+
+        /**
+        public Map<String, AttributesHolder> getFragmentAttrsMap() {
+            return fragmentAttrsMap;
+        }
+
+        public void setFragmentAttrsMap(Map<String, AttributesHolder> fragmentAttrsMap) {
+            this.fragmentAttrsMap = fragmentAttrsMap;
+        }
+         * **/
+
+        public Map<Integer, List<String>> getFragmentsMap() {
+            return fragmentLevelsMap;
+        }
+
+        public void setFragmentsMap(Map<Integer, List<String>> fragmentsMap) {
+            this.fragmentLevelsMap = fragmentsMap;
+        }
+        
+        
     }
 
     public static ParsedTextFile processTextFile(File inputFile) throws FileNotFoundException, IOException {
